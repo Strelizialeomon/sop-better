@@ -1,0 +1,91 @@
+# sop-better STANDARD —— 开发 SOP 的权威尺
+
+`/sop-init` 据此**生成**,`/sop-audit` 据此**对照**。本文件是唯一真相源。
+
+> 状态:草稿,待 owner review。本稿含两个新决策需确认:**(A) 两层模型(公约+实例化)**、**(B) "客观顶嘴"列为撒手安全条件**。
+
+---
+
+## 0. 两层模型(本工具的地基)
+
+一份 SOP = **不变的公约** + **按项目参数化的实例化**。`/sop-init` 两样都产出;既不死模板,也不空泛宪章。
+
+```
+/sop-init = 固定公约(照搬) + 读本项目的 [端/协作人/风险] 参数 → 生成具体角色与结构
+```
+
+---
+
+## 1. 公约(不变层 · 任何档照搬)
+
+跟项目无关,solo 脚本和四端产品都一样:
+
+1. **人机分工**:人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现)。人是审稿人,不是作者;但看得见、能毙、高风险能跳进去(**不从 L0 翻成盲盒**)。
+2. **重瞄 brainstorming**:只梳"要什么",技术架构由 AI 提案、人评审。默认 brainstorming 会把人脑内的代码抽出来——那是病根,本工具反其道。
+3. **跳 writing-plans + 补偿**:不跑 writing-plans;代价用两条硬补——**spec 验收标准必须可检验** + **code review 必留**(撒手后的安全网)。「plan 越轻 → 验收越硬 + review 越严」。
+4. **🧱 客观顶嘴(承重墙 · 与 code-review 并列)**:agent 必须反驳、说真话、主动标出不确定与风险,**不许讨好**。撒手给 yes-man = 把判断力交给马屁精,比不撒手更糟。所以"客观、敢反驳"是**让撒手成立的安全条件**,不是性格点缀。`/sop-audit` 把"agent 被设成顺从/无异议机制"也算一种**不合理**。
+5. **右尺寸**:SOP 重量由 `风险 × 验证成本` 定。宁可不足,不要过度——过度治理吃掉 AI 给的杠杆。
+6. **单一真相源 + 决策留痕**:每条跨端/长期决策进 `docs/decisions/`(ADR);事实只在一处权威定义,别处引用不重声。
+
+---
+
+## 2. 实例化层(可变 · 每项目参数化)
+
+`/sop-init` 询问或接收这些参数,据此生成,**不硬写**:
+
+| 参数 | 例 | 影响 |
+|---|---|---|
+| `ends[]` | admin / backend / frontend / mobile / crawler | 生成对应 scope 角色与目录 |
+| `collaborators[]` | 单人 / 人+多 agent / 多人 | 要不要 coordination 角色、collaboration.md |
+| `risk` | 可逆低风险 / 线上不可逆 | 默认撒手档、review 严格度 |
+| `tier` | T0 / T1 / T2 | 实例化多少结构(见 §3) |
+
+---
+
+## 3. 三维 × 三档矩阵
+
+三维:**结构**(建哪些 docs/角色)· **流程**(用哪些技能)· **人机分工**(谁拍板)。都随档伸缩:
+
+| | T0 一次性脚本 | T1 单人认真 | T2 多端/多 agent |
+|---|---|---|---|
+| **结构** | README + .env.example + .gitignore | + CLAUDE.md + docs/decisions(ADR)+ 单一真相源 | + 角色划分(按 ends 实例化)+ docs/contracts + collaboration.md +(可选)worktree + 状态标记 |
+| **流程** | 不 brainstorm,直接做 | 轻 brainstorm(梳意图)→ 建 → code review;**不 writing-plans** | 全套 + 跨端契约 handshake;每端独立 brainstorm |
+| **人机分工** | 人给意图,AI 全包 | 人=要什么+评审;AI=架构+实现 | 同 T1;跨端契约 freeze 需人确认 |
+| **对标** | baozhang / jiandaoyun | llm_auto_report | taoxi-geo / go_dispatch / xreal |
+
+**注**:四条铁律(§1.1–1.4)+ 右尺寸 + 顶嘴,**所有档都生效**;档只决定结构实例化多少。
+
+---
+
+## 4. /sop-init 生成的「Agent 工作约束」块
+
+每档写进项目 CLAUDE.md(T1 示例,T2 多 coordination/契约条款):
+
+```markdown
+## Agent 工作约束(本项目 · T1 档)
+- 梳理思路:用 brainstorming,但只梳"要什么"(目标/约束/验收)。
+  技术架构由 agent 提案,我评审 + 否决,不亲自设计。
+- 不跑 writing-plans:spec 通过后直接实现(spec 必含可检验的验收标准)。
+- 必跑 code review:撒手后的唯一安全网,不可省。
+- Agent 必须客观顶嘴:有异议直说、标不确定与风险,禁止讨好附和。
+- 默认撒手档 = L2;不可逆/高风险改动才升回我主导。
+```
+
+---
+
+## 5. /sop-audit 的查法(头号查"太重")
+
+按严重度查"不合理":
+
+1. **过度治理(头号)**:对项目规模而言仪式过重(单人项目却背着 coordination/scope label/回溯 req doc/audit 补口)。
+2. **档位错配**:实际复杂度与所用档不符(高风险却 T0,或脚本却 T2)。
+3. **顶嘴缺失**:CLAUDE.md/约束把 agent 设成顺从无异议——撒手不安全。
+4. **结构缺失**:该档该有的(单一真相源/ADR/验收标准/review)缺了。
+
+输出:人读报告 + 可执行 findings(参照 `google-design-skill` 的 criticize 双轨)。
+
+---
+
+## 6. 验证试金石
+
+本 STANDARD 与 `/sop-init` 不靠"看起来对"算数,**只有在一个真实 T2 项目(taoxi-geo)上跑通、生成物右尺寸且 owner 扫一眼 CLAUDE.md+目录树即能判对,才算验透**。未验 = PPT。
