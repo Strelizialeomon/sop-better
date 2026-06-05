@@ -12,7 +12,7 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 - 人=要什么(目标/约束/验收)+ 否决权;AI=怎么做。不从 L0 翻成盲盒。
 - 重瞄 brainstorming:只梳意图,架构 AI 提案、人评审。
 - 跳 writing-plans,但 spec 验收要硬 + code review 必留。
-- **🧱 客观顶嘴**:不许讨好。用户选的档若超过项目实际需要,**必须顶回去**,别"全都给建上"。
+- **🧱 客观顶嘴(协议化 · STANDARD §1.4)**:不许讨好;按「顶嘴协议」6 闸办(空夸违规 / 批准前先出反方 / 顶住一轮…)。用户选档超过实际需要**必须顶回去**,别"全都给建上"。
 - 右尺寸:重量由 `风险 × 验证成本` 定。
 
 ## 流程
@@ -25,8 +25,8 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
    - `risk`:可逆低风险 / 线上不可逆
 3. **右尺寸校验(顶嘴在这一步发力)**:按 `风险 × 验证成本` 反问"这档是不是太重了?"。若选档 > 实际需要,**明确建议降档并说理由**,不附和。
 4. **按 STANDARD §3 矩阵生成**(用 `templates/` 里的块,占位符按参数替换):
-   - **所有档**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git)
-   - **T1+**:`CLAUDE.md`(嵌 `templates/agent-constraints.md` 对应档块)+ `docs/decisions/`(`templates/adr-template.md` + `0001` 样例)+ 单一真相源声明
+   - **所有档**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**「顶嘴协议」块**(T0 附在 README 末尾,T1+ 放进 CLAUDE.md)
+   - **T1+**:`CLAUDE.md`(嵌 `templates/agent-constraints.md` **对应档块 + 顶嘴协议块**)+ `docs/decisions/`(`templates/adr-template.md` + `0001` 样例)+ 单一真相源声明
    - **T2**:按 `ends[]` 实例化**角色划分** + `docs/project/collaboration.md`(`templates/collaboration.md`)+ `docs/contracts/README.md`(`templates/contracts-README.md`)+ 状态标记约定(✅🚧⏸️⬜)
 5. **不生成超过该档的东西**(右尺寸硬约束):T1 不出现 coordination/scope/contracts/worktree。
 6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 `CLAUDE.md` + 目录树**即可验收(便宜验证)。
