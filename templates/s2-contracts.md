@@ -1,0 +1,34 @@
+<!-- templates/s2-contracts.md —— 仅 S2(多端,需跨端契约)。taoxi-geo 蒸馏。
+     选用条件:2+ 端要对接(前后端/小程序/爬虫之间有数据契约)。S0/S1 单端不用(契约自动生成或无需手写)。 -->
+
+# 跨端契约模式(S2)
+
+## 一、req doc 写到哪一层(语义级 vs 实施层)
+
+跨端 req doc 写**语义级骨架**,不写实施层:
+
+| ✅ 进 req doc(后端对齐锚点) | ❌ 留实施层(scope agent 自决) |
+|---|---|
+| 主流程时序(有序业务步骤) | 拓扑 / 组件 / hook / px / 动效 |
+| 每跨端步:谁触发 · 换什么**语义数据** · 流转什么**领域状态** | 字段名 / 类型 / endpoint 路径 / schema |
+| **交互的后端契约面**(决定后端能力的交互选择) | 交互的**视觉形态**(分几屏 / 弹层 / 按钮位置) |
+
+> **判据**:这个决策会不会改"跨端交换的数据"或"领域状态机"?会 → 进 req doc;纯视觉 / 纯实施 → 留实施层。
+
+**交互的后端契约面**(这些交互选择会变后端契约形状,必在 req doc **拍死**,别留"若…会…"假设):
+单步↔多步草稿(→ 草稿 endpoint)· 一次性↔分页/滚动(→ cursor 分页)· 整体↔行内提交(→ PATCH 粒度)· 等响应↔乐观(→ 幂等键 + 回滚)· 前端渲染↔后端 compute(→ compute endpoint)· 有无 batch/直传。
+
+## 二、契约握手(解耦"约定"和"做完" · 破两头堵)
+
+不必等对方做完,只要 api-draft **agreed** 就并行建:
+
+- **任一端发起**(防死锁):backend 把设计好的 endpoint+schema 作 api-draft 提案 post 到 issue;或 frontend 把"我渲染需要的 shape"作消费者提案 post。
+- 另一端 review,issue 上 1-2 轮 reconcile(**异步走评论 · 不开会**)。
+- 双方一致 = **agreed draft** → 各进实施**并行建**(frontend 可 mock 跑,不等 backend)。
+- **仍永不阻塞**:发起方 post 完不停,继续按自己理解的 draft 干;有异议走评论改。**握手 = 尽早对齐,不是卡住等批**。
+
+## 三、契约 firmness 三级
+
+1. **req 级**(起需求时)→ 锁"会动契约的交互决策"(能力级,见上表)
+2. **握手 draft 级**(实施前)→ 锁 endpoint + 字段 schema(双方 review · 活契约,改走 issue 评论 announce)
+3. **freeze**(联调后)→ 搬进 `docs/contracts/<X>.md` 只读硬契约。**选择性**:会被未来 feature 复用的平台边界才 freeze;只服务本 feature 的一次性契约停在 draft 即可。
