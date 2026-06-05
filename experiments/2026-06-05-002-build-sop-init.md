@@ -59,4 +59,6 @@
 
 **修复(本 commit)**:STANDARD §3 拆两轴(端数 S × 协作结构 C);§1.3 + SKILL 禁止「生成物引入 writing-plans」「凭记忆另写协作文档」;geo-reverse 的矛盾就地拨正。
 
+**复验(owner 重跑 geo-reverse · 2026-06-05)**:grep 确认 writing-plans 已无残留 ✅;两轴 `S1·C1` 全文一致 + S1 正确拒契约(改用 OpenAPI)✅。**抓到 1 残留**:`agent-constraints.md` 块头仍硬写"T1 单人认真"(与 S1·C1 双角色矛盾)→ 改为占位符 `{{SC}}` 随实际两轴。**至此 exp-002 的 fix 由真重跑闭环。**
+
 → 写入 PLAYBOOK?[x]

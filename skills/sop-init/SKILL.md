@@ -31,7 +31,7 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 3. **右尺寸校验(顶嘴在这一步发力)**:按 `风险 × 验证成本` 反问"这档是不是太重了?"。若选档 > 实际需要,**明确建议降档并说理由**,不附和。
 4. **按 STANDARD §3 两轴生成**(用 `templates/` 里的块,占位符按参数替换):
    - **总是**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**沟通约束块(顶嘴 + 说人话)**(S0·C0 附 README 末尾,否则放 CLAUDE.md)
-   - **凡非 S0·C0**:`CLAUDE.md`(嵌 `agent-constraints.md` **对应档块 + 沟通约束块**)+ `docs/decisions/`(adr 模板 + `0001` 样例)+ 单一真相源声明
+   - **凡非 S0·C0**:`CLAUDE.md`(嵌 `agent-constraints.md` 的**标准块**[S0·C0 用极简块;S2 再加多端追加块] + **沟通约束块**;**块头 `{{SC}}` 填实际两轴如 `S1·C1`,严禁写"单人/T1"等会跟协作结构矛盾的词**)+ `docs/decisions/`(adr 模板 + `0001` 样例)+ 单一真相源声明
    - **C≥C1(有协作)**:issue 模板 + label 状态机 + 角色命令 + `collaboration.md`(`templates/collaboration.md`,按角色/端实例化)+ 状态标记 ✅🚧⏸️⬜
    - **S=S2(多端)**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ 按 `ends[]` 的端角色
 5. **不生成超过两轴的东西**(右尺寸硬约束):S1 不建 contracts;C0 不建 issue/角色机器;C1 不建跨端契约/worktree。
