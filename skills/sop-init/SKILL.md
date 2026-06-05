@@ -5,7 +5,11 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 
 # sop-init
 
-为项目搭开发 SOP 骨架。唯一真相源是仓库根的 `STANDARD.md`,**先读它**,本技能只是执行流程,规则以 STANDARD 为准。
+为项目搭开发 SOP 骨架。
+
+**配套文件位置(本技能经软链装在 `~/.claude/skills/` 时仍按此绝对路径找)**:`SOP_HOME = /Users/sunchongsheng/code/sop-better/`。下文凡 `STANDARD.md` 指 `$SOP_HOME/STANDARD.md`,`templates/` 指 `$SOP_HOME/templates/`。
+
+唯一真相源是 `STANDARD.md`,**先读它**,本技能只是执行流程,规则以 STANDARD 为准。
 
 ## 铁律(来自 STANDARD §1,任何档都生效)
 
