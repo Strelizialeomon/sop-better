@@ -32,7 +32,7 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 4. **按 STANDARD §3 两轴生成**(用 `templates/` 里的块,占位符按参数替换):
    - **总是**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**沟通约束块(顶嘴 + 说人话)**(S0·C0 附 README 末尾,否则放 CLAUDE.md)
    - **凡非 S0·C0**:`CLAUDE.md`(嵌 `agent-constraints.md` 的**标准块**[S0·C0 用极简块;S2 再加多端追加块] + **沟通约束块**;**块头 `{{SC}}` 填实际两轴如 `S1·C1`,严禁写"单人/T1"等会跟协作结构矛盾的词**)+ `docs/decisions/`(adr 模板 + `0001` 样例)+ 单一真相源声明
-   - **C≥C1(有协作)**:issue 模板 + label 状态机 + 角色命令 + `collaboration.md`(`templates/collaboration.md`,按角色/端实例化)+ 状态标记 ✅🚧⏸️⬜
+   - **C≥C1(有协作)**:`collaboration.md`(`templates/collaboration.md`)+ **issue/PR 工作流(`templates/issue-pr-workflow.md` —— agent 执行的标准全生命周期 + 凭据保真)** + issue 模板 + label 状态机 + 角色命令 + 状态标记 ✅🚧⏸️⬜
    - **S=S2(多端)**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ 按 `ends[]` 的端角色
 5. **不生成超过两轴的东西**(右尺寸硬约束):S1 不建 contracts;C0 不建 issue/角色机器;C1 不建跨端契约/worktree。
 6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 `CLAUDE.md` + 目录树**即可验收(便宜验证)。
