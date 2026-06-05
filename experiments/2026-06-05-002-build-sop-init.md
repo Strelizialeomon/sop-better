@@ -49,8 +49,14 @@
 | 爽感 | /10 | |
 | 验证成本(越高=越便宜) | /10 | |
 
-## 5. 教训 → PLAYBOOK(待 taoxi-geo 验证后定稿)
+## 5. 验证结果 + 教训(真跑 geo-reverse · 2026-06-05)
 
-待填:L3 把"按既定 STANDARD 实现工具"交出去,行不行?前提是什么?
+**实际验证 = owner 在 geo-reverse 真跑了一次(比原计划 taoxi-geo dry-run 更硬)。**
 
-→ 写入 PLAYBOOK?[ ]
+- ✅ **右尺寸在档位上成立**:agent 写了 ADR-0001 明确拒绝 T2(单端+单 owner+低风险),还记了升级触发条件。该顶的顶了。
+- 🔴 **bug1 · writing-plans 自相矛盾**:CLAUDE.md 写"不跑 writing-plans",生成的 collaboration-sop.md 却把开发流程建在 writing-plans 上。根因:agent 凭对 taoxi-geo 的记忆另写协作文档,把旧习惯偷带进来。
+- 🔴 **bug2 · 档位模型 1 维**:geo-reverse=1 端+2 角色,T0/T1/T2 单标量装不下 →「T1 单人」配「双角色机器」名不副实。
+
+**修复(本 commit)**:STANDARD §3 拆两轴(端数 S × 协作结构 C);§1.3 + SKILL 禁止「生成物引入 writing-plans」「凭记忆另写协作文档」;geo-reverse 的矛盾就地拨正。
+
+→ 写入 PLAYBOOK?[x]

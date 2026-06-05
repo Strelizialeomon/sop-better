@@ -22,7 +22,7 @@
 
 1. **人机分工**:人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现)。人是审稿人,不是作者;但看得见、能毙、高风险能跳进去(**不从 L0 翻成盲盒**)。
 2. **重瞄 brainstorming**:只梳"要什么",技术架构由 AI 提案、人评审。默认 brainstorming 会把人脑内的代码抽出来——那是病根,本工具反其道。
-3. **跳 writing-plans + 补偿**:不跑 writing-plans;代价用两条硬补——**spec 验收标准必须可检验** + **code review 必留**(撒手后的安全网)。「plan 越轻 → 验收越硬 + review 越严」。
+3. **跳 writing-plans + 补偿**:不跑 writing-plans;代价用两条硬补——**spec 验收标准必须可检验** + **code review 必留**(撒手后的安全网)。「plan 越轻 → 验收越硬 + review 越严」。**这条管所有生成物**:连协作/流程 SOP 里也不许把开发流程建在 writing-plans 上(exp-002 翻车点)。
 4. **🧱 客观顶嘴(承重墙 · 与 code-review 并列)**:撒手给 yes-man = 把判断力交给马屁精,比不撒手更糟,所以"敢反驳"是**让撒手成立的安全条件**。但"要客观"是口号、不可检查、没用——必须落成**强制输出 + 闸门**的协议:
 
    **顶嘴协议(6 闸,可检查):**
@@ -49,22 +49,37 @@
 | `ends[]` | admin / backend / frontend / mobile / crawler | 生成对应 scope 角色与目录 |
 | `collaborators[]` | 单人 / 人+多 agent / 多人 | 要不要 coordination 角色、collaboration.md |
 | `risk` | 可逆低风险 / 线上不可逆 | 默认撒手档、review 严格度 |
-| `tier` | T0 / T1 / T2 | 实例化多少结构(见 §3) |
+| `端数 S` | S0 / S1 / S2 | 要不要 `docs/contracts/`(见 §3) |
+| `协作结构 C` | C0 / C1 / C2 | 要不要 issue/角色/协作机器(见 §3) |
 
 ---
 
-## 3. 三维 × 三档矩阵
+## 3. 两根独立的档位轴(不是一根 T0/T1/T2 标量)
 
-三维:**结构**(建哪些 docs/角色)· **流程**(用哪些技能)· **人机分工**(谁拍板)。都随档伸缩:
+> ⚠️ 旧版把这压成一根标量,被 **geo-reverse(1 端 + 业务/开发 2 角色)** 照出漏洞:它"端数"上是单端、"协作"上是双角色,一根尺装不下 → 只能硬凑出"T1 单人"配"双角色机器"的名不副实(exp-002)。**故拆成两根轴。**
 
-| | T0 一次性脚本 | T1 单人认真 | T2 多端/多 agent |
+SOP 的**结构**由两根**互不相干**的轴决定,各自伸缩。**流程 + 人机分工不随轴变,全照 §1 公约。**
+
+**轴一 · 端数 S(决定要不要跨端契约)**
+- `S0` 无服务 / 单脚本
+- `S1` 单端(一个 backend 或一个前端)
+- `S2` 多端(前端+后端+小程序+爬虫…)→ **才要** `docs/contracts/`
+
+**轴二 · 协作结构 C(决定要不要 issue/角色/协作机器)**
+- `C0` 单人单 agent → **不要**角色划分、不要 issue 状态机
+- `C1` 双角色 / 小团队(如 业务↔开发,各带 agent,靠 issue+doc 协同)→ 要 issue 模板 + label 状态机 + 角色命令 + collaboration,但**不要**跨端契约
+- `C2` 多端多 agent(每端一个 scope agent)→ 角色 + 契约 +(可选)worktree
+
+**一个项目 =(S, C),两轴自由组合**:
+
+| 简称 | =(S,C) | 结构产出 | 例子 |
 |---|---|---|---|
-| **结构** | README + .env.example + .gitignore | + CLAUDE.md + docs/decisions(ADR)+ 单一真相源 | + 角色划分(按 ends 实例化)+ docs/contracts + collaboration.md +(可选)worktree + 状态标记 |
-| **流程** | 不 brainstorm,直接做 | 轻 brainstorm(梳意图)→ 建 → code review;**不 writing-plans** | 全套 + 跨端契约 handshake;每端独立 brainstorm |
-| **人机分工** | 人给意图,AI 全包 | 人=要什么+评审;AI=架构+实现 | 同 T1;跨端契约 freeze 需人确认 |
-| **对标** | baozhang / jiandaoyun | llm_auto_report | taoxi-geo / go_dispatch / xreal |
+| T0 | S0·C0 | README + .env + .gitignore | baozhang |
+| T1 | S1·C0 | + CLAUDE.md + ADR + 单一真相源 | 纯单人单端 |
+| **(新)** | **S1·C1** | **T1 + issue 模板 + label 状态机 + 角色命令 + collaboration(无契约)** | **geo-reverse** |
+| T2 | S2·C2 | + 按端角色 + contracts + collaboration +(可选)worktree | taoxi-geo / go_dispatch |
 
-**注**:四条铁律(§1.1–1.4)+ 右尺寸 + 顶嘴,**所有档都生效**;档只决定结构实例化多少。
+**口诀:契约看 S,协作机器看 C。** 公约(§1)所有组合都生效。
 
 ---
 
@@ -89,7 +104,7 @@
 按严重度查"不合理":
 
 1. **过度治理(头号)**:对项目规模而言仪式过重(单人项目却背着 coordination/scope label/回溯 req doc/audit 补口)。
-2. **档位错配**:实际复杂度与所用档不符(高风险却 T0,或脚本却 T2)。
+2. **档位错配(两轴各查)**:端数 S 或协作结构 C 任一与实际不符——单端却建契约、单人却装 issue 状态机、或反过来该有的缺位。
 3. **顶嘴缺失**:CLAUDE.md/约束把 agent 设成顺从无异议——撒手不安全。
 4. **结构缺失**:该档该有的(单一真相源/ADR/验收标准/review)缺了。
 

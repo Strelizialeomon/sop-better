@@ -22,22 +22,24 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 
 ## 流程
 
-1. **读 `STANDARD.md`**(§3 矩阵 + §4 约束块 + §2 参数)。
+1. **读 `STANDARD.md`**(§3 两轴 S×C + §4 约束块 + §2 参数)。
 2. **定参数**(能从现有代码推断就推断:扫语言/目录/端数;推断不了就**一次问清**,别逐条挤牙膏):
-   - `tier`:T0 一次性脚本 / T1 单人认真 / T2 多端·多 agent
+   - `端数 S`:S0 单脚本 / S1 单端 / S2 多端 → 定契约
+   - `协作结构 C`:C0 单人 / C1 双角色·小团队(issue+角色) / C2 多端多 agent → 定协作机器
    - `ends[]`:admin / backend / frontend / mobile / crawler …
-   - `collaborators`:单人 / 人+多 agent / 多人
    - `risk`:可逆低风险 / 线上不可逆
 3. **右尺寸校验(顶嘴在这一步发力)**:按 `风险 × 验证成本` 反问"这档是不是太重了?"。若选档 > 实际需要,**明确建议降档并说理由**,不附和。
-4. **按 STANDARD §3 矩阵生成**(用 `templates/` 里的块,占位符按参数替换):
-   - **所有档**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**沟通约束块(顶嘴 + 说人话)**(T0 附在 README 末尾,T1+ 放进 CLAUDE.md)
-   - **T1+**:`CLAUDE.md`(嵌 `templates/agent-constraints.md` **对应档块 + 沟通约束块**)+ `docs/decisions/`(`templates/adr-template.md` + `0001` 样例)+ 单一真相源声明
-   - **T2**:按 `ends[]` 实例化**角色划分** + `docs/project/collaboration.md`(`templates/collaboration.md`)+ `docs/contracts/README.md`(`templates/contracts-README.md`)+ 状态标记约定(✅🚧⏸️⬜)
-5. **不生成超过该档的东西**(右尺寸硬约束):T1 不出现 coordination/scope/contracts/worktree。
+4. **按 STANDARD §3 两轴生成**(用 `templates/` 里的块,占位符按参数替换):
+   - **总是**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**沟通约束块(顶嘴 + 说人话)**(S0·C0 附 README 末尾,否则放 CLAUDE.md)
+   - **凡非 S0·C0**:`CLAUDE.md`(嵌 `agent-constraints.md` **对应档块 + 沟通约束块**)+ `docs/decisions/`(adr 模板 + `0001` 样例)+ 单一真相源声明
+   - **C≥C1(有协作)**:issue 模板 + label 状态机 + 角色命令 + `collaboration.md`(`templates/collaboration.md`,按角色/端实例化)+ 状态标记 ✅🚧⏸️⬜
+   - **S=S2(多端)**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ 按 `ends[]` 的端角色
+5. **不生成超过两轴的东西**(右尺寸硬约束):S1 不建 contracts;C0 不建 issue/角色机器;C1 不建跨端契约/worktree。
 6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 `CLAUDE.md` + 目录树**即可验收(便宜验证)。
 
 ## 禁止
 
-- 写 writing-plans 式重型实施计划。
+- 写 writing-plans 式重型实施计划。**生成的任何文档(含协作/流程 SOP)都不许把开发流程建在 writing-plans 上**(违背 §1.3)——开发侧直接实现 + code review。
+- **不许凭对用户其它项目(taoxi-geo 等)的记忆另写协作/流程文档**;协作文档一律用 `templates/`,否则会把旧习惯(尤其 writing-plans)偷带进来、自相矛盾(exp-002 根因)。
 - 讨好式"为了全面两套都给你建上"——违反右尺寸 + 顶嘴铁律。
 - 把密钥/凭据写进任何进 git 的文件。
