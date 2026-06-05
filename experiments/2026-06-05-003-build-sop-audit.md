@@ -15,9 +15,10 @@
 
 > 怎么不逐行读就判 /sop-audit 对不对?**两个已知答案的项目当试金石,一喊一放:**
 
-- **taoxi-geo**(已知过度治理:820 行 collaboration + 8 个 doc 子系统 / PoC)→ **必须**喊出 P1 过度治理。喊不出 = 没用。
-- **geo-reverse**(刚被 sop-init 右尺寸过)→ **必须**基本干净、不 cry wolf。
-- **校准成立 = taoxi-geo 喊得响 + geo-reverse 放得过。** owner 扫报告 top 几条即可判,不逐行读。
+- **taoxi-geo**(实测 `S2·C2`:4 端 + 多 agent)→ ⚠️**纠偏**:两轴模型下它的 contracts/collaboration/worktree **大多正当**,审查**不该**粗暴喊"过度治理砍掉"(那才是 cry wolf)。正确表现 = **精细**:把 820 行 collaboration 当**冗长信号**(行数≠罪证)、并质疑"多 agent C2 是真并行还是单人摆架子",都带证据。
+- **geo-reverse**(刚被 sop-init 右尺寸过 `S1·C1`)→ **应**基本干净、不 cry wolf。
+- **校准成立 = 精细不粗暴**:对 taoxi-geo 拿证据问冗长/问 C2 真假、不乱砍正当结构;对 geo-reverse 放得过。
+- **自省**:原始判据"taoxi-geo 必须喊 P1 过度治理"是错的——拿它跟单人模板比不公平(它本就该重)。这条纠偏本身就是 sop-audit 该有的「行数≠罪证」精神。
 
 ## 3. 给 AI 的简报(owner 实际给的)
 
