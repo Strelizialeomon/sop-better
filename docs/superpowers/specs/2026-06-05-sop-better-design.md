@@ -39,13 +39,14 @@ owner 用 AI 没爽感、没飞跃——因为只交了**打字**,没交**认知
 
 **贯穿线**:这把"SOP 档(T0–T2)"与撒手梯子(L0–L4)是**同一原理的两把刻度尺**,都由 `风险 × 验证成本` 决定该多重。sop-better 就是把这条护栏做成工具。
 
-## 4. 三件套命令
+## 4. 两个命令(原计划三件套,后收敛 · 见下注)
 
 | 命令 | 干啥 | 诉求 |
 |---|---|---|
 | **/sop-init** | 选档 → 生成三维 SOP 骨架(结构文件 + CLAUDE.md「Agent 工作约束」块 + 角色划分) | 快速建骨架 |
-| **/sop-audit** | 读现有项目,对照分档查"不合理":**①过度治理(头号)②结构缺失 ③档位错配**,出改进清单(只读,人读+可执行双轨,参照 google-design-skill 的 criticize) | 检查不合理 |
-| **/sop-improve** | 按 audit 结论直接动手改 | 直接改进 |
+| **/sop-audit** | 给现有项目体检,对照两轴查"不合理"(过度治理 头号 / 档错配 / 顶嘴缺 / 结构缺·凭据失真),出双轨报告;**默认只报告,owner 说"改 / go"才走 issue/PR 工作流修 + 开 PR** | 检查 + 按需改 |
+
+> **没有独立 `/sop-improve`**:最初照搬 google-design-skill 设了 init/audit/improve 三件套,但 audit 选了"owner 点头就改",改的活被它包了 → improve 与它撞车,砍掉(右尺寸,exp-003)。
 
 ## 5. 关键原则(逐条都是 owner 拍过的)
 
@@ -83,8 +84,8 @@ sop-better/
 
 ## 8. 范围与先后
 
-- **先做 `/sop-init`**:自包含、立刻能用,且它生成的就是 audit 要对照的"标准";`/sop-audit`、`/sop-improve` 第二步。
-- **YAGNI**:不上自动化平台;不一次铺三件套;不顺手治别的项目。
+- **先做 `/sop-init`**:自包含、立刻能用,且它生成的就是 audit 要对照的"标准";`/sop-audit` 第二步(已建)。**不做独立 /sop-improve**——audit 经 owner go 链改即可。
+- **YAGNI**:不上自动化平台;**不养独立 /sop-improve**(audit 经 go 链改);不顺手治别的项目。
 - **安全待办(挂名另开)**:`py-script`/`jiandaoyun`/`vpn-tutorial/CREDENTIALS.md`/`llm_auto_report` 硬编码密钥——真实风险,与本项目无关。
 
 ## 9. 狗粮注(自举)

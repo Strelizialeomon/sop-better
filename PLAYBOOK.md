@@ -53,9 +53,9 @@
 - ⭐ 刚加的 §1.8「凭据保真」**第一次接触真项目就逮到一条真烂凭据**(principles.md 过时、自相矛盾)。说明"右尺寸=人的成本 + 凭据要真"这轮重定义是对的、可操作的。
 - **证据**:exp-003 / taoxi-geo PR #179
 
-### ⚠️ 只读边界会被"先动"冲掉:audit 一授权就链成 improve+PR
-- sop-audit 设计为只读,但 owner 一句"先动"它就改文件 + 开 PR。loop 跑通是好事(audit→improve→PR + 凭据),但 /audit 与 /improve 的界限糊了。
-- **待定**:是接受"audit 可经 go 链进 improve",还是强制只读、改交 improve。
+### ✅ audit 默认只读、owner 说"改"才链改;砍掉独立 /sop-improve
+- taoxi-geo PR #179 暴露:audit 一被授权就改文件 + 开 PR。**决策(owner 拍)**:扶正成设计——**默认只出报告,owner 明确说"改/go"才走 issue/PR 工作流修复**。
+- 既然 audit 点头就改,独立 `/sop-improve` 跟它撞车、没剩多少事 → **砍掉**(右尺寸:不为没出现的需求养命令)。剩两命令:init + audit。
 - **证据**:exp-003 / taoxi-geo PR #179
 
 ---

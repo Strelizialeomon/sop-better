@@ -8,15 +8,15 @@
 
 ---
 
-## 三件套(产品)
+## 两个命令(产品)
 
 | 命令 | 干啥 |
 |---|---|
 | **/sop-init** | 选档 → 给项目搭三维 SOP 骨架(结构文件 + 角色划分 + CLAUDE.md「Agent 工作约束」块) |
-| **/sop-audit** | 读现有项目,查"不合理":**①过度治理(头号)②结构缺失 ③档位错配** → 改进清单 |
-| **/sop-improve** | 按 audit 结论直接动手改 |
+| **/sop-audit** | 给现有项目"体检",查"不合理"(**①过度治理 头号 ②档位错配 ③顶嘴缺失 ④结构缺失/凭据失真**)→ 出报告;**你说"改"它就接着修 + 开 PR**(默认只报告) |
 
-**当前进度**:先做 `/sop-init`(它生成的就是 audit 要对照的标准);audit / improve 第二步。
+**当前进度**:`/sop-init`、`/sop-audit` 都已建好装上。
+> 没有单独的 `/sop-improve`:audit 你点头就改,"改"的活它包了——不为还没出现的需求养第三个命令(右尺寸)。
 
 ---
 
@@ -74,9 +74,9 @@ sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人�
 ```
 sop-better/
 ├── README.md
-├── STANDARD.md                  # 三维×分档的权威标准(audit 对照尺 · 待建)
-├── skills/sop-init/             # 三件套实现(init 先行 · 待建)
-├── templates/                   # 各档结构 + CLAUDE.md 约束块模板(待建)
+├── STANDARD.md                  # 两轴×三维的权威标准(audit 对照尺)
+├── skills/{sop-init,sop-audit}/ # 命令实现(都已建 + 软链进 ~/.claude/skills)
+├── templates/                   # 各档结构 + 约束块 + issue/PR 工作流模板
 ├── docs/superpowers/specs/      # 设计 spec
 ├── PLAYBOOK.md                  # 狗粮日志:撒手护栏
 └── experiments/                 # 狗粮日志:exp-NNN

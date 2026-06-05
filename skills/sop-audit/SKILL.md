@@ -1,17 +1,17 @@
 ---
 name: sop-audit
-description: 只读审查一个项目的"开发 SOP"是否右尺寸——头号查过度治理(仪式吃掉 AI 杠杆),也查档位错配 / 顶嘴缺失 / 结构缺失。对照 sop-better/STANDARD.md,出"人读报告 + 可执行 findings"双轨,不改任何文件(改交 /sop-improve)。给老项目体检、怀疑 SOP 太重 / 不一致时用。
+description: 给项目的"开发 SOP"做体检——头号查过度治理(仪式吃掉 AI 杠杆),也查档位错配 / 顶嘴缺失 / 结构缺失 / 凭据失真。对照 sop-better/STANDARD.md,出"人读报告 + 可执行 findings"双轨。默认只出报告;owner 明确说"改 / go"才动手修(走 issue/PR 工作流)。给老项目体检、怀疑 SOP 太重 / 不一致时用。
 ---
 
 # sop-audit
 
-只读给项目的**开发 SOP** 做体检。对照 STANDARD 挑"不合理",**头号挑"太重"**(过度治理)。**不改任何文件。**
+给项目的**开发 SOP** 做体检。对照 STANDARD 挑"不合理",**头号挑"太重"**(过度治理)。**默认只出报告、不动文件;owner 明确说"改 / go"才动手修。**
 
 **配套**:`SOP_HOME = /Users/sunchongsheng/code/sop-better/`;`STANDARD.md = $SOP_HOME/STANDARD.md`。**先读 STANDARD**,规则以它为准。
 
 ## 铁律
 
-- **只读**,绝不改文件(改是 `/sop-improve` 的事)。
+- **默认只读**:只出报告、不动任何文件。**owner 明确说"改 / go"才动手修**——按 severity 走 issue/PR 工作流落地(见流程第 7 步)。没听到"改"就停在报告。
 - **头号查"过度治理"——只算人掏的成本**:人手开 issue / 贴 label / 等每个 PR 才叫过度;**agent 自动维护、agent 消费的 issue/PR 不算**(那是撒手基础设施,冤枉它=cry wolf)。
 - **每条 finding 必须带证据**(file:line / 行数 / 具体仪式名),空喊"太重了"=违规(顶嘴协议在审查上的落地)。
 - **行数 ≠ 罪证**:体量只是**信号**,不直接判"错";说清"这是信号,该不该砍要看内容",别越权定罪。
@@ -34,15 +34,16 @@ description: 只读审查一个项目的"开发 SOP"是否右尺寸——头号�
    - **P0 仅指针**:扫到硬编码密钥/凭据 → 只点一句"另走安全 track(STANDARD §7)",**不在本体检展开**。
 5. **出双轨报告**:
    - **(a) 人读**:开头一句总判("太重 / 刚好 / 太轻" + 实测 S·C);然后按 severity 排,每条 = `现象 + 为什么不对(对照 STANDARD 哪条)+ 建议(降到哪 / 补什么)+ 证据`。
-   - **(b) 可执行 findings**(给 `/sop-improve` 接):
+   - **(b) 可执行 findings**(owner 说"改"时据此动手;也可存盘供以后照单改):
      ```json
      [{"severity":"P1","kind":"over|mismatch|missing|nopushback","target":"file/dir","evidence":"...","suggest":"..."}]
      ```
 6. **收尾**:一句"**最该先动的 1 条**"。
+7. **若 owner 看完说"改 / go"** → 按 `templates/issue-pr-workflow.md` 落地:开 issue 记 findings → 分支 → 改 → PR(`Refs`)→ 按风险审合(低风险自动合 / 高风险回 owner)。**没说"改"就停在第 6 步。**
 
 ## 禁止
 
-- 改任何文件(只读)。
+- **owner 没说"改"就擅自动文件**(默认只读;动手前必须拿到明确 go)。
 - 无证据的 finding(凭印象喊"太重")——违反顶嘴。
 - cry wolf:右尺寸项目硬挑毛病凑数。
 - 把"体量大"直接等同于"错"——只能当信号。
