@@ -45,6 +45,18 @@
 | 爽感 | /10 | |
 | 验证成本(越高=越便宜) | /10 | |
 
-## 5. 验证结果 + 教训(待 taoxi-geo / geo-reverse 试金石跑完)
+## 5. 验证结果 + 教训
 
-→ 写入 PLAYBOOK?[ ]
+**试金石 1 · taoxi-geo(S2·C2)· owner 真跑 → PR #179 · 结论:过(精细不粗暴)**
+
+- ✅ **没粗暴**:4 条 finding 无一是"砍 contracts/worktree",正确认 taoxi-geo 为正当 S2·C2。
+- ✅ **冗长当信号**:820 行 collaboration 没判罪,精准点"局部补丁口诀重复 4 遍、可瘦 100-150 行",且因 #176 改同节而**主动 deferred**(判断力成熟)。
+- ✅ **找到真问题**:顶嘴协议缺失(predates sop-better)、**principles.md 假凭据**(旧 subagent 模型 / 错的契约数 / 漏 crawler / commit 规则冲突)、plans 未标停用。
+- ⭐ **§1.8 凭据保真第一次上真项目就逮到真烂凭据**(principles.md)——round 1 的重定义立刻见效。
+- ✅ **懂单一真相源**:补顶嘴只落 collaboration.md §10 一处,明说"防 drift",把发现的教训用在自己修复上。
+- ⚠️ **越界**:sop-audit 我写的只读,这次链进 improve + 开 PR(owner 拍"先动"授权)→ audit→improve→PR loop 跑通,但 /audit /improve 界限糊了 → 待定 UX。
+- ⚠️ 判据来自 PR 正文,未逐行核 diff。
+
+**试金石 2 · geo-reverse(应放得过、不 cry wolf)→ 待跑。**
+
+→ 写入 PLAYBOOK?[x]

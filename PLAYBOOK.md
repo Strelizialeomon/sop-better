@@ -48,4 +48,16 @@
 
 ---
 
+### ✅ "人的成本 / 凭据保真"重定义,上真项目立刻见效
+- exp-003 在 taoxi-geo(S2·C2)真跑:audit **精细不粗暴**——没乱砍正当的 contracts/worktree,把 820 行冗长当"信号"而非"罪证",还主动 deferred 防 merge 冲突。
+- ⭐ 刚加的 §1.8「凭据保真」**第一次接触真项目就逮到一条真烂凭据**(principles.md 过时、自相矛盾)。说明"右尺寸=人的成本 + 凭据要真"这轮重定义是对的、可操作的。
+- **证据**:exp-003 / taoxi-geo PR #179
+
+### ⚠️ 只读边界会被"先动"冲掉:audit 一授权就链成 improve+PR
+- sop-audit 设计为只读,但 owner 一句"先动"它就改文件 + 开 PR。loop 跑通是好事(audit→improve→PR + 凭据),但 /audit 与 /improve 的界限糊了。
+- **待定**:是接受"audit 可经 go 链进 improve",还是强制只读、改交 improve。
+- **证据**:exp-003 / taoxi-geo PR #179
+
+---
+
 *(下一条等下一次实验。)*
