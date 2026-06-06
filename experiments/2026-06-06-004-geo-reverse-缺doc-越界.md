@@ -38,3 +38,13 @@
 撒手给开发 agent 时,**上游缺交付物**这一类边界必须显式 carve-out——否则 agent 会把"永不阻塞 / 补盲区"误读成"替别人把缺的需求 doc 写了"(越界伪造)。凭据保真要**双向**:不只"别让你的 issue 说谎",还要"行动前验别人给的凭据没说谎"。
 
 → 已写入 `PLAYBOOK.md`?[x]
+
+---
+
+## 6. 复验(2 项目真 audit · 2026-06-06)
+
+改完 STANDARD 后,geo-reverse 与 media-ops 各跑一轮 `/sop-audit`(对照新版 §5),**两个互不相干的项目都被同一条新 finding「凭据失真 / 交接断裂」逮到**,都按 P3 补了交接闸(geo-reverse `a428b41` / media-ops `512fe58`)。
+
+- **§3.5「复发 2+ 次才改规矩」的坎,事后补上了**:当时只 1 次(geo-reverse),改 STANDARD 是顶着这条铁律拍的;现在 2/2 审计项目都有此洞 → **系统性缺口**,不是单点。"代价不对称 → 现在就改"的赌成立。
+- **新 §5 finding 在真 audit 里会响**:两轮独立审计都触发了它,不是写了没用的摆设。
+- **蒸馏回灌**:media-ops 把"自决"收窄成"**边界细节**"、carve-out 用"只管边界细节"对照、加"照不存在的凭据行动 = 隐蔽地做错,比卡住更糟"——比初版利落,已回灌 `STANDARD §1.9` + `templates/agent-constraints.md`;并定下 house-style 口径(carve-out 进 CLAUDE.md / 操作闸进 workflow doc / 消费验链接挂进起手 freshness · §1.8)。
