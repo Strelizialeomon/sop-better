@@ -71,6 +71,9 @@ git checkout -b <type>/issue-<N>-<slug> origin/master   # 不必 checkout master
 # 干活 → git push -u origin <branch> → gh pr create ... Closes #N
 ```
 
+- **`git stash` 跨 worktree 共享**：所有 wt 共用一个 `.git/`，`git stash list` 看到的是同一份——可拿它做临时跨端 hand-off（A 端 stash、B 端 pop）。
+- **同一 feat 分支不能同时在两个 worktree checkout**（git 报 `already checked out`）——同端一时刻通常只一条 active feat，撞上别懵：换分支名或在原 worktree 收尾。
+
 ## 维护命令
 
 ```bash
