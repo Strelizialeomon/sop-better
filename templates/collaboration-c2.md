@@ -17,6 +17,8 @@
 
 **scope agent ≠ 执行 PM 派的细 task;= 高权限程序员,收到方向后自决实施。**
 
+> **身份从工作目录自动定**(用了 worktree 时):你的 cwd 在哪个 `wt-<端>` = 你就是哪个端的 scope agent,不用手动声明(细则见 `worktree-isolation.md`)。
+
 ## 6+1 流程骨架(轻 · 无硬 gate · 无 lifecycle label)
 
 1. **起需求**:跨端 → coord 起 req doc;单端上下文明确 → 该 scope agent 自起(不必经 coord 中转)。req doc 写"做什么 + 怎么算对 + 主流程 + 跨端换什么数据",**不写实施层**(见 `s2-contracts.md`)。
