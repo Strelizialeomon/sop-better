@@ -16,7 +16,7 @@
 
 ## Issue 生命周期(agent 操作)
 
-1. **开**:一个需求/缺陷一个 issue。正文 = 一句话需求 + 验收标准 + 指向 doc 的链接。**issue 薄、doc 厚**:细节进 doc,issue 只留索引 + 状态 + 验收。
+1. **开**:一个需求/缺陷一个 issue。**先把 doc commit+push 到远端、再开 issue**;正文 = 一句话需求 + 验收标准 + **指向 doc 的稳定链接(commit permalink / 已合 PR,别指会悬空的分支相对路径)**。**issue 薄、doc 厚**:细节进 doc,issue 只留索引 + 状态 + 验收。**"提 issue"和"推 doc"不许分两步漂着——doc 不在远端就别开 issue。**
 2. **标**:阶段 label(如 评估中 / 开发中 / 已完成,互斥)+ 阻塞 flag(如 待澄清,叠加)。状态标记 ✅🚧⏸️⬜。
 3. **跟进**:进度、决策、方案变化随时写进 issue 评论(留痕即凭据);要别的角色/agent 接手就 **tag**。
 4. **关**:验收过 → 关。被 PR 收口的用 `Closes #N`。
@@ -40,3 +40,4 @@
 - **issue 评论 vs PR 评论**:为半年后 / 别的 agent / merge 后还能查 → 写 **issue**(留痕·总线);针对这次 diff 的代码评审来回 → 写 **PR**。方案变更(换思路 / 改字段 / 调 schema)必回写一句到 issue,别只留 PR / commit。
 - **决策快照 ≤30 行**:spec ready / 方案变更时,在 issue 评论留"核心决策快照"(列拓扑 / 字段 / 关键选择,不展开理由)——让 review 子代理别把故意决策当 bug 报,也让回溯能复现设计。
 - **起手 freshness(多会话 / 多 agent)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再信本地 SOP / 代码——本地常是旧快照、或停在别的分支。
+- **接 issue 先验链接(消费侧凭据校验)**:起手照 issue 工作前,**先验它指的 doc 在远端解析得开**(fetch + 按工作 ref 找路径)。解析不到 = **坏交接 / 会说谎的凭据**(issue 说"详见此 doc"、doc 却不在)→ **反弹回开 issue 的角色**(评论 tag + ⏸️ 待澄清),**别自己补 doc**(自补 = 伪造需求 · STANDARD §1.8 + §1.9)。
