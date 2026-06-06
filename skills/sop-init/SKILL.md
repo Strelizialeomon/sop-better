@@ -33,6 +33,7 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
    - **凡非 S0·C0**:`CLAUDE.md`(嵌 `agent-constraints.md` 的**标准块**[S0·C0 用极简块;S2 再加多端追加块] + **沟通约束块**;**块头 `{{SC}}` 填实际两轴如 `S1·C1`,严禁写"单人/T1"等会跟协作结构矛盾的词**)+ `docs/decisions/`(adr 模板 + `0001` 样例 + **升级触发条件 ADR**:写"越过 X → 升 Y → 那时才补 Z")+ 单一真相源声明
    - **C1(双角色/小团队)**:`templates/collaboration.md`(轻)+ **issue/PR 工作流(`templates/issue-pr-workflow.md` —— 全生命周期 + 凭据保真 + 凭据细则)** + issue 模板 + label 状态机 + 角色命令 + 状态标记 ✅🚧⏸️⬜
    - **C2(多端·多并行 agent)**:改用 **`templates/collaboration-c2.md`**(角色 + 6+1 骨架 + 消息总线 + 起手 freshness + worktree 选项 · 蒸馏自 taoxi-geo)+ issue-pr-workflow
+     - **worktree 仅在 owner 确认"真并行多 agent"时才落**(C2 里的可选项,不默认):额外发 **`templates/worktree-isolation.md`**(布局/HEAD race trap/setup+维护/起手按-ref-验/反转条件)+ 用 `adr-template.md` 记一条 worktree ADR。串行 / 单 agent → 不发(过度治理)。
    - **S=S2(多端)**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ **`templates/s2-contracts.md`**(契约握手 + firmness 三级 + req-doc 语义级/实施层边界)+ 按 `ends[]` 的端角色
 5. **不生成超过两轴的东西**(右尺寸硬约束):S1 不建 contracts;C0 不建 issue/角色机器;C1 不建跨端契约/worktree。
 6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 `CLAUDE.md` + 目录树**即可验收(便宜验证)。

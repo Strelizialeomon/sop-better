@@ -85,7 +85,7 @@ SOP 的**结构**由两根**互不相干**的轴决定,各自伸缩。**流程 +
 **轴二 · 协作结构 C(决定要不要 issue/角色/协作机器)**
 - `C0` 单人单 agent → **不要**角色划分、不要 issue 状态机
 - `C1` 双角色 / 小团队(如 业务↔开发,各带 agent,靠 issue+doc 协同)→ 要 issue 模板 + label 状态机 + 角色命令 + collaboration,但**不要**跨端契约
-- `C2` 多端多 agent(每端一个 scope agent)→ 角色 + 契约 +(可选)worktree
+- `C2` 多端多 agent(每端一个 scope agent)→ 角色 + 契约 +(可选)worktree(**仅"真并行多 agent"才上**,细则见 `templates/worktree-isolation.md`)
 
 **一个项目 =(S, C),两轴自由组合**:
 
