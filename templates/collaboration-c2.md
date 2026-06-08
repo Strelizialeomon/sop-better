@@ -26,13 +26,13 @@
 3. **细化**:scope agent invoke brainstorming 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce(不再单独整体批)。
 4. **开发**:切 `<type>/issue-N-slug` 分支(分支名自决);实施 + 进展/变更写 issue 评论;push + PR(`Closes #N`);**过新眼睛 review**(STANDARD §1.3)再示意 merge。
 5. **联调**:owner 跑;单端 bug → 该 agent;跨端 mismatch → 评论拍板改哪端。
-6. **收口**:别把"做完了"手抄进多个 doc(单一真相源 · STANDARD §1.6)。
+6. **收口**:别把"做完了"手抄进多个 doc(单一真相源 · STANDARD §1.6)。**owner 说"收工"= 推收口 doc 远端的明确指令(文档 main / 代码 PR)**。
 - **+1 回改 req doc**(可选 · 有重大 deviation 才值)。
 
 ## 多 agent 不撞车(C2 核心)
 
 - **消息总线**:需求 issue 保持 open 当容器;跨 agent 靠 issue 评论 sync(字段/决策/跨端影响),别端起手 `gh issue view N --comments` 自动 sync。**issue 薄 doc 厚**。
-- **起手 freshness(不可跳)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再读 SOP——否则读的是旧快照的旧规则。一句话起手报告:`我是 X agent · 在 Y 分支 · behind N · open issue M · 准备干 #K`。
+- **起手 freshness(不可跳)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再读 SOP——否则读的是旧快照的旧规则。一句话起手报告:`我是 X agent · 在 Y 分支 · behind N · open issue M · 准备干 #K`。**owner 会话顺带扫 `待业务确认`,一条条拍**。
 - **scope 隔离**:不动别端代码、不动别人起的 req doc/契约(要改走 issue 评论提)。
 - **worktree(选项)**:多 agent 真频繁本地冲突才上(每端一个 worktree 物理隔离);否则别上(过度治理)。**上了 → 落 `worktree-isolation.md`(布局/race trap/setup+维护/起手按-ref-验/反转条件)+ 记一条 ADR。**
 

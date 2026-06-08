@@ -6,6 +6,8 @@
 
 ## 业务端起需求(对话 → 收口 → issue + req doc)
 
+> **开工先按 `issue-pr-workflow.md` 的起手 freshness**:`git fetch` sync + 扫 `待业务确认` 的 issue 一条条拍,再聊新需求。
+
 1. **对话**:业务方跟 agent 聊需求,agent **主动建议补盲区**(可行性 / 怎么拆 · 照亮不代选),业务方拍——循环到收口。
 2. **收口标准**(三样钉死才算,不是聊到完美):**① 验收(怎么算对)· ② 主流程(哪几步)· ③ 范围(要啥 / 不要啥)**。
 3. **落凭据**:**先把 req doc(`docs/superpowers/specs/` · brainstorming 默认落点)commit+push 到远端、再开需求 issue 指过去**(issue 轻量:idea + assignee + **指向 doc 的稳定链接 commit/PR**,别指会悬空的相对路径;"开 issue"和"推 doc"不许分两步漂着)。**req doc 只写"要什么"(语义级:做什么 / 验收 / 主流程 / 跨端换什么数据),绝不碰"怎么做"**——技术留给 dev 端 brainstorm。
@@ -30,7 +32,7 @@
 
 ## 红线
 
-- 不擅自 commit / push(需 owner 明确指令)。
+- 不擅自 commit / push(需 owner 明确指令)。**owner 说"收工 / 结束"即此明确指令** → 把本会话收口的 doc 按 `issue-pr-workflow.md` 推远端(文档 main / 代码 PR)。
 - 不跑 writing-plans;spec 验收要硬 + code review 必留(见各端 CLAUDE.md)。
 - 治理过重要主动喊停——右尺寸 > 全面。
 
