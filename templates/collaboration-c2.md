@@ -21,7 +21,7 @@
 
 ## 6+1 流程骨架(轻 · 无硬 gate · 无 lifecycle label)
 
-1. **起需求**:跨端 → coord 起 req doc;单端上下文明确 → 该 scope agent 自起(不必经 coord 中转)。req doc 写"做什么 + 怎么算对 + 主流程 + 跨端换什么数据",**不写实施层**(见 `s2-contracts.md`)。
+1. **起需求**:跨端 → coord 起 req doc;单端上下文明确 → 该 scope agent 自起(不必经 coord 中转)。req doc 写"做什么 + 怎么算对 + 主流程 + 形态 + 跨端换什么数据",**不写实施层**(见 `s2-contracts.md`)。
 2. **取活**:scope label 有 open issue 即"待干"。
 3. **细化**:scope agent invoke brainstorming 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce(不再单独整体批)。
 4. **开发**:切 `<type>/issue-N-slug` 分支(分支名自决);实施 + 进展/变更写 issue 评论;push + PR(`Closes #N`);**过新眼睛 review**(STANDARD §1.3)再示意 merge。

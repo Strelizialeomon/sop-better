@@ -42,4 +42,5 @@
 - **gh 就绪(默认 gh 实现 · 业务侧一次性前置)**:整套 issue/PR 凭据靠 `gh`。`gh auth status` 不过(没装 / 没登录)→ **用大白话**带业务装(mac `brew install gh` / win `winget install GitHub.CLI`)+ 引导他敲 `! gh auth login` 跟着提示走;**一次性,装完不再问**。逐步引导由 agent 现场说人话(别展开成版本化图文教程,会过时)。
 - **起手 freshness(多会话 / 多 agent)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再信本地 SOP / 代码——本地常是旧快照、或停在别的分支。**业务会话顺带 `gh issue list --label 待业务确认`:有就一条条念给 owner 当场拍、没有一句带过**(别让等人决策的 issue 烂着没人 surface)。
 - **接 issue 先验链接(消费侧凭据校验)**:起手照 issue 工作前,**先验它指的 doc 在远端解析得开**(fetch + 按工作 ref 找路径)。解析不到 = **坏交接 / 会说谎的凭据**(issue 说"详见此 doc"、doc 却不在)→ **反弹回开 issue 的角色**(评论 tag + ⏸️ 待澄清),**别自己补 doc**(自补 = 伪造需求 · STANDARD §1.8 + §1.9)。
+- **取活先判细化(消费侧 · 别抓起就写)**:开发取活后 agent 先帮判一轮——够清楚且小 → 直接干;不清楚 / 太大 → 先端内 brainstorm 拆;**缺的是业务该给的"要什么"(含产品形态)→ 反弹业务(§1.9 carve-out)、不自补**(反例 geo-reverse #2:开发凭"永不阻塞"自己把需求补了)。
 - **收工 = 写凭据时点(owner 说"收工 / 结束")**:这就是红线「不擅自 push」要的那个**明确指令**——把本会话收口的 doc 按上面 Issue / PR 生命周期推远端(**文档推 main、代码走 PR**),开 / 更 issue 指稳定链接、自检保真。**不重抄步骤,照上面那两套生命周期走即可。**

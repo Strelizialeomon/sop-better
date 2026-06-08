@@ -9,8 +9,8 @@
 > **开工先按 `issue-pr-workflow.md` 的起手 freshness**:`git fetch` sync + 扫 `待业务确认` 的 issue 一条条拍,再聊新需求。
 
 1. **对话**:业务方跟 agent 聊需求,agent **主动建议补盲区**(可行性 / 怎么拆 · 照亮不代选),业务方拍——循环到收口。
-2. **收口标准**(三样钉死才算,不是聊到完美):**① 验收(怎么算对)· ② 主流程(哪几步)· ③ 范围(要啥 / 不要啥)**。
-3. **落凭据**:**先把 req doc(`docs/superpowers/specs/` · brainstorming 默认落点)commit+push 到远端、再开需求 issue 指过去**(issue 轻量:idea + assignee + **指向 doc 的稳定链接 commit/PR**,别指会悬空的相对路径;"开 issue"和"推 doc"不许分两步漂着)。**req doc 只写"要什么"(语义级:做什么 / 验收 / 主流程 / 跨端换什么数据),绝不碰"怎么做"**——技术留给 dev 端 brainstorm。
+2. **收口标准**(钉死才算,不是聊到完美):**① 验收(怎么算对)· ② 主流程(哪几步)· ③ 范围(要啥 / 不要啥)· ④ 形态(交付长什么样:网页 / 按钮 / App / 定时任务…,用业务话定、别默认 CLI)**。
+3. **落凭据**:**先把 req doc(`docs/superpowers/specs/` · brainstorming 默认落点)commit+push 到远端、再开需求 issue 指过去**(issue 轻量:idea + assignee + **指向 doc 的稳定链接 commit/PR**,别指会悬空的相对路径;"开 issue"和"推 doc"不许分两步漂着)。**req doc 只写"要什么"(语义级:做什么 / 验收 / 主流程 / 形态 / 跨端换什么数据),绝不碰"怎么做"**——技术留给 dev 端 brainstorm。
 4. **交棒**:收口后球交 agent 实施,业务方只在高风险闸 / 联调露面。
 
 ## 角色与边界({{ends}})
