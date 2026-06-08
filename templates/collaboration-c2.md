@@ -9,15 +9,19 @@
 
 ## 角色
 
+> 每端的**身份 + 边界**写在各端 `<端目录>/CLAUDE.md`(端级文档 · `/sop-init` 按 `ends[]` 生成 · harness 自动加载)。此处只给跨端协作骨架,**不复述各端边界**(单一真相源 · STANDARD §1.6)。
+
 | 角色 | scope | 干啥 |
 |---|---|---|
 | Coordination | docs | 出"在做什么" + 起跨端 req doc · **不出契约、不写端代码** |
-| 各端 scope agent | {{ends}} | 端内代码 + 端内 spec/ADR + 自决实施 · 遇不合理自己解决 + 评论 |
+| 各端 scope agent | {{ends}} | 端内代码 + 端内 spec/ADR + 自决实施 · 遇不合理自己解决 + 评论 · **边界见各端 `CLAUDE.md`** |
 | Owner | — | 提需求 + 审 req + 联调 + merge · **不当通讯人** |
 
 **scope agent ≠ 执行 PM 派的细 task;= 高权限程序员,收到方向后自决实施。**
 
-> **身份从工作目录自动定**(用了 worktree 时):你的 cwd 在哪个 `wt-<端>` = 你就是哪个端的 scope agent,不用手动声明(细则见 `worktree-isolation.md`)。
+> **身份靠"进哪个端的目录"自动定**:harness 自动加载 cwd 最近的 `CLAUDE.md` —— 在 `wt-<端>/<端目录>/` 就自动是该端 scope agent,在主仓就是 coordination。不靠声明、不靠猜(细则见 `worktree-isolation.md`)。
+>
+> **错座位护栏**:端内活(端内 spec / 端代码)归 scope agent、在对应端 worktree 产出;coordination(主仓)只产**跨端 req doc**(进哪个端目录自动变该端身份 · Layer C 已物理逼到对的座位)。**救场**——spec 已误产在主仓:别"释放分支",按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 在端 worktree 从 origin/master 另切实施分支`。
 
 ## 6+1 流程骨架(轻 · 无硬 gate · 无 lifecycle label)
 

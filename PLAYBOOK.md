@@ -101,4 +101,14 @@
 
 ---
 
+### ⚠️ 多端(S2)缺"端角色文档"→ 各端不知自己是谁 → 交接乱套;蒸馏母本时把这层载重结构漏了
+- go_dispatch 反例:一条 backend 端内 spec 在主仓(coordination 座位)起头,agent 不知自己该是哪个端 / 该在哪干,凭空造出"释放分支 + 跨端交接"一通乱,被 owner 纠正 4 次。根因:**多端身份没有"自动加载"的落点**——sop-better 只生成项目级 CLAUDE.md + collaboration 角色表(要 agent 主动读才生效),缺**每端一份自动加载的 `<端>/CLAUDE.md`**。
+- 母本(taoxi-geo + go_dispatch)各自独立长出"root + 每端 CLAUDE.md"三层身份栈;sop-better 蒸馏时只搬了 root〔A〕+ collaboration〔B〕,**漏了 Layer C**——而 SKILL.md §S2 还留着"按 ends[] 的端角色"字样却**无模板兜底**(→ 要么静默跳过,要么违反"不许凭记忆另写"的禁止条)。
+- **护栏**:①新 `templates/end-role-claude.md`(端级身份:身份 + 本端 local〔scope/技术栈/常读/实施层词汇〕+ 指向 §10)· `/sop-init` 在 **S2** 按 `ends[]` 每端生成一份;②靠 **harness 自动加载 cwd 最近 CLAUDE.md** = 进端即定身份(**必须叫 `CLAUDE.md`**,换名即废);③纪律:**端文件指针不复述通用红线**(否则成漂移源 · §1.8)——这点 go_dispatch 已比 taoxi-geo 优(把通用红线收成一行 §10 指针),照它;④"错座位护栏"并入 collaboration-c2 角色段(端内活归 scope agent · 已产在主仓则走 req-doc 交接,别"释放分支")· ⑤身份分层**不写进 always-loaded 内核**(机制靠自动加载自跑 · 守住瘦内核 · better-lighter 自审时把首版多加的那行砍回)。
+- **边界**:仅 S2(单端没有"端")· 门槛同 worktree(真并行多 agent 才值)。
+- **元教训**:**蒸馏会丢"载重结构",不只是修剪肥肉**——两个母本独立收敛到的结构,瘦版漏掉就是信号、不是巧合;改 SKILL 时"留了名却没留模板"= 半截缺口,比全无更坑。
+- **证据**:go_dispatch 反例(2026-06-08 会话)
+
+---
+
 *(下一条等下一次实验。)*

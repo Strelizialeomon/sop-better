@@ -98,7 +98,7 @@ SOP 的**结构**由两根**互不相干**的轴决定,各自伸缩。**流程 +
 | T0 | S0·C0 | README + .env + .gitignore | baozhang |
 | T1 | S1·C0 | + CLAUDE.md + ADR + 单一真相源 | 纯单人单端 |
 | **(新)** | **S1·C1** | **T1 + issue 模板 + label 状态机 + 角色命令 + collaboration(无契约)** | **geo-reverse** |
-| T2 | S2·C2 | + 按端角色 + contracts + collaboration +(可选)worktree | taoxi-geo / go_dispatch |
+| T2 | S2·C2 | + 按端角色(每端一份自动加载的 `<端>/CLAUDE.md` 身份文档 · `end-role-claude.md`)+ contracts + collaboration +(可选)worktree | taoxi-geo / go_dispatch |
 
 **口诀:契约看 S,协作机器看 C。** 公约(§1)所有组合都生效。
 
