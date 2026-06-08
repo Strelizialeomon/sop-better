@@ -76,3 +76,17 @@
 - **验收**:见 §5(grep 正向 + 反向 + 端到端 + review + exp)。
 - **主流程**:改 §3 那 11 处 → grep 核 §5A/B → build 后跑 §5C → 新眼睛 review → 记 exp-005。
 - **要啥 / 不要啥**:要"补两点真缺口 + 其余指针接上"(§2);**不要**新概念 / 新 section / 重抄(§4)。
+
+---
+
+## 7. 增补(同次 go · owner 追加)
+
+两条业务"起手"前置,延续瘦身:
+
+1. **起手先确认角色(补 §1.2 真空白)**:§1.2 讲了业务/开发变焦 + owner 陷阱,**独缺"agent 怎么定角色"** → 全靠猜。补:起手问一句「业务还是开发?」(CLAUDE.md 钉死单一角色则不问),**默认业务**。
+   - 落点:`STANDARD.md` §1.2 +1 句;`agent-constraints.md` 标准块 +1 行(凡非 S0·C0,因它管 brainstorming 变焦)。
+2. **gh 就绪(业务侧一次性前置)**:开工扫 issue / 整个凭据系统靠 `gh`,业务人员可能没装/没登录 → 第一条命令就跑不起来。补:开工前置——`gh auth status` 不过则 agent **用大白话**带装(mac brew / win winget)+ 引导 `! gh auth login`,**一次性**。
+   - 落点:`issue-pr-workflow.md`「起手 freshness」前置 +1 条;`agent-constraints.md` 加一条 `(C≥C1·一次性前置)gh 就绪` bullet(**与每次开工的节奏分开** · 采纳 exp-005 增量 review 的一条)。
+   - **瘦身硬约束**:SOP 只写"带他装登"指令 + 命令一行,**不嵌完整教程**(gh 版本会变);逐步引导 agent 运行时现生成(说人话是公约)。
+
+**不做**:不嵌 gh 安装教程;collaboration*.md 经已有「起手 freshness」指针自动获得 gh 前置,不另写;sop-audit 不为这两条加新查法(模板已带即足,避免过度治理)。**净增 ≤ 4 行**。
