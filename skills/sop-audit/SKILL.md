@@ -25,6 +25,7 @@ description: 给项目的"开发 SOP"做体检——头号查过度治理(仪式
    - `C` 协作结构:扫 `.github/ISSUE_TEMPLATE`、`.claude/commands`(角色命令)、`docs/collaboration*`、worktree、scope label → 没有=C0,业务↔开发/小团队=C1,多端 scope agent=C2。
    - `风险`:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
 3. **比"该有 vs 实际"**:STANDARD §3 由 (S,C) 推出"该有的结构";扫项目实际有的治理文件/仪式;两边相减。
+   - **🔄 加比"模板版本"(揪漂移根因)**:项目的治理 doc 多是 `/sop-init` 从 `$SOP_HOME/templates/` 生成的**快照**,但 **template 随 STANDARD 进化、已生成的项目不会自动跟着长**。把项目的 `issue-pr-workflow.md` / `collaboration*.md` / CLAUDE.md 约束块跟当前 `templates/` 对应文件**比一遍**:template 有、项目缺的**新规则 / carve-out** = **漂移根因**(报为下方「凭据失真 / 结构缺失」· kind `missing` · 建议**回灌**)。这揪的是**根因**(doc 落后于模板),不只揪**症状**(某条 issue 被误关)。⚠️ 比的是「缺了该有的新护栏」,**不是逐字一致**——项目可有正当本地偏离(右尺寸),别把合理差异报成漂移。
 4. **按 §5 四类出 finding,每条标 severity + 证据**:
    - **P1 过度治理(头号 · 只算人掏的成本)**:**人**手跑的仪式过重(人手开 issue / 贴 label / 等每个 PR、回溯 req doc、audit 补口、给单人建 worktree)。⚠️ **agent 自动维护的 issue/PR 不算过度**——是撒手基础设施。体量(collaboration 行数 / doc 子系统数)只当**信号**,问的是"人要不要为它掏成本"。**还查"规则攒成笼子"(反向齿轮)**:约束块 / SOP 有 agent 从不照做 / 与别条重复 / 已被别处 subsume 的**死规则** → 当过度治理报出、建议**删 / 合 / 降级**(STANDARD §3.5:SOP 也该掉秤、不只长肉)。
    - **P2 档位错配**:S 或 C 与实际不符(单端却建契约 / 单人却装 issue 状态机 / 反过来缺位)。
