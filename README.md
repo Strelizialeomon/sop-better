@@ -29,7 +29,7 @@
 
 ---
 
-## 核心模型:三维 SOP × 分档
+## 核心模型:三维 SOP × 两轴档位
 
 一份 SOP 是**三个维度**,且都随档位伸缩:
 
@@ -39,13 +39,9 @@
 | **流程** | 用哪些技能、跳哪些(brainstorm✓ / writing-plans✗ / code-review✓) |
 | **人机分工** | 人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现) |
 
-| 档 | 大致内容 | 对标 |
-|---|---|---|
-| **T0 一次性脚本** | README + .env;不 brainstorm,直接做 | baozhang |
-| **T1 单人认真** | + CLAUDE.md + ADR;轻 brainstorm→建→review,**不跑 writing-plans** | llm_auto_report |
-| **T2 多端/多 agent** | + 角色 + contracts + collaboration + worktree | taoxi-geo / xreal |
+**档位 = 两根独立的轴**(权威定义见 `STANDARD.md` §3,此处不重抄):**契约看 S(端数),协作机器看 C(协作结构)**。T0/T1/T2 只是常见 (S,C) 组合的简称——旧的一维标量档位已被 exp-002 证伪、废弃。
 
-**贯穿线**:SOP 档(T0–T2)与撒手梯子(L0–L4)是同一原理的两把尺,都由 `风险 × 验证成本` 决定该多重。
+**贯穿线**:SOP 档与撒手梯子(L0–L4)是同一原理的两把尺,都由 `风险 × 验证成本` 决定该多重。
 
 ---
 
@@ -62,8 +58,7 @@
 
 sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人梳意图、AI 提架构)+ 跳 writing-plans + 留 code review。每造一块就是一次"撒手实验",记进 `experiments/`,把"什么能安全交给 AI"的护栏沉淀进 `PLAYBOOK.md`。
 
-- `experiments/2026-06-05-001-design-sop-better.md` —— exp-001:让 AI 设计本项目(L2),**这套工作流的活样板**。
-- 下一次:做 `/sop-init`(exp-002,目标 L3)。
+- `experiments/` —— exp-001(设计本项目,这套工作流的活样板)起的全部撒手实验日志;结晶沉淀在 `PLAYBOOK.md`。
 
 撒手梯子、实验闭环、PLAYBOOK 护栏的完整说明,见 `PLAYBOOK.md` 与上面的 spec。
 
@@ -74,6 +69,7 @@ sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人�
 ```
 sop-better/
 ├── README.md
+├── CLAUDE.md                    # 仓库家规(薄入口,纯指针)
 ├── STANDARD.md                  # 两轴×三维的权威标准(audit 对照尺)
 ├── skills/{sop-init,sop-audit}/ # 命令实现(都已建 + 软链进 ~/.claude/skills)
 ├── templates/                   # 各档结构 + 约束块 + issue/PR 工作流模板
@@ -81,7 +77,3 @@ sop-better/
 ├── PLAYBOOK.md                  # 狗粮日志:撒手护栏
 └── experiments/                 # 狗粮日志:exp-NNN
 ```
-
-## 安全待办(挂名,另开)
-
-调研时发现的硬编码密钥,与本项目无关但真实:`py-script/utils/get_db.py`、`jiandaoyun_cralwer`、`vpn-tutorial/CREDENTIALS.md`、`llm_auto_report`。哪天单开任务清理。

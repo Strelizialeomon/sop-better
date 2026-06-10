@@ -3,3 +3,6 @@
 
 # macOS
 .DS_Store
+
+# 本地笔记(不入 git,如安全待办)
+*.local.md

@@ -86,7 +86,7 @@ sop-better/
 
 - **先做 `/sop-init`**:自包含、立刻能用,且它生成的就是 audit 要对照的"标准";`/sop-audit` 第二步(已建)。**不做独立 /sop-improve**——audit 经 owner go 链改即可。
 - **YAGNI**:不上自动化平台;**不养独立 /sop-improve**(audit 经 go 链改);不顺手治别的项目。
-- **安全待办(挂名另开)**:`py-script`/`jiandaoyun`/`vpn-tutorial/CREDENTIALS.md`/`llm_auto_report` 硬编码密钥——真实风险,与本项目无关。
+- **安全待办(挂名另开)**:调研中发现若干其它项目存在硬编码密钥——真实风险,与本项目无关;具体清单不入公开仓,见本地 `SECURITY-TODO.local.md`(2026-06-10 self-audit 移出 · issue #3)。
 
 ## 9. 狗粮注(自举)
 

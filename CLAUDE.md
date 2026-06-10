@@ -1,0 +1,10 @@
+# sop-better · 仓库家规(薄入口,只放指针,不重抄公约)
+
+本仓 = `SOP_HOME`,产出 `/sop-init`、`/sop-audit` 两个技能。**唯一真相源是 `STANDARD.md`**——改任何规则先读它;其 §1 公约(反驳协议、凭据保真等)对本仓会话同样生效。
+
+- **软链即线上**:`skills/` 软链进 `~/.claude/skills/`,**工作树就是线上**——改完即生效,切分支 = 换线上版本;干完活回 main。
+- **自举闭环**:每造/改一块 = 一次撒手实验 → 记 `experiments/`(用 `_TEMPLATE.md`)→ 结晶沉 `PLAYBOOK.md`。
+- **PLAYBOOK 只收实验背书的条目**:没有 exp-NNN 编号的教训不进(规矩见其头部)。
+- **回灌纪律**:STANDARD / templates 长出新护栏后,对活着的 lab 项目(taoxi-geo / geo-reverse / media-ops)跑 audit 回灌,别等旧规则再咬(PLAYBOOK exp-007 续)。
+- **不重抄**:README / SKILL / 模板引用 STANDARD 一律指针、不复述正文(重抄必漂移 · §1.6)。
+- **改 SOP 先用 audit 镜头审自己的提案**:净增行数设上限 + 反向验收(exp-005);减法/搬迁后逐条核安全护栏没丢(exp-006)。
