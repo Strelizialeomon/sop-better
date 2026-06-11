@@ -37,7 +37,7 @@
 
 - **消息总线**:需求 issue 保持 open 当容器;跨 agent 靠 issue 评论 sync(字段/决策/跨端影响),别端起手 `gh issue view N --comments` 自动 sync。**issue 薄 doc 厚**。
 - **起手 freshness(不可跳)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再读 SOP——否则读的是旧快照的旧规则。一句话起手报告:`我是 X agent · 在 Y 分支 · behind N · open issue M · 准备干 #K`。**owner 会话顺带扫 `待业务确认`,一条条拍**。
-- **scope 隔离**:不动别端代码、不动别人起的 req doc/契约(要改走 issue 评论提)。
+- **scope 隔离**:不动别端代码、不动别人起的 req doc/契约(要改走 issue 评论提)。识别到要改 req doc / 跨端(含 owner 当面加的扩范围)→ **自己写评论上交 coord + 附设计草案 + 报 owner 一句,别把 escalate 做成 owner 选择题**(§1.9 carve-out);只"做不做 / 优先级"留 owner 拍。
 - **worktree(选项)**:多 agent 真频繁本地冲突才上(每端一个 worktree 物理隔离);否则别上(过度治理)。**上了 → 落 `worktree-isolation.md`(布局/race trap/setup+维护/起手按-ref-验/反转条件)+ 记一条 ADR。**
 
 ## 高价值坑(taoxi-geo 复发过的 · 值得带上)
