@@ -27,6 +27,7 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
    - `协作结构 C`:C0 单人 / C1 双角色·小团队(issue+角色) / C2 多端多 agent → 定协作机器
    - `ends[]`:admin / backend / frontend / mobile / crawler …
    - `risk`:可逆低风险 / 线上不可逆
+   - `house_style[]`:既有技术规范 / 参考项目,按端(如 "Go 后端 → go_dispatch_backend 仓本体")。指参照**本体**(纪律与理由见 STANDARD §2 该行 · exp-008);可给推断候选但**必须 owner 确认、不静默凭记忆填**。答"无" → 约束块占位写"无参照"(立栈走确认闸 · STANDARD §1.9)
 3. **右尺寸校验(反驳在这一步发力)**:按 `风险 × 验证成本` 反问"这档是不是太重了?"。若选档 > 实际需要,**明确建议降档并说理由**,不附和。
 4. **按 STANDARD §3 两轴生成**(用 `templates/` 里的块,占位符按参数替换):
    - **总是**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);**沟通约束块(反驳 + 说人话)**(S0·C0 附 README 末尾,否则放 CLAUDE.md)
