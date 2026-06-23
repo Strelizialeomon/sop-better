@@ -92,7 +92,7 @@ STANDARD §1 公约开头白纸黑字：「**跟项目无关，solo 脚本和四
 | `README.md` | 档位表 + 两轴叙述改为新模型 | 文档一致 |
 | `docs/superpowers/specs/2026-06-05-sop-better-design.md` | 不改正文（历史记录），但新 spec 取代其档位模型 | 留痕 |
 
-**不动**：`end-role-claude.md` / `worktree-isolation.md` / `s2-contracts.md` / `contracts-README.md`（多端结构本体，实质不变，只是触发条件从"S2"改称"有第2个端"）。
+**轻改(只换触发标签 / 重命名,实质结构不变)**：`end-role-claude.md`(S2→多端)/ `worktree-isolation.md`(C2→多端)/ `s2-contracts.md` **→ 重命名 `multiend-contracts.md`**(S2→多端)/ `contracts-README.md`(T2→多端)。〔实现期细化:为概念干净,把这几份多端文件里的死 token 也清了,超出 spec 初稿"不动"的保守范围——见 exp-012。〕
 
 ## 8. 判断点（实现时定，flag 给 owner）
 

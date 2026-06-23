@@ -1,10 +1,10 @@
 # sop-better
 
-一个 **Claude 技能仓**:为项目**搭、查、改**它的"开发 SOP",并且**按项目该有的重量分档**——既补不足,更砍过度。
+一个 **Claude 技能仓**:为项目**搭、查、改**它的"开发 SOP",并且**按项目该有的重量右尺寸**——既补不足,更砍过度。
 
 名字直说:make SOP better,一个**不断迭代**的开发 SOP 工具。形态照搬作者自己的 `google-design-skill`(`init / criticize / format`),换领域。
 
-> 完整设计见 [`docs/superpowers/specs/2026-06-05-sop-better-design.md`](docs/superpowers/specs/2026-06-05-sop-better-design.md)。
+> 完整设计见 [`docs/superpowers/specs/2026-06-05-sop-better-design.md`](docs/superpowers/specs/2026-06-05-sop-better-design.md);档位模型简化(收成"一条流程+结构按现实长")见 [`2026-06-23-collapse-tiers-to-one-flow-design.md`](docs/superpowers/specs/2026-06-23-collapse-tiers-to-one-flow-design.md)(exp-012)。
 
 ---
 
@@ -12,8 +12,8 @@
 
 | 命令 | 干啥 |
 |---|---|
-| **/sop-init** | 选档 → 给项目搭三维 SOP 骨架(结构文件 + 角色划分 + CLAUDE.md「Agent 工作约束」块) |
-| **/sop-audit** | 给现有项目"体检",查"不合理"(**①过度治理 头号 ②档位错配 ③反驳缺失 ④结构缺失/凭据失真**)→ 出报告;**你说"改"它就接着修 + 开 PR**(默认只报告) |
+| **/sop-init** | 给项目搭右尺寸 SOP 骨架:一条流程 + 按"几端/几人"长出的结构(结构文件 + 角色划分 + CLAUDE.md「Agent 工作约束」块) |
+| **/sop-audit** | 给现有项目"体检",查"不合理"(**①过度治理 头号 ②结构错配 ③反驳缺失 ④结构缺失/凭据失真**)→ 出报告;**你说"改"它就接着修 + 开 PR**(默认只报告) |
 
 **当前进度**:`/sop-init`、`/sop-audit` 都已建好装上。
 > 没有单独的 `/sop-improve`:audit 你点头就改,"改"的活它包了——不为还没出现的需求养第三个命令(右尺寸)。
@@ -29,19 +29,19 @@
 
 ---
 
-## 核心模型:三维 SOP × 两轴档位
+## 核心模型:一条流程 + 结构按现实长
 
-一份 SOP 是**三个维度**,且都随档位伸缩:
+一份 SOP 里,**流程 + 人机分工恒定**(所有项目同一条),只有**结构**按项目实际长:
 
-| 维度 | 管什么 |
-|---|---|
-| **结构** | 建哪些 docs / 角色划分 |
-| **流程** | 用哪些技能、跳哪些(brainstorm✓ / writing-plans✗ / code-review✓) |
-| **人机分工** | 人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现) |
+| 维度 | 管什么 | 变不变 |
+|---|---|---|
+| **流程** | 用哪些技能、跳哪些(brainstorm✓ / writing-plans✗ / code-review✓)+ issue+PR + 风险闸 | **恒定**(人人同一条) |
+| **人机分工** | 人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现) | **恒定** |
+| **结构** | 建哪些 docs / 角色划分 | **按现实长**(见下) |
 
-**档位 = 两根独立的轴**(权威定义见 `STANDARD.md` §3,此处不重抄):**契约看 S(端数),协作机器看 C(协作结构)**。T0/T1/T2 只是常见 (S,C) 组合的简称——旧的一维标量档位已被 exp-002 证伪、废弃。
+**结构按两条正交触发长出来**(权威定义见 `STANDARD.md` §3,此处不重抄):**有第 2 个端 → 加契约/按端文档/worktree;有第 2 个人 → 加协作 doc;没有就别建**。旧的"两轴 9 宫格档位"(S0–S2 × C0–C2 / T0/T1/T2)已被 exp-012 收掉——它只是把这条生成规则预先枚举成了组合。
 
-**贯穿线**:SOP 档与撒手梯子(L0–L4)是同一原理的两把尺,都由 `风险 × 验证成本` 决定该多重。
+**贯穿线**:结构该多重、撒手梯子(L0–L4)该多高,都由 `风险 × 验证成本` 决定。
 
 ---
 
@@ -70,9 +70,9 @@ sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人�
 sop-better/
 ├── README.md
 ├── CLAUDE.md                    # 仓库家规(薄入口,纯指针)
-├── STANDARD.md                  # 两轴×三维的权威标准(audit 对照尺)
+├── STANDARD.md                  # 一条流程+结构按现实长的权威标准(audit 对照尺)
 ├── skills/{sop-init,sop-audit}/ # 命令实现(都已建 + 软链进 ~/.claude/skills)
-├── templates/                   # 各档结构 + 约束块 + issue/PR 工作流模板
+├── templates/                   # 结构模板 + 约束块 + issue/PR 工作流模板
 ├── docs/superpowers/specs/      # 设计 spec
 ├── PLAYBOOK.md                  # 狗粮日志:撒手护栏
 └── experiments/                 # 狗粮日志:exp-NNN

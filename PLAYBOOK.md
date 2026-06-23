@@ -104,7 +104,7 @@
 ### ⚠️ 多端(S2)缺"端角色文档"→ 各端不知自己是谁 → 交接乱套;蒸馏母本时把这层载重结构漏了
 - go_dispatch 反例:一条 backend 端内 spec 在主仓(coordination 座位)起头,agent 不知自己该是哪个端 / 该在哪干,凭空造出"释放分支 + 跨端交接"一通乱,被 owner 纠正 4 次。根因:**多端身份没有"自动加载"的落点**——sop-better 只生成项目级 CLAUDE.md + collaboration 角色表(要 agent 主动读才生效),缺**每端一份自动加载的 `<端>/CLAUDE.md`**。
 - 母本(taoxi-geo + go_dispatch)各自独立长出"root + 每端 CLAUDE.md"三层身份栈;sop-better 蒸馏时只搬了 root〔A〕+ collaboration〔B〕,**漏了 Layer C**——而 SKILL.md §S2 还留着"按 ends[] 的端角色"字样却**无模板兜底**(→ 要么静默跳过,要么违反"不许凭记忆另写"的禁止条)。
-- **护栏**:①新 `templates/end-role-claude.md`(端级身份:身份 + 本端 local〔scope/技术栈/常读/实施层词汇〕+ 指向 §10)· `/sop-init` 在 **S2** 按 `ends[]` 每端生成一份;②靠 **harness 自动加载 cwd 最近 CLAUDE.md** = 进端即定身份(**必须叫 `CLAUDE.md`**,换名即废);③纪律:**端文件指针不复述通用红线**(否则成漂移源 · §1.8)——这点 go_dispatch 已比 taoxi-geo 优(把通用红线收成一行 §10 指针),照它;④"错座位护栏"并入 collaboration-c2 角色段(端内活归 scope agent · 已产在主仓则走 req-doc 交接,别"释放分支")· ⑤身份分层**不写进 always-loaded 内核**(机制靠自动加载自跑 · 守住瘦内核 · better-lighter 自审时把首版多加的那行砍回)。
+- **护栏**:①新 `templates/end-role-claude.md`(端级身份:身份 + 本端 local〔scope/技术栈/常读/实施层词汇〕+ 指向 §10)· `/sop-init` 在 **S2** 按 `ends[]` 每端生成一份;②靠 **harness 自动加载 cwd 最近 CLAUDE.md** = 进端即定身份(**必须叫 `CLAUDE.md`**,换名即废);③纪律:**端文件指针不复述通用红线**(否则成漂移源 · §1.8)——这点 go_dispatch 已比 taoxi-geo 优(把通用红线收成一行 §10 指针),照它;④"错座位护栏"并入 collaboration.md 多端追加段(端内活归 scope agent · 已产在主仓则走 req-doc 交接,别"释放分支")· ⑤身份分层**不写进 always-loaded 内核**(机制靠自动加载自跑 · 守住瘦内核 · better-lighter 自审时把首版多加的那行砍回)。
 - **边界**:仅 S2(单端没有"端")· 门槛同 worktree(真并行多 agent 才值)。
 - **元教训**:**蒸馏会丢"载重结构",不只是修剪肥肉**——两个母本独立收敛到的结构,瘦版漏掉就是信号、不是巧合;改 SKILL 时"留了名却没留模板"= 半截缺口,比全无更坑。
 - **证据**:go_dispatch 反例(2026-06-08 会话)
@@ -138,9 +138,9 @@
 ---
 
 ### ⚠️ escalate 是 agent 自决动作、不是 owner 选择题——方向判对了还会"多问一步"把上交也做成 pick
-- taoxi-geo #206:owner 当面给 admin agent 一个**冻结范围外 + 跨端**的需求。agent **方向判对了**(认出"不能自己吞、要回 coord 改 req doc"),却把 **escalate 这个动作本身**做成 owner 选择题("选项 1 现在并进 / 选项 2 fast-follow……你选哪个"),**逼 owner 回一句"去写评论"才动手**。可"写评论上交 coord"按 SOP(§1.9 不假民主 + collaboration-c2 scope隔离)本就是自决该做的 → 多问一步 = 假民主真 ask,且**直接吃掉撒手杠杆**(owner 得手把手驱动每次跨端交接)。根因:§1.9「不假民主」撞上 §1.1「owner 定要什么」边界没划线,agent 把"机械上交动作"误并进"产品决策"(exp-004/007/008 同形:最强规则指向"让 owner 拍")。
+- taoxi-geo #206:owner 当面给 admin agent 一个**冻结范围外 + 跨端**的需求。agent **方向判对了**(认出"不能自己吞、要回 coord 改 req doc"),却把 **escalate 这个动作本身**做成 owner 选择题("选项 1 现在并进 / 选项 2 fast-follow……你选哪个"),**逼 owner 回一句"去写评论"才动手**。可"写评论上交 coord"按 SOP(§1.9 不假民主 + collaboration.md 多端追加段 scope隔离)本就是自决该做的 → 多问一步 = 假民主真 ask,且**直接吃掉撒手杠杆**(owner 得手把手驱动每次跨端交接)。根因:§1.9「不假民主」撞上 §1.1「owner 定要什么」边界没划线,agent 把"机械上交动作"误并进"产品决策"(exp-004/007/008 同形:最强规则指向"让 owner 拍")。
 - **拆包(护栏核心)**:**做不做 / 优先级 = owner 的产品决策(§1.1);怎么把它正确送到对的人手里(C2=coord / C1=业务方)= agent 自决动作**——自己写 issue 评论 + 附设计草案 + 报一句,别请示"要不要 / 怎么 escalate"。**owner 当面交办的扩范围/跨端需求同样走这条**:别因"老板亲口说"就吞进自己的活。
-- **护栏**:① `STANDARD.md §1.9` 加「🔀 escalate 是自决动作、不是选择题」carve-out(端-agnostic 真相源);② `collaboration-c2.md` scope隔离 加 C2 落地(指针引 §1.9,不重抄);③ **不动** always-loaded 内核(靠现成「跨端 → 读 collaboration」指针路由 · exp-006 瘦内核)+ 不动 audit(运行时洞,传播靠模板版本差 · exp-007)。
+- **护栏**:① `STANDARD.md §1.9` 加「🔀 escalate 是自决动作、不是选择题」carve-out(端-agnostic 真相源);② `collaboration.md`(多端追加段)scope隔离 加多端落地(指针引 §1.9,不重抄);③ **不动** always-loaded 内核(靠现成「跨端 → 读 collaboration」指针路由 · exp-006 瘦内核)+ 不动 audit(运行时洞,传播靠模板版本差 · exp-007)。
 - **代价 / 边界**:又是"**一次就改**",过两关——**设计缺陷**(§1.9/§1.1 边界未划线,可证指错)+ **代价不对称**(规则净增 ~4 行 vs 每次跨端 escalate 都要 owner 手把手 = defeat 撒手杠杆本身)。**比 exp-004 弱**(这次只多问一步、没伪造需求)——升级靠"多问一步直接 defeat 撒手杠杆 + 修复极便宜",不靠事故严重度。跨项目复验 + C1 落点待补(见 exp-009 §6)。
 - **证据**:exp-009(taoxi-geo #206 真事故)
 
