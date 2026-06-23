@@ -1,5 +1,5 @@
-<!-- templates/end-role-claude.md —— /sop-init 在 S=S2 时按 `ends[]` 给**每个端**生成一份,落在 `<end_dir>/CLAUDE.md`。
-     选用条件:S2(多端)。S0/S1 单端没有"端"概念 → 不生成(过度治理)。
+<!-- templates/end-role-claude.md —— /sop-init 在**有第 2 个端(多端)**时按 `ends[]` 给**每个端**生成一份,落在 `<end_dir>/CLAUDE.md`。
+     选用条件:多端(≥2 端)。单端没有"端"概念 → 不生成(过度治理)。
      ⚠️ 必须叫 `CLAUDE.md` 且放在端子目录根——靠 harness **自动加载 cwd 最近的 CLAUDE.md** 实现"进端即定身份",换名(ROLE.md 之类)就废了魔力。
      纪律(STANDARD §1.8 凭据保真):端文件 = 身份 + **本端 local**(✅scope / 技术栈 / 常读文件)+ **指针**。
        通用红线指向 `collaboration.md §10` 单一真相源,**绝不复述**——复述 = 会漂移的凭据(改了一处忘改 N 份端文件)。

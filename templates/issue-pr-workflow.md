@@ -1,4 +1,4 @@
-<!-- templates/issue-pr-workflow.md —— 仅 C≥C1。agent 执行的 issue + PR 标准工作流。
+<!-- templates/issue-pr-workflow.md —— 所有项目(人人走 issue+PR,含单人)。agent 执行的 issue + PR 标准工作流。
      核心:issue/PR 是 agent 之间的共享内存 / 凭据,不是给人的 PM 表。agent 全程操作,人可读可不读,只在高风险闸出现。
      默认 GitHub 实现(gh CLI / GitHub PR);工作流是抽象,换平台时只换实现。
      /sop-init 把本文件落成 docs/ 下的工作流约定,并在 collaboration.md 引用。 -->
@@ -17,7 +17,7 @@
 ## Issue 生命周期(agent 操作)
 
 1. **开**:一个需求/缺陷一个 issue。**先把 doc commit+push 到远端、再开 issue**;正文 = 一句话需求 + 验收标准 + **指向 doc 的稳定链接(commit permalink / 已合 PR,别指会悬空的分支相对路径)**。**issue 薄、doc 厚**:细节进 doc,issue 只留索引 + 状态 + 验收。**"提 issue"和"推 doc"不许分两步漂着——doc 不在远端就别开 issue。**
-2. **标(阶段 label 看协作结构 C)**:**C1(label 状态机)** 用 评估中 / 开发中 / 已完成(互斥);**C2 的 6+1 流程默认无 lifecycle label**(轻、无硬 gate,进度靠 issue open/closed + 状态标记 + 评论,见 `collaboration.md`)。两档都用 **阻塞 flag**(如 待澄清 / `待业务确认`,叠加;`待业务确认` = 等业务方拍板,开工要 surface 给人)+ 状态标记 ✅🚧⏸️⬜。
+2. **标**:阶段 label(互斥,一个 issue 同时只一个:评估中 / 开发中 / 已完成)+ **阻塞 flag**(叠加,如 待澄清 / `待业务确认`;`待业务确认` = 等业务方 / owner 拍板,开工要 surface 给人)+ 状态标记 ✅🚧⏸️⬜。**这是基线(media-ops 同款)**。(重协调的多端多 agent 项目若觉 lifecycle label 冗余,可在 `collaboration.md` 约定改用 open/closed + 状态标记 + 评论的更轻策略——非默认、不是档位。)
 3. **跟进**:进度、决策、方案变化随时写进 issue 评论(留痕即凭据);要别的角色/agent 接手就 **tag**。
 4. **关**:验收过 → 关。被 PR 收口的用 `Closes #N`。
    - **🚧 决策闸 carve-out(裁决 ≠ 收口)**:若 issue 是「裁决只是选了条路、这条路还要等下游 spike/数据验证才算数」的**决策闸**(典型:私信走 web 还是 App,取决于一个 spike 能不能跑通)——**别在裁决时关**。正文必带一行**关闭条件**(什么证据才收口 + 跑不过转哪条路);并给人一句「**只回复决策、别关本 issue**——关闭由开发按关闭条件统一做」;裁决后 label 不进终态、挂到那条 spike 上,闸合上才关。否则裁决一关 = 选路被当收口 = 会说谎的凭据(§1.8)。纯裁决(拍完即定,如选型)不吃这条,照旧"裁决即关"。

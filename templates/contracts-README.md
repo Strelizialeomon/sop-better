@@ -1,4 +1,4 @@
-<!-- templates/contracts-README.md —— 仅 T2。生成为 docs/contracts/README.md。占位符:{{ends}} -->
+<!-- templates/contracts-README.md —— 仅多端(≥2 端)。生成为 docs/contracts/README.md。占位符:{{ends}} -->
 
 # 跨端契约(单一真相源)
 
@@ -7,7 +7,7 @@
 ## 规矩
 
 - 一个跨端事实 = 一处定义。改它 → 先改本目录 + 通知相关端 + 两端对齐(handshake)后才落地。
-- 契约 **freeze 需 owner 明确确认**(STANDARD T2 流程)。
+- 契约 **freeze 需 owner 明确确认**(STANDARD §3 多端流程)。
 - 端清单:{{ends}}。
 
 ## 目录
