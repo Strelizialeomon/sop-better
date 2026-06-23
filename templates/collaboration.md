@@ -1,10 +1,11 @@
-<!-- templates/collaboration.md —— 仅「有第 2 个人」时生成(单人不建)。按"几个人 / 几个端"伸缩:
-     基线 = 双角色 / 小团队(业务↔开发,轻);有第 2 个端 + 多并行 scope agent 再加下方「多端多 agent 追加段」(蒸馏自 taoxi-geo)。
+<!-- templates/collaboration.md —— 有协作时生成,两段独立触发、可只有其一:
+     **多人** → 基线双角色段(业务↔开发 handoff);**多端 + 真并行多 agent** → 下方「多端多 agent 追加段」(蒸馏自 taoxi-geo · 多 agent 协调挂"并行 agent"、不挂"第 2 人")。
+     两者都无(单端单人 / 无并行 agent)→ 不生成本文件。单人多端多 agent → 只有追加段。
      生成为 docs/project/collaboration.md。占位符:{{ends}} {{collaborators}} -->
 
 # 协作约定(本项目)
 
-> 本文件是"谁干什么、怎么不撞车"的真相源,**仅当有第 2 个人时才有**——单人项目没有这份(角色变焦在 CLAUDE.md 公约里恒定、不靠它;issue+PR 也归恒定流程、不靠它)。跨端事实(仅多端)定义在 `docs/contracts/`,这里只管协作流。
+> 本文件是"谁干什么、怎么不撞车"的真相源,**有协作才有**——多人(下方基线双角色段)或多端真并行多 agent(下方多端追加段);单端单人 / 无并行 agent 没有这份(角色变焦在 CLAUDE.md 公约里恒定;issue+PR 归恒定流程)。跨端事实(仅多端)定义在 `docs/contracts/`,这里只管协作流。
 
 ## 角色(基线 · 双角色小团队)
 

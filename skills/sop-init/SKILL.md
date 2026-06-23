@@ -30,9 +30,10 @@ description: 为项目搭"右尺寸"的开发 SOP 骨架——固定公约 + 按
 3. **右尺寸校验(反驳在这一步发力)**:反问"这项目真需要一份 SOP 吗?多端 / 多人结构是真有、还是在预建?"。真一次性脚本 → 建议别 init(出范围);凭空的多端 / 多人结构 → **明确建议砍掉并说理由**,不附和。
 4. **生成(一条流程 + 结构按现实长 · 用 `templates/` 里的块,占位符按参数替换):**
    - **总是(所有跑 sop-init 的项目,含单人单端)**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);`CLAUDE.md`(嵌 `agent-constraints.md` 的**标准块 + 沟通约束块**;**块头 `{{proj}}` 填项目一句话描述,别写档位编号 / "单人"等窄化词**)+ `docs/decisions/`(adr 模板 + `0001` 样例 + **升级触发条件 ADR**:"加第 2 个端 → 补契约/按端文档/worktree;加第 2 个人 → 补协作 doc")+ 单一真相源声明 + **issue/PR 工作流(`templates/issue-pr-workflow.md` —— 全生命周期 + 凭据保真)+ issue 模板 + label 状态机(评估中/开发中/已完成 + `待业务确认` 阻塞 flag)+ 状态标记 ✅🚧⏸️⬜**(issue+PR 恒定、人人都走含单人)
-   - **有第 2 个人(≥2 个不同的人)才加**:`templates/collaboration.md`(基线双角色段;**多端 + 多并行 agent 再带上它的「多端多 agent 追加段」**——角色 + 6+1 骨架 + 消息总线 + worktree 选项)+ 角色命令。单人 → 不建(角色变焦在公约里恒定)。
-   - **有第 2 个端(≥2 端)才加**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ **`templates/multiend-contracts.md`**(契约握手 + firmness 三级 + req-doc 语义级/实施层边界)+ **按 `ends[]` 给每端生成 `templates/end-role-claude.md`** → 落 `<end_dir>/CLAUDE.md`(端级身份文档:身份 + 本端 local〔scope/技术栈/常读文件/实施层词汇〕+ 指向 §10)。**靠 harness 自动加载 cwd 最近 CLAUDE.md = 进端即定身份**(治"多端各端不知自己是谁");纪律:**端文件指针不复述通用红线**(复述=漂移源 · STANDARD §1.8)。
-     - **worktree 仅在 owner 确认"真并行多 agent"时才落**(多端里的可选项,不默认):额外发 **`templates/worktree-isolation.md`**(布局/HEAD race trap/setup+维护/起手按-ref-验/反转条件)+ 用 `adr-template.md` 记一条 worktree ADR。串行 / 单 agent → 不发(过度治理)。
+   - **有第 2 个人(≥2 个不同的人)才加**:`templates/collaboration.md` 的**基线双角色段**(业务↔开发 handoff:起需求 / 收口标准 / 交棒)+ 角色命令。单人 → 不建(角色变焦在公约里恒定)。
+   - **有第 2 个端(≥2 端)才加**:`docs/contracts/README.md`(`templates/contracts-README.md`)+ **`templates/multiend-contracts.md`**(契约握手 + firmness 三级 + req-doc 语义级/实施层边界)+ **按 `ends[]` 给每端生成 `templates/end-role-claude.md`** → 落 `<end_dir>/CLAUDE.md`(端级身份文档:身份 + 本端 local〔scope/技术栈/常读文件/实施层词汇〕+ 指向项目根 CLAUDE.md 工作约束块)。**靠 harness 自动加载 cwd 最近 CLAUDE.md = 进端即定身份**(治"多端各端不知自己是谁");纪律:**端文件指针不复述通用红线**(复述=漂移源 · STANDARD §1.8)。
+     - **且 owner 确认"真并行多 agent"才加**(多端里的可选项,不默认):worktree —— **`templates/worktree-isolation.md`**(布局/HEAD race trap/setup+维护/起手按-ref-验/反转条件)+ `adr-template.md` 记 worktree ADR;**外加 `collaboration.md` 的「多端多 agent 追加段」**(角色 + 6+1 骨架 + 消息总线 + scope 隔离 + coordination)。串行 / 单 agent → 都不发(过度治理)。
+   - **注**:`collaboration.md` 在「有第 2 个人」或「多端真并行多 agent」**任一**命中时生成,带对应段(可只有其一——如 taoxi-geo 单人多端多 agent 只有追加段)。
 5. **没有的端/人不预建**(右尺寸硬约束):单端不建 contracts/按端文档/worktree;单人不建协作 doc/角色命令;真一次性脚本压根不跑 sop-init(出范围)。
 6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 `CLAUDE.md` + 目录树**即可验收(便宜验证)。
 

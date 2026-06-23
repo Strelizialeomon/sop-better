@@ -2,7 +2,7 @@
      选用条件:多端(≥2 端)。单端没有"端"概念 → 不生成(过度治理)。
      ⚠️ 必须叫 `CLAUDE.md` 且放在端子目录根——靠 harness **自动加载 cwd 最近的 CLAUDE.md** 实现"进端即定身份",换名(ROLE.md 之类)就废了魔力。
      纪律(STANDARD §1.8 凭据保真):端文件 = 身份 + **本端 local**(✅scope / 技术栈 / 常读文件)+ **指针**。
-       通用红线指向 `collaboration.md §10` 单一真相源,**绝不复述**——复述 = 会漂移的凭据(改了一处忘改 N 份端文件)。
+       通用红线指向项目根 `CLAUDE.md`「Agent 工作约束」块(单一真相源),**绝不复述**——复述 = 会漂移的凭据(改了一处忘改 N 份端文件)。
      占位符:{{End}} 端名首字大写 · {{end}} scope 小写 · {{end_dir}} 端目录名 · {{project}} 项目名
             {{stack}} 本端技术栈 · {{end_docs}} 本端独有常读 doc(逐条列)· {{impl_vocab}} 本端"实施层词汇"(Step 3 brainstorm 拍的那些)
      〔多 repo 而非 monorepo〕:端文件放各端 repo 根;跨端契约/SOP 的相对路径换成稳定 URL(commit permalink / 已合 PR),别用会悬空的相对路径(STANDARD §1.8)。 -->
@@ -22,9 +22,9 @@
 - ✅ own-scope `type:fix` / `type:chore` 自起;**纯本端**单端 `type:feat` 可自起
 - ❌ **跨端 feat**(影响 2+ 端 / 动 API / schema / 跨端契约)→ 必走 coord;单端 / 跨端**不确定**→ escalate coord
 - ❌ 不改其他端代码;不动**不属于自己**的 req doc / 已 freeze 契约 / `docs/decisions`
-- ❌ **其余通用红线**(不擅自 merge · 不动保护分支 · 缺上游交付物反弹不脑补 · 不写"倾向 X" anchor 让人 pick · 改动触及主流程骨架/跨端契约必 escalate)→ **`collaboration.md §10` 单一真相源,端文件不复述**
+- ❌ **其余通用红线**(不擅自 merge · 不动保护分支 · 缺上游交付物反弹不脑补 · 不写"倾向 X" anchor 让人 pick · 改动触及主流程骨架/跨端契约必 escalate)→ **项目根 `CLAUDE.md`「Agent 工作约束」块单一真相源,端文件不复述**
 
-## 开发流程(端速查 · 完整见 collaboration.md §3)
+## 开发流程(端速查 · 完整见 collaboration.md 多端追加段「6+1 流程骨架」)
 
 取活 → **Step 3** invoke `superpowers:brainstorming` 出端内 spec(`docs/execution/…`)→ 需求 issue 评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")→ **Step 4** 在自己 worktree 切 `<type>/issue-N-slug`(从 `origin/master`)· 自决实施 · 永不阻塞 · push + PR(`Closes #N`)· 过新眼睛 review 再示意 merge。简单 fix(trivial)免 brainstorming。
 
