@@ -72,7 +72,7 @@ sop-better/
 ├── CLAUDE.md                    # 仓库家规(薄入口,纯指针)
 ├── STANDARD.md                  # 一条流程+结构按现实长的权威标准(audit 对照尺)
 ├── skills/{sop-init,sop-audit}/ # 命令实现(都已建 + 软链进 ~/.claude/skills)
-├── templates/                   # 结构模板 + 约束块 + issue/PR 工作流模板
+├── master/                      # 母本:按触发分层(base + layer-collaborators/multiend/parallel-agents)的结构/约束/工作流
 ├── docs/superpowers/specs/      # 设计 spec
 ├── PLAYBOOK.md                  # 狗粮日志:撒手护栏
 └── experiments/                 # 狗粮日志:exp-NNN

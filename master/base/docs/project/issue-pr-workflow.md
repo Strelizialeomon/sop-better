@@ -1,4 +1,4 @@
-<!-- templates/issue-pr-workflow.md —— 所有项目(人人走 issue+PR,含单人)。agent 执行的 issue + PR 标准工作流。
+<!-- master/base/docs/project/issue-pr-workflow.md —— 所有项目(人人走 issue+PR,含单人)。agent 执行的 issue + PR 标准工作流。
      核心:issue/PR 是 agent 之间的共享内存 / 凭据,不是给人的 PM 表。agent 全程操作,人可读可不读,只在高风险闸出现。
      默认 GitHub 实现(gh CLI / GitHub PR);工作流是抽象,换平台时只换实现。
      /sop-init 把本文件落成 docs/ 下的工作流约定,并在 collaboration.md 引用。 -->

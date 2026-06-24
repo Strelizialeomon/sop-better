@@ -1,4 +1,4 @@
-<!-- templates/contracts-README.md —— 仅多端(≥2 端)。生成为 docs/contracts/README.md。占位符:{{ends}} -->
+<!-- master/layer-multiend/contracts-README.md —— 仅多端(≥2 端)。生成为 docs/contracts/README.md。占位符:{{ends}} -->
 
 # 跨端契约(单一真相源)
 
