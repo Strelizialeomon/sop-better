@@ -1,4 +1,4 @@
-<!-- templates/adr-template.md —— 复制为 docs/decisions/NNNN-<slug>.md。NNNN 四位递增。 -->
+<!-- master/base/docs/decisions/adr-template.md —— 复制为 docs/decisions/NNNN-<slug>.md。NNNN 四位递增。 -->
 
 # ADR-{{NNNN}}: {{决策标题}}
 

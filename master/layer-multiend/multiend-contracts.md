@@ -1,4 +1,4 @@
-<!-- templates/multiend-contracts.md —— 仅多端(需跨端契约)。taoxi-geo 蒸馏。
+<!-- master/layer-multiend/multiend-contracts.md —— 仅多端(需跨端契约)。taoxi-geo 蒸馏。
      选用条件:2+ 端要对接(前后端/小程序/爬虫之间有数据契约)。单端不用(契约自动生成或无需手写)。 -->
 
 # 跨端契约模式(多端)

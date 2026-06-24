@@ -1,4 +1,4 @@
-<!-- templates/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是多端协作里的 (可选) 项,不是默认。
+<!-- master/layer-parallel-agents/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是多端协作里的 (可选) 项,不是默认。
      选用条件:你真的同时开 ≥2 个 agent 窗口改同一个仓(每端一个)。串行干 / 单 agent → 别上(过度治理)。
      蒸馏自 taoxi-geo(ADR-0007 + collaboration §13 实战)。/sop-init 仅在 owner 选上 worktree 时落本文件,
      并在 collaboration.md 多端追加段的 "worktree(选项)" 行指过来 + 用 adr-template.md 记一条 ADR(含下方反转条件)。

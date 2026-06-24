@@ -1,10 +1,10 @@
 <!-- master/layer-collaborators/collaboration.md —— 触发:有第 2 个人(≥2 个不同的人 · 业务↔开发 handoff)。
      /sop-init 落成 docs/project/collaboration.md。若同时"真并行多 agent",再把 layer-parallel-agents/coordination.md 追加在后(单人多端多 agent 则只有那段、没有本段)。
-     占位符:{{ends}} {{collaborators}}。拆分自原 templates/collaboration.md「基线双角色段」——多 agent 协调骨架挂"并行 agent"触发、在 coordination.md,不挂"第 2 个人"。-->
+     拆分自原 templates/collaboration.md「基线双角色段」——多 agent 协调骨架挂"并行 agent"触发、在 coordination.md,不挂"第 2 个人"。-->
 
 # 协作约定（本项目）
 
-> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 CLAUDE.md 公约里恒定；issue+PR 归恒定流程）。跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
+> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 CLAUDE.md 公约里恒定；issue+PR 归恒定流程）。**多端真并行多 agent 的协调骨架在 `coordination.md`（/sop-init 追加在本段之后）。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
 
 ## 角色（基线 · 双角色小团队）
 

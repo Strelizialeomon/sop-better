@@ -1,4 +1,4 @@
-<!-- templates/end-role-claude.md —— /sop-init 在**有第 2 个端(多端)**时按 `ends[]` 给**每个端**生成一份,落在 `<end_dir>/CLAUDE.md`。
+<!-- master/layer-multiend/end-role-claude.md —— /sop-init 在**有第 2 个端(多端)**时按 `ends[]` 给**每个端**生成一份,落在 `<end_dir>/CLAUDE.md`。
      选用条件:多端(≥2 端)。单端没有"端"概念 → 不生成(过度治理)。
      ⚠️ 必须叫 `CLAUDE.md` 且放在端子目录根——靠 harness **自动加载 cwd 最近的 CLAUDE.md** 实现"进端即定身份",换名(ROLE.md 之类)就废了魔力。
      纪律(STANDARD §1.8 凭据保真):端文件 = 身份 + **本端 local**(✅scope / 技术栈 / 常读文件)+ **指针**。
@@ -14,7 +14,7 @@
 > **推荐 cwd**:`~/code/{{project}}-root/wt-{{end}}/{{end_dir}}/`(本端专用 worktree · HEAD 与主 worktree 物理隔离)。主 worktree 下的同名子目录**仅 read-only**——在那 `git checkout` 会偷走 coordination 的 HEAD(见 [`worktree-isolation.md`](../docs/project/worktree-isolation.md))。〔无 worktree 则删本行〕
 
 - **Scope**:`scope:{{end}}` · **取活**:`gh issue list --label scope:{{end}} --state open`(open 即"待干")
-- **完整 SOP 真相源**:[`../docs/project/collaboration.md`](../docs/project/collaboration.md) —— 6+1 流程 / 红线 / 消息总线 / 角色 都在那。本文件只给**身份 + 本端 local + 指针**,不复述。
+- **完整 SOP 真相源**:项目根 `CLAUDE.md`「Agent 工作约束」+ [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md)（**恒有**）。〔有协作 / 并行多 agent 时另见 `../docs/project/collaboration.md`（6+1 流程 / 角色 / 消息总线）；**单人多端串行无此文件 → 删本句**〕本文件只给**身份 + 本端 local + 指针**,不复述。
 
 ## 你的边界
 
@@ -24,7 +24,7 @@
 - ❌ 不改其他端代码;不动**不属于自己**的 req doc / 已 freeze 契约 / `docs/decisions`
 - ❌ **其余通用红线**(不擅自 merge · 不动保护分支 · 缺上游交付物反弹不脑补 · 不写"倾向 X" anchor 让人 pick · 改动触及主流程骨架/跨端契约必 escalate)→ **项目根 `CLAUDE.md`「Agent 工作约束」块单一真相源,端文件不复述**
 
-## 开发流程(端速查 · 完整见 collaboration.md 多端追加段「6+1 流程骨架」)
+## 开发流程(端速查 · 多 agent 并行时完整见 `coordination.md`「6+1 流程骨架」;串行单 agent 照根 CLAUDE.md + `issue-pr-workflow.md`)
 
 取活 → **Step 3** invoke `superpowers:brainstorming` 出端内 spec(`docs/execution/…`)→ 需求 issue 评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")→ **Step 4** 在自己 worktree 切 `<type>/issue-N-slug`(从 `origin/master`)· 自决实施 · 永不阻塞 · push + PR(`Closes #N`)· 过新眼睛 review 再示意 merge。简单 fix(trivial)免 brainstorming。
 
