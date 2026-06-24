@@ -25,7 +25,7 @@ description: 给项目的"开发 SOP"做体检——头号查过度治理(仪式
    - **几个人**:扫 `docs/collaboration*`、`.claude/commands`(角色命令)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。(issue+PR 人人都有、不据此判人数)
    - **风险**:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
 3. **比"该有 vs 实际"**:STANDARD §3 由"几端 / 几人"推出"该有的结构";扫项目实际有的治理文件/仪式;两边相减。
-   - **🔄 加比"模板版本"(揪漂移根因)**:项目的治理 doc 多是 `/sop-init` 从 `$SOP_HOME/templates/` 生成的**快照**,但 **template 随 STANDARD 进化、已生成的项目不会自动跟着长**。把项目的 `issue-pr-workflow.md` / `collaboration*.md` / CLAUDE.md 约束块跟当前 `templates/` 对应文件**比一遍**:template 有、项目缺的**新规则 / carve-out** = **漂移根因**(报为下方「凭据失真 / 结构缺失」· kind `missing` · 建议**回灌**)。这揪的是**根因**(doc 落后于模板),不只揪**症状**(某条 issue 被误关)。⚠️ 比的是「缺了该有的新护栏」,**不是逐字一致**——项目可有正当本地偏离(右尺寸),别把合理差异报成漂移。**但近似 ≠ 覆盖(exp-010 · 防被近似版骗过)**:项目有某护栏的**近似版**时别停在"大原则盖到了"就判无漂移——**逐条语义比**(非逐字、非靠字面标记):看 template 那条有没有针对某**具体场景 / 边界的限定**(carve-out、反例、"即使 X 也要 Y"式例外),项目近似版**只搬了大原则、漏了那个限定** = 仍 `missing` + **标信心**。普通措辞 / 详略差异仍按"合理本地偏离"宽放(别扩成事事都报 → audit 自己变 cry wolf)。
+   - **🔄 加比"模板版本"(揪漂移根因)**:项目的治理 doc 多是 `/sop-init` 从 `$SOP_HOME/templates/` 生成的**快照**,但 **template 随 STANDARD 进化、已生成的项目不会自动跟着长**。把项目的 `issue-pr-workflow.md` / `collaboration*.md` / CLAUDE.md 约束块跟当前 `templates/` 对应文件**比一遍**:template 有、项目缺的**新规则 / carve-out** = **漂移根因**(报为下方「凭据失真 / 结构缺失」· kind `missing` · 建议**回灌**)。这揪的是**根因**(doc 落后于模板),不只揪**症状**(某条 issue 被误关)。⚠️ 比的是「缺了该有的新护栏」,**不是逐字一致**——项目可有正当本地偏离(右尺寸),别把合理差异报成漂移。**但近似 ≠ 覆盖(exp-010 · 防被近似版骗过)**:项目有某护栏的**近似版**时别停在"大原则盖到了"就判无漂移——**逐条语义比**(非逐字、非靠字面标记):看 template 那条有没有针对某**具体场景 / 边界的限定**(carve-out、反例、"即使 X 也要 Y"式例外),项目近似版**只搬了大原则、漏了那个限定** = 仍 `missing` + **标信心**。普通措辞 / 详略差异仍按"合理本地偏离"宽放(别扩成事事都报 → audit 自己变 cry wolf)。**🔁 双向比(exp-013 · 减法残留也是漂移)**:模板不只会**长**、也会**删 / 合 / 改名**(如 exp-012 删极简块 + S/C/T 档)。除了上面"项目**缺**模板新增护栏"(`missing`),必须**逆查"项目还**留着**模板已删的块 / 档 / 文件"**(kind `stale`):约束块是已废的**极简块**、用了已删**档位编号**(`S0·C0` 等)、引用已删 / 改名的模板(`collaboration-c2` / `s2-contracts`)= `stale` → 报 + 建议**换成现行块**(极简块 → 标准块那条流程)。**只查 missing 会让减法残留静默存活**(py-script 真复跑实证:audit 只换了档位词的皮、漏了极简块整块该换标准块 · STANDARD §5.2)。
 4. **按 §5 五类出 finding,每条标 severity + 证据**。**查法细则全在 STANDARD §5(第 1 步已读),本技能不重抄(重抄必漂移),这里只定 severity 映射**:
    - **P1 过度治理(头号)**= §5.1(人手跑的仪式过重 + 死规则笼子;「只算人掏的成本、agent 自动维护不算」见铁律)。
    - **P2 结构错配**= §5.2;**P2 反驳缺失**= §5.3。
@@ -35,7 +35,7 @@ description: 给项目的"开发 SOP"做体检——头号查过度治理(仪式
    - **(a) 人读**:开头一句总判("太重 / 刚好 / 太轻" + 实测 几端 / 几人 / 风险);然后按 severity 排,每条 = `现象 + 为什么不对(对照 STANDARD 哪条)+ 建议(降到哪 / 补什么)+ 证据`。
    - **(b) 可执行 findings**(owner 说"改"时据此动手;也可存盘供以后照单改):
      ```json
-     [{"severity":"P1","kind":"over|mismatch|missing|nopushback","target":"file/dir","evidence":"...","suggest":"..."}]
+     [{"severity":"P1","kind":"over|mismatch|missing|stale|nopushback","target":"file/dir","evidence":"...","suggest":"..."}]
      ```
 6. **收尾**:一句"**最该先动的 1 条**"。
 7. **若 owner 看完说"改 / go"** → 按 `templates/issue-pr-workflow.md` 落地:开 issue 记 findings → 分支 → 改 → PR(`Refs`)→ 按风险审合(低风险自动合 / 高风险回 owner)。**没说"改"就停在第 6 步。**
