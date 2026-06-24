@@ -180,4 +180,23 @@
 
 ---
 
+### ⚠️ 想"以真项目为纲"改生成器前,先 verify-by-running 现状——现状可能已是你要造的东西
+- 把 `/sop-init` 从"抽象 `templates/` 拼装"改成"母本驱动",方案押"templates/ 是会漂的抽象碎片、运行时现拼易 misfire"。2 轮 clean-context 新眼睛**实跑现状**证伪:`templates/` 早已是**整份具体当前母本**(exp-011/012/013 修复都在)、`/sop-init` 早已 copy-whole+slot(无"现拼碎片"步)、audit 双向 diff 早 ship。大改真值只剩"trigger-layer 重排 + base 骨架 crown freshness",其余全是**重建已存在的东西**。
+- **护栏**:改生成器 / 重构前,**先 verify-by-running 现状**(读真实流程 + 真跑一遍),别照 spec 对现状的描述动手——描述常 oversell。砍到诚实残值再动。
+- **代价 / 边界**:exp-005「为小缺口立大概念」的同形(这次是改整个生成器方向);owner informed override 仍要重排(长期可维护性 taste)= 正当,只要认清量级是"重排+骨架"非"3 源合成"。
+- **证据**:exp-014(2 轮新眼睛 verify-by-running 把 master/ 大改砍成重排+骨架)
+
+### ⚠️ 重排 / 搬迁护栏时,把"往 doc 中段插入"改成"槽替换",守住"不中段动刀"不变量
+- master/ 重排把"多端约束块**追加进根 CLAUDE.md §2 中段**"(§2 后面紧跟 §3/§4)——文档中段插入、无锚点。正违反 spec 自己立的"`/sop-init` 只在 slot 处 find/replace、**绝不在 doc 中段动刀**"不变量——而那条不变量**正是 freshness crown 不复埋的命根**。新眼睛逮到,改成 `{{multiend_constraints}}` 槽(单端整行删、多端填)。
+- **护栏**:任何"往生成物里插一段"的机制,都做成**显式槽替换**(空值整行删),别做成"找位置插入"。中段插入 = 给"载重位置被挪 / 被埋"开后门。
+- **证据**:exp-014(新眼睛 review 逮中段插入违反不变量)
+
+### ⚠️ 生成器类改动,静态全绿也必须真跑一遍生成——模板机制层的洞静态照不出
+- exp-014 实现过 **4 镜头独立新眼睛**(承重墙保真 / 挂对闸 / bug / 右尺寸)+ grep **全绿**;dogfood **真跑** `/sop-init` 才逮出:master 文件顶部 `<!-- …占位符… -->` 元注释没被 strip → `{{proj}}` 连头注一起被填成乱码。
+- **护栏**:改 `/sop-init`(或任何"读模板生成产物"的工具)后,**必须真跑一次生成 + grep 验产物**;静态查(护栏在场 / grep / review)对"模板机制层"的洞**天生盲**。
+- **代价 / 边界**:exp-002 / exp-013「真跑>dry-run」的再次应验,同一条规律第三次咬。**复验待补**:dogfood B(taoxi-geo 增量验三触发)+ C(py-script audit 验 stale)跨项目未跑,A(单端 crown freshness)已过。
+- **证据**:exp-014(dogfood 真跑逮 meta-header 没 strip)
+
+---
+
 *(下一条等下一次实验。)*
