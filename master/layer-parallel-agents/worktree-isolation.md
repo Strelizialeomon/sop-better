@@ -1,6 +1,6 @@
 <!-- master/layer-parallel-agents/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是多端协作里的 (可选) 项,不是默认。
      选用条件:你真的同时开 ≥2 个 agent 窗口改同一个仓(每端一个)。串行干 / 单 agent → 别上(过度治理)。
-     蒸馏自 taoxi-geo(ADR-0007 + collaboration §13 实战)。/sop-init 仅在 owner 选上 worktree 时落本文件,
+     蒸馏自 taoxi-geo(ADR-0007 + collaboration §13 实战)。$sop-init 仅在 owner 选上 worktree 时落本文件,
      并在 collaboration.md 多端追加段的 "worktree(选项)" 行指过来 + 用 adr-template.md 记一条 ADR(含下方反转条件)。
      占位符:{{project}} 项目名 · {{ends}} 端列表(每端一个 wt-)。-->
 
@@ -92,4 +92,4 @@ git worktree repair                # 修元数据指向旧路径（主仓 / 容�
 | onboarding 老踩 race（误在主仓同名子目录 `git checkout`） | 加 cwd 检查 wrapper / shell alias，强制启动校验在不在 wt-* |
 | 单 `.git/` 出现性能瓶颈（多 worktree 大 fetch / GC 慢） | 拆成多 clone 独立仓 |
 | 单机协作变多机 / owner 加协作者 | 每个协作者各自 `git clone` + 各自 wt-* |
-| Claude Code 原生支持 worktree（按子目录自动推 path） | 简化本 SOP |
+| 目标 agent 运行时原生支持 worktree（按子目录自动推 path） | 简化本 SOP |

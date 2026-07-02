@@ -1,10 +1,10 @@
 <!-- master/layer-collaborators/collaboration.md —— 触发:有第 2 个人(≥2 个不同的人 · 业务↔开发 handoff)。
-     /sop-init 落成 docs/project/collaboration.md。若同时"真并行多 agent",再把 layer-parallel-agents/coordination.md 追加在后(单人多端多 agent 则只有那段、没有本段)。
+     $sop-init 落成 docs/project/collaboration.md。若同时"真并行多 agent",再把 layer-parallel-agents/coordination.md 追加在后(单人多端多 agent 则只有那段、没有本段)。
      拆分自原 templates/collaboration.md「基线双角色段」——多 agent 协调骨架挂"并行 agent"触发、在 coordination.md,不挂"第 2 个人"。-->
 
 # 协作约定（本项目）
 
-> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 CLAUDE.md 公约里恒定；issue+PR 归恒定流程）。**多端真并行多 agent 的协调骨架在 `coordination.md`（/sop-init 追加在本段之后）。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
+> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 agent 指令文件公约里恒定；issue+PR 归恒定流程）。**多端真并行多 agent 的协调骨架在 `coordination.md`（$sop-init 追加在本段之后）。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
 
 ## 角色（基线 · 双角色小团队）
 
@@ -29,5 +29,5 @@
 ## 红线
 
 - 不擅自 commit / push（需 owner 明确指令）。**owner 说"收工 / 结束"即此明确指令** → 把本会话收口的 doc 按 `issue-pr-workflow.md` 推远端（文档 main / 代码 PR）。
-- 不跑 writing-plans；spec 验收要硬 + code review 必留（见 CLAUDE.md）。
+- 不跑 writing-plans；spec 验收要硬 + code review 必留（见 agent 指令文件）。
 - 治理过重要主动喊停——右尺寸 > 全面。

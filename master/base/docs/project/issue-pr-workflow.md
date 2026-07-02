@@ -1,7 +1,7 @@
 <!-- master/base/docs/project/issue-pr-workflow.md —— 所有项目(人人走 issue+PR,含单人)。agent 执行的 issue + PR 标准工作流。
      核心:issue/PR 是 agent 之间的共享内存 / 凭据,不是给人的 PM 表。agent 全程操作,人可读可不读,只在高风险闸出现。
      默认 GitHub 实现(gh CLI / GitHub PR);工作流是抽象,换平台时只换实现。
-     /sop-init 把本文件落成 docs/ 下的工作流约定,并在 collaboration.md 引用。 -->
+     $sop-init 把本文件落成 docs/ 下的工作流约定,并在 collaboration.md 引用。 -->
 
 # Issue + PR 工作流(agent 执行 · 人可读可不读)
 
@@ -34,7 +34,7 @@
 ## 与撒手档挂钩
 
 - 默认撒手档越高,自动合的范围越大;但**"高风险闸回人"恒定不变**。
-- 哪些算"高风险"写进项目 CLAUDE.md 的「升回我主导」清单。
+- 哪些算"高风险"写进项目 agent 指令文件的「升回我主导」清单。
 
 ## 凭据细则(吸自 taoxi-geo)
 

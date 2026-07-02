@@ -1,5 +1,5 @@
 <!-- master/layer-parallel-agents/coordination.md —— 触发:真并行多 agent(= 上 worktree · 多端各端一个 scope agent + coordination)。挂"并行 agent"、不挂"第 2 个人"。
-     /sop-init 把这段落进 docs/project/collaboration.md:若也有第 2 个人,接在 layer-collaborators 的双角色段之后;单人多端多 agent 则只有这段。占位符:{{ends}}
+     $sop-init 把这段落进 docs/project/collaboration.md:若也有第 2 个人,接在 layer-collaborators 的双角色段之后;单人多端多 agent 则只有这段。占位符:{{ends}}
      拆分自原 templates/collaboration.md「多端多 agent 追加段」。agent 自决 / 永不阻塞 / 新眼睛 review 全在 STANDARD §1,此处不重复。worktree 机制见同层 worktree-isolation.md。-->
 
 # 多端多 agent 协调（本项目）
@@ -8,17 +8,17 @@
 
 ## 角色（多端）
 
-> 每端的**身份 + 边界**写在各端 `<端目录>/CLAUDE.md`（端级文档 · `/sop-init` 按 `ends[]` 生成 · harness 自动加载）。此处只给跨端协作骨架，**不复述各端边界**（单一真相源 · STANDARD §1.6）。
+> 每端的**身份 + 边界**写在各端 `<端目录>/<agent 指令文件>`（端级文档 · `$sop-init` 按 `ends[]` 与 runtime 生成 · 对应运行时自动加载）。此处只给跨端协作骨架，**不复述各端边界**（单一真相源 · STANDARD §1.6）。
 
 | 角色 | scope | 干啥 |
 |---|---|---|
 | Coordination | docs | 出"在做什么" + 起跨端 req doc · **不出契约、不写端代码** |
-| 各端 scope agent | {{ends}} | 端内代码 + 端内 spec/ADR + 自决实施 · 遇不合理自己解决 + 评论 · **边界见各端 `CLAUDE.md`** |
+| 各端 scope agent | {{ends}} | 端内代码 + 端内 spec/ADR + 自决实施 · 遇不合理自己解决 + 评论 · **边界见各端 agent 指令文件** |
 | Owner | — | 提需求 + 审 req + 联调 + merge · **不当通讯人** |
 
 **scope agent ≠ 执行 PM 派的细 task；= 高权限程序员，收到方向后自决实施。**
 
-> **身份靠"进哪个端的目录"自动定**：harness 自动加载 cwd 最近的 `CLAUDE.md` —— 在 `wt-<端>/<端目录>/` 就自动是该端 scope agent，在主仓就是 coordination。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
+> **身份靠"进哪个端的目录"自动定**：运行时自动加载 cwd 最近的 agent 指令文件（Codex=`AGENTS.md`;Claude Code=`CLAUDE.md`）——在 `wt-<端>/<端目录>/` 就自动是该端 scope agent，在主仓就是 coordination。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
 >
 > **错座位护栏**：端内活（端内 spec / 端代码）归 scope agent、在对应端 worktree 产出；coordination（主仓）只产**跨端 req doc**。**救场**——spec 已误产在主仓：别"释放分支"，按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 在端 worktree 从 origin/master 另切实施分支`。
 
@@ -26,7 +26,7 @@
 
 1. **起需求**：跨端 → coord 起 req doc；单端上下文明确 → 该 scope agent 自起（不必经 coord 中转）。req doc 写"做什么 + 怎么算对 + 主流程 + 形态 + 跨端换什么数据"，**不写实施层**（见 `multiend-contracts.md`）。
 2. **取活**：scope label 有 open issue 即"待干"。
-3. **细化**：scope agent invoke brainstorming 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce（不再单独整体批）。
+3. **细化**：scope agent 用 `brainstorming` skill 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce（不再单独整体批）。
 4. **开发**：切 `<type>/issue-N-slug` 分支（分支名自决）；实施 + 进展 / 变更写 issue 评论；push + PR（`Closes #N`）；**过新眼睛 review**（STANDARD §1.3）再示意 merge。
 5. **联调**：owner 跑；单端 bug → 该 agent；跨端 mismatch → 评论拍板改哪端。
 6. **收口**：别把"做完了"手抄进多个 doc（单一真相源 · STANDARD §1.6）。**owner 说"收工"= 推收口 doc 远端的明确指令（文档 main / 代码 PR）**。

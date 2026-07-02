@@ -20,7 +20,7 @@
 
 ---
 
-<!-- /sop-init 同时生成的 0001 样例(让 owner 一看就懂格式): -->
+<!-- $sop-init 同时生成的 0001 样例(让 owner 一看就懂格式): -->
 <!--
 # ADR-0001: 本项目直推 master,不开分支
 - 日期:{{today}}
@@ -28,10 +28,10 @@
 ## 背景
 单人项目,开 PR/分支是过度治理,吃迭代速度。
 ## 候选
-- A 直推 master + /commit-msg 收口
+- A 直推 master + 按 `issue-pr-workflow.md` 写收口说明
 - B feature 分支 + PR
 ## 决策
 A。右尺寸,符合 STANDARD「宁可不足不要过度」。
 ## 影响
-省流程;代价是无 PR 评审,故 code review 改为本地必跑(见 CLAUDE.md 约束)。
+省流程;代价是无 PR 评审,故 code review 改为本地必跑(见 agent 指令文件约束)。
 -->
