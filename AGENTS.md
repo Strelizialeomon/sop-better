@@ -8,3 +8,4 @@
 - **回灌纪律**:STANDARD / master 长出新护栏后,对活着的 lab 项目(taoxi-geo / geo-reverse / media-ops)跑 audit 回灌,别等旧规则再咬(PLAYBOOK exp-007 续)。
 - **不重抄**:README / SKILL / 模板引用 STANDARD 一律指针、不复述正文(重抄必漂移 · §1.6)。
 - **改 SOP 先用 audit 镜头审自己的提案**:净增行数设上限 + 反向验收(exp-005);减法/搬迁后逐条核安全护栏没丢(exp-006)。
+- **提交信息必须走 `$commit-msg`**:凡要 commit,先用 `$commit-msg` skill 读当前 diff 生成/校验 commit message;不许直接手写 `git commit -m ...` 绕过。若 skill 无法调用,先明说原因再提交。

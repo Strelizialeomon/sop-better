@@ -25,11 +25,12 @@
 ## PR 生命周期(agent 操作)
 
 1. **分支**:`feat/issue-N-<slug>`(一需求一分支)。
-2. **提 PR**:正文 `Refs #N`(收口用 `Closes #N`)+ 改了什么 + 验收怎么过 + 链接 issue/doc。
-3. **审 + 合(按风险 · 撒手档)**:
+2. **提交信息**:commit 前必须用 `$commit-msg` skill 读当前 diff 生成/校验 commit message;不许直接手写 `git commit -m ...` 绕过。若 skill 无法调用,先明说原因再提交。
+3. **提 PR**:正文 `Refs #N`(收口用 `Closes #N`)+ 改了什么 + 验收怎么过 + 链接 issue/doc。
+4. **审 + 合(按风险 · 撒手档)**:
    - **低风险 / 可逆**(纯函数、UI、文档、测试)→ agent 自审(过 code review 公约)+ **自动合**,人不等。**文档(req/design doc)内容的审 = brainstorming 收口那一步,不在 PR 再审一遍 → 默认直接推 main;main 受保护才开 PR(仍自动合)。代码不吃这条豁免,照走 PR + 新眼睛 review。**
    - **高风险 / 不可逆**(生产库 schema、付费 API 全量、改远端、删数据)→ **回人审**才合;审是**独立一道**,不是 AI 自己盖章。
-4. **合后**:删分支;`Closes #N` 自动关 issue,否则 agent 手动关 + 自检凭据保真。
+5. **合后**:删分支;`Closes #N` 自动关 issue,否则 agent 手动关 + 自检凭据保真。
 
 ## 与撒手档挂钩
 
