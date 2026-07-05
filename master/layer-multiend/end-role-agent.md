@@ -26,7 +26,7 @@
 
 ## 开发流程(端速查 · 多 agent 并行时完整见 `coordination.md`「6+1 流程骨架」;串行单 agent 照根 `AGENTS.md` + `issue-pr-workflow.md`)
 
-取活 → **Step 3** 用 `brainstorming` skill 出端内 spec(`docs/execution/…`)→ 需求 issue 评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")→ **Step 4** 在自己 worktree 切 `<type>/issue-N-slug`(从 `origin/master`)· 自决实施 · 永不阻塞 · push + PR(`Closes #N`)· 过新眼睛 review 再示意 merge。简单 fix(trivial)免 brainstorming。
+取活 → **Step 3** 用 `brainstorming` skill 出端内 spec(`docs/execution/…`)→ 需求 issue 评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")→ **Step 4** 在自己 worktree 切 `<type>/issue-N-slug`(从 `origin/master`)· 自决实施 · 永不阻塞 · push + PR(默认 `Refs #N`,最终收口才 `Closes #N`)· 过新眼睛 review 再示意 merge。简单 fix(trivial)免 brainstorming。
 
 - **本端实施层词汇**(Step 3 才拍这些 · 别在 req doc 提前锁):{{impl_vocab}}
 - 〔端特有里程碑——如 backend:写完 `…-api-draft.md` 必在 issue 评论 link 供对接,与 spec-ready 是两个里程碑。没有就删本行。〕

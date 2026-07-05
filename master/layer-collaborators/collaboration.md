@@ -9,7 +9,7 @@
 ## 角色（基线 · 双角色小团队）
 
 - **业务 / 需求方**：提需求 → agent 据此开 issue（一句话需求 + 验收 + 链到 req doc）。只管"要什么"，不碰技术架构。**业务会话有开工 / 收工仪式**：开工先扫 `待业务确认` 的 issue 逐条拍；收工把需求落 issue + req doc 走 PR 推远端（不直推受保护分支）。
-- **开发**：认领 issue → 开分支 `<type>/issue-N-slug` → 实现 → PR（`Closes #N`）→ 低风险自审自动合、高风险回人审。
+- **开发**：认领 issue → 开分支 `<type>/issue-N-slug` → 实现 → PR（按 `issue-pr-workflow.md`:默认 `Refs #N`,最终收口才 `Closes #N`）→ 低风险自审自动合、高风险回人审。
 - （单人 + 多 agent 时）主窗口 = 你；scope agent = 派出去的实现者。**派单 prompt 必须自包含**——subagent 看不到主窗口上下文。
 
 ## 业务端起需求（对话 → 收口 → issue + req doc）
