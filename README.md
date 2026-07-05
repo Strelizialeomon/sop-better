@@ -1,83 +1,168 @@
 # sop-better
 
-一个 **Codex-only 技能仓**:为项目**搭、查、改**它的"开发 SOP",并且**按项目该有的重量右尺寸**——既补不足,更砍过度。
+`sop-better` 是一个 **Codex-only 开发 SOP 工具仓**。
 
-名字直说:make SOP better,一个**不断迭代**的开发 SOP 工具。形态照搬作者自己的 `google-design-skill`(`init / criticize / format`),换领域。
+它产出两个 skill:
 
-> 当前权威设计见 `STANDARD.md` + `master/`。早期设计记录见 [`docs/superpowers/specs/2026-06-05-sop-better-design.md`](docs/superpowers/specs/2026-06-05-sop-better-design.md);档位模型简化(收成"一条流程+结构按现实长")见 [`2026-06-23-collapse-tiers-to-one-flow-design.md`](docs/superpowers/specs/2026-06-23-collapse-tiers-to-one-flow-design.md)(exp-012)。
+- `$sop-init`: 给项目生成右尺寸的开发 SOP 骨架。
+- `$sop-audit`: 给现有项目体检,查 SOP 太重、太轻、漂移或凭据失真。
+
+这个仓的目标不是把规则越写越多,而是把 agent 的工作压成一条能执行的 flow:先查证,再分流,该调研就调研,做完要验证和收口。**给 agent 一条路,不是让它背题。**
+
+> 唯一真相源是 [`STANDARD.md`](STANDARD.md)。README 只做入口说明,不承载具体规则。
 
 ---
 
-## 两个 Skills(产品)
+## 当前主线
 
-| Skill | 干啥 |
+### 1. 两层模型
+
+一份 SOP = **不变公约** + **按项目现实生成的结构**。
+
+- 不变公约:人机分工、反驳、查证、issue/PR、review、高风险闸等。
+- 可变结构:这个项目有几个端、几个人、风险多高,就生成多少结构。
+
+换句话说:流程是同一条,目录和协作文件按现实长。
+
+### 2. 一条运行 flow
+
+agent 干活默认走这条闭环:
+
+```text
+查证 -> 分流 -> 调研 -> 执行验证 -> 收口
+```
+
+- **查证**:本地事实查代码 / 配置 / 日志 / issue / PR;外部事实查可靠来源。查不到就说不知道。
+- **分流**:低风险局部事直接做;缺目标 / 范围 / 验收、跨边界或高风险就确认。
+- **调研**:给方案 / 设计 / 估算 / 选型前,先给调研结论、主流做法、建议方案、信源和风险。
+- **执行验证**:改完主动跑能跑的验证;不能跑就明说。
+- **收口**:结束时交代状态、验证、风险和推荐下一步。
+
+### 3. 结构按现实长
+
+旧版曾用档位枚举。现在已经收成更简单的触发规则:
+
+| 现实触发 | 才生成什么 |
 |---|---|
-| **$sop-init** | 给项目搭右尺寸 SOP 骨架:一条流程 + 按"几端/几人"长出的结构(结构文件 + 角色划分 + `AGENTS.md`「Agent 工作约束」块) |
-| **$sop-audit** | 给现有项目"体检",查"不合理"(**①过度治理 头号 ②结构错配 ③沟通闭环缺环/口号化/过度阻塞 ④结构缺失/凭据失真**)→ 出报告;**你说"改"它就接着修 + 开 PR**(默认只报告) |
+| 有第 2 个端 | 契约、按端身份文档 |
+| 多端还要真并行多 agent | worktree 隔离、多 agent 协调骨架 |
+| 有第 2 个人 | 业务↔开发协作 handoff |
 
-**当前进度**:`$sop-init`、`$sop-audit` 都已建好,并软链进 `~/.codex/skills/`。
-> 没有单独的 `$sop-improve`:audit 你点头就改,"改"的活它包了——不为还没出现的需求养第三个 skill(右尺寸)。
+没有就不建。右尺寸的意思不是“少”,而是“该有的有,不该有的别预建”。
+
+### 4. 协作用三件套
+
+业务↔开发、开发↔开发都按这三件套协作:
+
+| 凭据 | 职责 |
+|---|---|
+| doc | 正文 / 真相源:需求、设计、契约、长期决策 |
+| issue | 索引 + 状态 + 消息总线:谁在做、等谁、变化去哪看 |
+| PR | 交付凭据 + 验收 / 收口动作:改了什么、怎么验、是否关闭 issue |
+
+口诀是: **doc 写正文,issue 跑状态和消息,PR 写交付验证**。
+
+issue 评论也按凭据价值分层:影响后续判断的评论要写厚,只贴链接 / tag / 轻进度才短评。细则在 [`master/base/docs/project/issue-pr-workflow.md`](master/base/docs/project/issue-pr-workflow.md)。
 
 ---
 
-## 它为什么这么设计(一句话诊断)
+## 两个 Skill
 
-作者用 AI 没爽感、没飞跃——因为只交了**打字**,没交**认知**;而现有那套高水位 SOP **全是控制机制**,**仪式吃掉了 AI 给的杠杆**。所以这工具的灵魂是两件事:
-
-1. **把 SOP 右尺寸化**——对一个人指挥 AI,最大的"不合理"通常是**过度治理**,不是治理不足。
-2. **把"人撒手、AI 接管"写进流程**——人管"要什么",AI 管"怎么做"。
-
----
-
-## 核心模型:一条流程 + 结构按现实长
-
-一份 SOP 里,**流程 + 人机分工恒定**(所有项目同一条),只有**结构**按项目实际长:
-
-| 维度 | 管什么 | 变不变 |
+| Skill | 用途 | 默认行为 |
 |---|---|---|
-| **流程** | 用哪些技能、跳哪些(brainstorm✓ / writing-plans✗ / code-review✓)+ issue+PR + 风险闸 | **恒定**(人人同一条) |
-| **人机分工** | 人 = 要什么(目标/约束/验收)+ 否决权;AI = 怎么做(架构/设计/拆解/实现) | **恒定** |
-| **结构** | 建哪些 docs / 角色划分 | **按现实长**(见下) |
+| [`$sop-init`](skills/sop-init/SKILL.md) | 给新项目或已长大的项目生成 / 补齐 SOP | 按端数、协作人数、风险右尺寸生成 |
+| [`$sop-audit`](skills/sop-audit/SKILL.md) | 审现有 SOP 是否不合理 | 默认只出报告;owner 明确说改 / go 才动文件 |
 
-**结构按两条正交触发长出来**(权威定义见 `STANDARD.md` §3,此处不重抄):**有第 2 个端 → 加契约/按端文档/worktree;有第 2 个人 → 加协作 doc;没有就别建**。旧的"两轴 9 宫格档位"(S0–S2 × C0–C2 / T0/T1/T2)已被 exp-012 收掉——它只是把这条生成规则预先枚举成了组合。
+当前两个 skill 都已软链进 `~/.codex/skills/`。本仓工作树就是线上版本,改完即生效。
 
-**贯穿线**:结构该多重、撒手梯子(L0–L4)该多高,都由 `风险 × 验证成本` 决定。
-
-**当前运行心智**:agent 干活按一条闭环走——**查证 → 分流 → 调研 → 执行验证 → 收口**。先查本地 / 外部事实,不知道就明说;按动作后果决定直接做还是确认;给方案前交调研包;实施后主动验证;结束时交代状态、验证、风险和下一步。
-
-**当前协作心智**:业务↔开发、开发↔开发靠三件套走——**doc 写正文 / issue 做索引和消息总线 / PR 做交付验证和收口**。SOP 给 agent 的是一条交接 flow,不是一堆要背的协议名。
+没有单独的 `$sop-improve`:audit 找到问题后,owner 点头就改。不为还没出现的需求养第三个 skill。
 
 ---
 
-## 四条铁律
+## 设计原则
 
-1. **audit 头号查"太重"**,不只是查"缺"。
-2. **重瞄 brainstorming**:只梳"要什么",架构由 AI 提案、人评审不作者。
-3. **砍 writing-plans 要补偿**:plan 越轻 → spec 验收越硬 + code review 越严(撒手后唯一安全网)。
-4. **不从"永远 L0"翻成"永远盲盒"**:人不写架构,但看得见、能毙、高风险能跳进去。
+### 头号敌人:过度治理
+
+对一个人指挥 agent 来说,最常见的问题不是“规则不够”,而是“规则吃掉杠杆”。
+
+所以 `$sop-audit` 头号查:
+
+- 人是不是被迫跑太多仪式。
+- 单人项目是不是装了多人协作机器。
+- 单端项目是不是预建了多端契约。
+- SOP 是不是越写越像笼子。
+
+但 issue / PR 这类 agent 自动维护的凭据不算过度治理。成本在 AI,价值在人和后续 agent。
+
+### 撒手不是盲盒
+
+本仓默认反对两种极端:
+
+- 人永远 L0:什么都自己写,agent 只打字。
+- agent 永远盲盒:人完全看不见判断和风险。
+
+正确状态是:人定“要什么”,agent 负责“怎么做”;高风险、人类决策、业务边界仍然回到 owner。
+
+### 凭据必须保真
+
+issue / PR / doc / ADR 是 agent 的共享内存。
+
+共享内存有用的前提是它是真的:
+
+- issue 状态要反映现实。
+- PR 要写验证和风险。
+- doc 链接要能在远端打开。
+- 决策 / 实测 / 收口 / 状态校正不能只写一句短评糊过去。
+
+会说谎的凭据比没有凭据更危险。
 
 ---
 
-## 怎么造它(狗粮法 · 自举)
+## 自举方式
 
-sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人梳意图、AI 提架构)+ 跳 writing-plans + 留 code review。每造一块就是一次"撒手实验",记进 `experiments/`,把"什么能安全交给 AI"的护栏沉淀进 `PLAYBOOK.md`。
+sop-better 用自己的方法造自己:
 
-- `experiments/` —— exp-001(设计本项目,这套工作流的活样板)起的全部撒手实验日志;结晶沉淀在 `PLAYBOOK.md`。
+1. 真实项目里踩坑或验证。
+2. 记一条 [`experiments/`](experiments/)。
+3. 把可复用教训沉到 [`PLAYBOOK.md`](PLAYBOOK.md)。
+4. 真成模式,才回灌到 [`STANDARD.md`](STANDARD.md) / [`master/`](master/) / skills。
 
-撒手梯子、实验闭环、PLAYBOOK 护栏的完整说明,见 `PLAYBOOK.md` 与上面的 spec。
+近期主线可以从这些实验看:
+
+- exp-024:诚实无知闸。
+- exp-025:沟通规则瘦身成“查证 -> 分流 -> 调研 -> 执行验证 -> 收口”。
+- exp-027:doc / issue / PR 三件套协作主线。
+- exp-028:issue 评论凭据分层。
+
+早期设计记录在 [`docs/superpowers/specs/`](docs/superpowers/specs/)。
 
 ---
 
 ## 仓库结构
 
-```
+```text
 sop-better/
-├── README.md
-├── AGENTS.md                    # 仓库家规(Codex canonical)
-├── STANDARD.md                  # 一条流程+结构按现实长的权威标准(audit 对照尺)
-├── skills/{sop-init,sop-audit}/ # Codex skills(软链进 ~/.codex/skills)
-├── master/                      # 母本:按触发分层(base + layer-collaborators/multiend/parallel-agents)的结构/约束/工作流
-├── docs/superpowers/specs/      # 设计 spec
-├── PLAYBOOK.md                  # 狗粮日志:撒手护栏
-└── experiments/                 # 狗粮日志:exp-NNN
+├── README.md                    # 项目入口说明
+├── AGENTS.md                    # 本仓 Codex 工作约定
+├── STANDARD.md                  # 唯一真相源:生成与审计的权威尺
+├── skills/
+│   ├── sop-init/                # 生成右尺寸 SOP
+│   └── sop-audit/               # 审计 / 优化现有 SOP
+├── master/                      # 母本:base + 按触发追加的 layer
+├── docs/superpowers/specs/      # 历史设计 spec
+├── experiments/                 # 每次 dogfood / 回灌实验
+└── PLAYBOOK.md                  # 从实验沉淀出的护栏
 ```
+
+---
+
+## 读文件顺序
+
+如果你是第一次看这个仓:
+
+1. 先读本 README,知道项目在干什么。
+2. 再读 [`STANDARD.md`](STANDARD.md),看当前权威模型。
+3. 要看生成产物,读 [`master/base/`](master/base/) 和对应 layer。
+4. 要理解规则怎么长出来,读 [`PLAYBOOK.md`](PLAYBOOK.md) 和最近的 `experiments/`。
+
+改规则时反过来:先查 `STANDARD.md`,再动 `master/` 或 skills,最后补 experiment / PLAYBOOK。
