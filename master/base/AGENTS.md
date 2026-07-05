@@ -1,4 +1,4 @@
-<!-- master/base/AGENTS.md —— $sop-init 把这份(填 {{槽}} 后)落成项目根 AGENTS.md。Claude Code 兼容时额外落 CLAUDE.md 桥接;Claude Code-only 项目才把同内容落成 CLAUDE.md。所有项目都有(三触发不命中也恒有)。
+<!-- master/base/AGENTS.md —— $sop-init 把这份(填 {{槽}} 后)落成项目根 AGENTS.md。所有项目都有(三触发不命中也恒有)。
      占位符:{{proj}} 项目一句话(别写档位 / "单人"窄化词) · {{house_style}}(参考仓本体 / 无则"无参照") · {{default_altitude}} 默认撒手档 · {{risk_gate_items}}(本项目高风险动作清单,逐行) · {{prod_infra_note}}(读生产 / VPN / 远端协同 等风险旁注,可空 → 整句删)
      权威公约在 STANDARD §1;本骨架只是它的具体渲染。沟通约束块逐字取自原 agent-constraints.md(媒体ops 那版渲染落后、不取)。-->
 

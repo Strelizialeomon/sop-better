@@ -4,7 +4,7 @@
 
 > 状态:已验、持续迭代——exp-002 起在真实项目(geo-reverse / taoxi-geo / media-ops)跑通(证据见 `PLAYBOOK.md`)。决策 **(A) 两层模型(公约+实例化)** 与 **(B) "客观反驳"列为撒手安全条件** 均已确认并承重(§0 / §1.4)。
 
-> 术语:下文 **agent 指令文件** 默认指 Codex 会自动读取的 `AGENTS.md`。Claude Code 兼容项目只额外落一个薄 `CLAUDE.md` 桥接到 `AGENTS.md`,避免两份全文漂移。
+> 术语:下文 **agent 指令文件** 固定指 Codex 会自动读取的 `AGENTS.md`。本工具不再生成或维护 `CLAUDE.md`。
 
 ---
 
@@ -75,7 +75,8 @@ $sop-init = 固定公约(照搬) + 读本项目的 [端/协作人/风险] 参数
 | `collaborators[]` | 单人 / 人+多 agent / 多人 | **≥2 个不同的人 → 触发协作 doc**(谁干啥不撞车);单人不建。**issue+PR 不看这条**——归恒定流程(见 §3) |
 | `risk` | 可逆低风险 / 线上不可逆 | 默认撒手档、review 严格度;高风险闸恒定 |
 | `house_style[]` | Go 后端 → go_dispatch_backend 仓**本体**(不指技能/记忆快照,快照会过时)/ 无 | 立栈直接对齐(定义层);无参照 → 触发立栈确认闸(§1.9) |
-| `runtime` | Codex / Claude Code / both | 决定 agent 指令文件落点:Codex=`AGENTS.md`;Claude Code=`CLAUDE.md`;both=`AGENTS.md` 全文 + `CLAUDE.md` 桥接。默认 Codex |
+
+> agent 运行时不再是参数:`$sop-init` 只生成 Codex 的 `AGENTS.md`;已有 `CLAUDE.md` 视为旧残留,由 `$sop-audit` 报告迁移 / 删除。
 
 ---
 
@@ -113,7 +114,7 @@ $sop-init = 固定公约(照搬) + 读本项目的 [端/协作人/风险] 参数
 
 ## 4. $sop-init 生成的「Agent 工作约束」块
 
-权威版本在 **`master/base/AGENTS.md` 母本**(生成时默认落为 `AGENTS.md`;Claude Code 兼容时额外落 `CLAUDE.md` 桥接;工作约束块 + 沟通约束块;多端追加在 `master/layer-multiend/multiend-constraints-block.md`,按"有没有第 2 个端"选用)。此处不放示例正文——快照会过期(§1.6 单一真相源;本节旧示例就曾落后模板一代)。
+权威版本在 **`master/base/AGENTS.md` 母本**(生成时落为 `AGENTS.md`;工作约束块 + 沟通约束块;多端追加在 `master/layer-multiend/multiend-constraints-block.md`,按"有没有第 2 个端"选用)。此处不放示例正文——快照会过期(§1.6 单一真相源;本节旧示例就曾落后模板一代)。
 
 ---
 

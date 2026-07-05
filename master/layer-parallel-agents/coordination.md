@@ -8,7 +8,7 @@
 
 ## 角色（多端）
 
-> 每端的**身份 + 边界**写在各端 `<端目录>/<agent 指令文件>`（端级文档 · `$sop-init` 按 `ends[]` 与 runtime 生成 · 对应运行时自动加载）。此处只给跨端协作骨架，**不复述各端边界**（单一真相源 · STANDARD §1.6）。
+> 每端的**身份 + 边界**写在各端 `<端目录>/AGENTS.md`（端级文档 · `$sop-init` 按 `ends[]` 生成 · Codex 自动加载）。此处只给跨端协作骨架，**不复述各端边界**（单一真相源 · STANDARD §1.6）。
 
 | 角色 | scope | 干啥 |
 |---|---|---|
@@ -18,7 +18,7 @@
 
 **scope agent ≠ 执行 PM 派的细 task；= 高权限程序员，收到方向后自决实施。**
 
-> **身份靠"进哪个端的目录"自动定**：运行时自动加载 cwd 最近的 agent 指令文件（Codex=`AGENTS.md`;Claude Code=`CLAUDE.md`）——在 `wt-<端>/<端目录>/` 就自动是该端 scope agent，在主仓就是 coordination。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
+> **身份靠"进哪个端的目录"自动定**：Codex 自动加载 cwd 最近的 `AGENTS.md`——在 `wt-<端>/<端目录>/` 就自动是该端 scope agent，在主仓就是 coordination。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
 >
 > **错座位护栏**：端内活（端内 spec / 端代码）归 scope agent、在对应端 worktree 产出；coordination（主仓）只产**跨端 req doc**。**救场**——spec 已误产在主仓：别"释放分支"，按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 在端 worktree 从 origin/master 另切实施分支`。
 

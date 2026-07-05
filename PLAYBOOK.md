@@ -104,7 +104,7 @@
 ### ⚠️ 多端(S2)缺"端角色文档"→ 各端不知自己是谁 → 交接乱套;蒸馏母本时把这层载重结构漏了
 - go_dispatch 反例:一条 backend 端内 spec 在主仓(coordination 座位)起头,agent 不知自己该是哪个端 / 该在哪干,凭空造出"释放分支 + 跨端交接"一通乱,被 owner 纠正 4 次。根因:**多端身份没有"自动加载"的落点**——sop-better 只生成项目级 agent 指令文件 + collaboration 角色表(要 agent 主动读才生效),缺**每端一份自动加载的 `<端>/<agent 指令文件>`**。
 - 母本(taoxi-geo + go_dispatch)各自独立长出"root + 每端 agent 指令文件"三层身份栈;sop-better 蒸馏时只搬了 root〔A〕+ collaboration〔B〕,**漏了 Layer C**——而 SKILL.md §S2 还留着"按 ends[] 的端角色"字样却**无模板兜底**(→ 要么静默跳过,要么违反"不许凭记忆另写"的禁止条)。
-- **护栏**:①新 `master/layer-multiend/end-role-agent.md`(端级身份:身份 + 本端 local〔scope/技术栈/常读/实施层词汇〕+ 指向根 agent 指令文件)· `$sop-init` 在多端时按 `ends[]` 每端生成一份;②靠运行时自动加载 cwd 最近的 agent 指令文件 = 进端即定身份(**Codex 必须叫 `AGENTS.md`,Claude Code 兼容才叫 `CLAUDE.md`**,换名即废);③纪律:**端文件指针不复述通用红线**(否则成漂移源 · §1.8)——这点 go_dispatch 已比 taoxi-geo 优(把通用红线收成一行指针),照它;④"错座位护栏"并入 collaboration.md 多端追加段(端内活归 scope agent · 已产在主仓则走 req-doc 交接,别"释放分支")· ⑤身份分层**不写进 always-loaded 内核**(机制靠自动加载自跑 · 守住瘦内核 · better-lighter 自审时把首版多加的那行砍回)。
+- **护栏**:①新 `master/layer-multiend/end-role-agent.md`(端级身份:身份 + 本端 local〔scope/技术栈/常读/实施层词汇〕+ 指向根 agent 指令文件)· `$sop-init` 在多端时按 `ends[]` 每端生成一份;②靠 Codex 自动加载 cwd 最近的 `AGENTS.md` = 进端即定身份,换名即废;③纪律:**端文件指针不复述通用红线**(否则成漂移源 · §1.8)——这点 go_dispatch 已比 taoxi-geo 优(把通用红线收成一行指针),照它;④"错座位护栏"并入 collaboration.md 多端追加段(端内活归 scope agent · 已产在主仓则走 req-doc 交接,别"释放分支")· ⑤身份分层**不写进 always-loaded 内核**(机制靠自动加载自跑 · 守住瘦内核 · better-lighter 自审时把首版多加的那行砍回);⑥ exp-019 后本工具 Codex-only,旧 `CLAUDE.md` 入口一律视为删除残留。
 - **边界**:仅 S2(单端没有"端")· 门槛同 worktree(真并行多 agent 才值)。
 - **元教训**:**蒸馏会丢"载重结构",不只是修剪肥肉**——两个母本独立收敛到的结构,瘦版漏掉就是信号、不是巧合;改 SKILL 时"留了名却没留模板"= 半截缺口,比全无更坑。
 - **证据**:go_dispatch 反例(2026-06-08 会话)
@@ -207,5 +207,10 @@
 - **证据**:exp-016(dogfood 3 炮:合成坏/好 spec + media-ops 真 spec `2026-06-22-存储拓扑`)
 
 ---
+
+### ⚠️ 去兼容层要砍全链路:入口、生成器、审计、母本槽位一起改;只改门面会继续生成旧世界
+- **缺口**:exp-017 把项目从 Claude-only 改到 Codex-compatible,留下了 `runtime=Codex/Claude/both`、根 `CLAUDE.md` 桥接、`~/.claude/skills` 说明和 `{{agent_instruction_file}}` 槽。用户后来明确要 Codex-only,如果只改 README / AGENTS 文案,`$sop-init` 仍会生成桥接,`$sop-audit` 仍会把桥接当正常,旧兼容层会继续自我复制。
+- **护栏**:去兼容层时按四处扫:①入口文件(根 `CLAUDE.md` / README / AGENTS)②生成规则(`STANDARD` + `$sop-init`)③审计规则(`$sop-audit` 把旧入口报 `stale`)④母本槽位(`master/` 不再保留运行时文件名槽)。历史实验可保留事实,活文档必须 Codex-only。
+- **证据**:exp-019
 
 *(下一条等下一次实验。)*

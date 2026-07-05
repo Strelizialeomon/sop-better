@@ -1,10 +1,10 @@
 # sop-better
 
-一个 **Codex 技能仓**(Claude Code 只保留桥接兼容):为项目**搭、查、改**它的"开发 SOP",并且**按项目该有的重量右尺寸**——既补不足,更砍过度。
+一个 **Codex-only 技能仓**:为项目**搭、查、改**它的"开发 SOP",并且**按项目该有的重量右尺寸**——既补不足,更砍过度。
 
 名字直说:make SOP better,一个**不断迭代**的开发 SOP 工具。形态照搬作者自己的 `google-design-skill`(`init / criticize / format`),换领域。
 
-> 完整设计见 [`docs/superpowers/specs/2026-06-05-sop-better-design.md`](docs/superpowers/specs/2026-06-05-sop-better-design.md);档位模型简化(收成"一条流程+结构按现实长")见 [`2026-06-23-collapse-tiers-to-one-flow-design.md`](docs/superpowers/specs/2026-06-23-collapse-tiers-to-one-flow-design.md)(exp-012)。
+> 当前权威设计见 `STANDARD.md` + `master/`。早期设计记录见 [`docs/superpowers/specs/2026-06-05-sop-better-design.md`](docs/superpowers/specs/2026-06-05-sop-better-design.md);档位模型简化(收成"一条流程+结构按现实长")见 [`2026-06-23-collapse-tiers-to-one-flow-design.md`](docs/superpowers/specs/2026-06-23-collapse-tiers-to-one-flow-design.md)(exp-012)。
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Skill | 干啥 |
 |---|---|
-| **$sop-init** | 给项目搭右尺寸 SOP 骨架:一条流程 + 按"几端/几人"长出的结构(结构文件 + 角色划分 + `AGENTS.md`「Agent 工作约束」块；Claude Code 项目额外落 `CLAUDE.md` 桥接) |
+| **$sop-init** | 给项目搭右尺寸 SOP 骨架:一条流程 + 按"几端/几人"长出的结构(结构文件 + 角色划分 + `AGENTS.md`「Agent 工作约束」块) |
 | **$sop-audit** | 给现有项目"体检",查"不合理"(**①过度治理 头号 ②结构错配 ③反驳缺失 ④结构缺失/凭据失真**)→ 出报告;**你说"改"它就接着修 + 开 PR**(默认只报告) |
 
-**当前进度**:`$sop-init`、`$sop-audit` 都已建好,并软链进 `~/.codex/skills/` + `~/.claude/skills/`。
+**当前进度**:`$sop-init`、`$sop-audit` 都已建好,并软链进 `~/.codex/skills/`。
 > 没有单独的 `$sop-improve`:audit 你点头就改,"改"的活它包了——不为还没出现的需求养第三个 skill(右尺寸)。
 
 ---
@@ -70,9 +70,8 @@ sop-better **用它自己鼓吹的工作流来造**:重瞄的 brainstorming(人�
 sop-better/
 ├── README.md
 ├── AGENTS.md                    # 仓库家规(Codex canonical)
-├── CLAUDE.md                    # Claude Code 薄桥接:指向 AGENTS.md
 ├── STANDARD.md                  # 一条流程+结构按现实长的权威标准(audit 对照尺)
-├── skills/{sop-init,sop-audit}/ # Codex skills(软链进 ~/.codex/skills;Claude Code 桥接进 ~/.claude/skills)
+├── skills/{sop-init,sop-audit}/ # Codex skills(软链进 ~/.codex/skills)
 ├── master/                      # 母本:按触发分层(base + layer-collaborators/multiend/parallel-agents)的结构/约束/工作流
 ├── docs/superpowers/specs/      # 设计 spec
 ├── PLAYBOOK.md                  # 狗粮日志:撒手护栏

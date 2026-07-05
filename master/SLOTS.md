@@ -8,9 +8,9 @@
 
 | 层 | 触发 | 落到项目哪 |
 |---|---|---|
-| `base/` | 总是 | agent 指令文件（Claude Code=`CLAUDE.md`;Codex=`AGENTS.md`;both=`AGENTS.md` 全文 + `CLAUDE.md` 桥接）+ `docs/decisions/`（adr-template + 你补 0001/升级触发 ADR）+ `docs/project/issue-pr-workflow.md` |
+| `base/` | 总是 | Codex agent 指令文件 `AGENTS.md` + `docs/decisions/`（adr-template + 你补 0001/升级触发 ADR）+ `docs/project/issue-pr-workflow.md` |
 | `layer-collaborators/` | ≥2 个人 | `docs/project/collaboration.md`（双角色 handoff 段） |
-| `layer-multiend/` | ≥2 个端 | `docs/contracts/`（README + multiend-contracts）+ 每端 `<端>/<agent 指令文件>`（end-role）+ 把 `multiend-constraints-block` 追加进根 agent 指令文件 §2 |
+| `layer-multiend/` | ≥2 个端 | `docs/contracts/`（README + multiend-contracts）+ 每端 `<端>/AGENTS.md`（end-role）+ 把 `multiend-constraints-block` 填进根 `AGENTS.md` 的 `{{multiend_constraints}}` 槽 |
 | `layer-parallel-agents/` | 真并行多 agent（= 上 worktree · **前提：已多端**；单端不单独触发） | `docs/project/worktree-isolation.md` + 把 `coordination.md` 追加进 `docs/project/collaboration.md` |
 
 > 三触发**正交**：端的事归端、人的事归人、并行的事归并行（口诀见 STANDARD §3）。`$sop-init` 必须按触发分流，**别按目录相邻**当门（否则复发 exp-012 挂错闸）。
@@ -25,7 +25,6 @@
 | `{{risk_gate_items}}` | 本项目高风险动作清单（逐行，如 写生产库 / 付费 API 全量 / 调 OA） | 可空 → 只留恒定的保护分支那行 |
 | `{{prod_infra_note}}` | 读生产 / VPN / 远端协同 等风险旁注（串进 §⛳"为什么排第一"） | 可空 → 整句删，不留悬挂 |
 | `{{multiend_constraints}}` | 多端时填 `layer-multiend/multiend-constraints-block` 的 3 条（端划分 / 独立 brainstorm / 状态标记） | 单端 → **整行删**（不在 doc 中段动刀，守 freshness 不复埋的不变量） |
-| `{{agent_instruction_file}}` | 运行时指令文件名:Codex=`AGENTS.md`;Claude Code=`CLAUDE.md`;both 的全文文件=`AGENTS.md` | 用于端级模板和协作文档;both 另生成薄 `CLAUDE.md` 桥接 |
 
 > `role_identity` **不是 find/replace 槽**：base 恒写 §1「起手先确认业务还是开发」；2 人项目的 gh 身份自动判定是 `layer-collaborators` 整段 include、不是填 base 的槽。
 
