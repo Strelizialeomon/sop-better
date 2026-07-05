@@ -37,7 +37,13 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      ```json
      [{"severity":"P1","kind":"over|mismatch|missing|stale|nopushback","target":"file/dir","evidence":"...","suggest":"..."}]
      ```
-6. **收尾**:一句"**最该先动的 1 条**"。
+6. **收尾卡(任务收口卡在 audit 报告里的落地)**:报告末尾必须用轻量收口卡,别只写旧式一句话推荐。
+   - **状态**:本次 audit 是「无阻断 / 可直接改 / 需 owner 先决策 / 需补现场复核」哪一种。
+   - **验证**:列已查的关键凭据(如 STANDARD / 母本 / AGENTS / workflow / GitHub 实况);没查到或查不到的明说。
+   - **风险 / 未验**:哪些 finding 依赖现场数据、权限、时间点或用户选择;别把未验当事实。
+   - **推荐下一步**:给 1 条最建议动作。
+   - **可选动作**:只有真有分叉才给 2-3 个选项并标推荐;没有分叉就不造选择题。
+   - **高危边界**:推荐 push / 批量改 label / deploy / 删除 / 改 git 历史 等不等于授权,仍等 owner 明确确认具体动作。
 7. **若 owner 看完说"改 / go"** → 按 `master/base/docs/project/issue-pr-workflow.md` 落地:开 issue 记 findings → 分支 → 改 → PR(`Refs`)→ 按风险审合(低风险自动合 / 高风险回 owner)。**没说"改"就停在第 6 步。**
 
 ## 禁止
