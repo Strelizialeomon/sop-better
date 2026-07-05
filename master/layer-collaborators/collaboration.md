@@ -6,9 +6,18 @@
 
 > 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 agent 指令文件公约里恒定；issue+PR 归恒定流程）。**多端真并行多 agent 的协调骨架在 `coordination.md`（$sop-init 追加在本段之后）。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
 
+## 协作主线(doc / issue / PR)
+
+> 本文件不替代 `issue-pr-workflow.md`;这里只说人和 agent 怎么沿三件套交接。
+
+- **业务 → 开发**:业务方只定"要什么" → req doc 写正文 → issue 只做索引 / 状态 / 验收入口 → 开发接 issue 前先验 doc 链接。缺 req doc / 链接打不开 / 形态没钉死 = 坏交接,反弹业务,不自补。
+- **开发 → 业务**:开发发现范围 / 形态 / 验收要变,或需要业务裁决 → issue 评论写清"要拍什么 + 影响 + 推荐 / 选项",加 `待业务确认` / `待澄清`;不要把业务问题埋进 PR。
+- **开发 → 开发**:方案变化、字段 / 契约调整、端间影响 → 写 issue 评论当消息总线;PR 评论只处理这次 diff。接手 agent 先看 issue 评论和 doc,再看 PR。
+- **PR 收口**:中间交付 / doc PR 用 `Refs`;只有验收 / 关闭条件满足的最终交付才 `Closes`。
+
 ## 角色（基线 · 双角色小团队）
 
-- **业务 / 需求方**：提需求 → agent 据此开 issue（一句话需求 + 验收 + 链到 req doc）。只管"要什么"，不碰技术架构。**业务会话有开工 / 收工仪式**：开工先扫 `待业务确认` 的 issue 逐条拍；收工把需求落 issue + req doc 走 PR 推远端（不直推受保护分支）。
+- **业务 / 需求方**：提需求 → agent 据此开 issue（一句话需求 + 验收 + 链到 req doc）。只管"要什么"，不碰技术架构。**业务会话有开工 / 收工仪式**：开工先扫 `待业务确认` 的 issue 逐条拍；收工把需求落 issue + req doc 按 `issue-pr-workflow.md` 推远端（文档 main,受保护才 PR;代码走 PR）。
 - **开发**：认领 issue → 开分支 `<type>/issue-N-slug` → 实现 → PR（按 `issue-pr-workflow.md`:默认 `Refs #N`,最终收口才 `Closes #N`）→ 低风险自审自动合、高风险回人审。
 - （单人 + 多 agent 时）主窗口 = 你；scope agent = 派出去的实现者。**派单 prompt 必须自包含**——subagent 看不到主窗口上下文。
 
