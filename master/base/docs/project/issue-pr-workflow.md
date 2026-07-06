@@ -24,11 +24,24 @@
 
 ## Issue 生命周期(agent 操作)
 
-1. **开**:一个需求/缺陷一个 issue。**先把 doc commit+push 到远端、再开 issue**;正文 = 一句话需求 + 验收标准 + **指向 doc 的稳定链接(commit permalink / 已合 PR,别指会悬空的分支相对路径)**。**issue 薄、doc 厚**:细节进 doc,issue 只留索引 + 状态 + 验收。**"提 issue"和"推 doc"不许分两步漂着——doc 不在远端就别开 issue。**
-2. **标**:阶段 label(互斥,一个 issue 同时只一个:评估中 / 开发中 / 已完成)+ **阻塞 flag**(叠加,如 待澄清 / `待业务确认`;`待业务确认` = 等业务方 / owner 拍板,开工要 surface 给人)+ 状态标记 ✅🚧⏸️⬜。**这是基线(media-ops 同款)**。(重协调的多端多 agent 项目若觉 lifecycle label 冗余,可在 `collaboration.md` 约定改用 open/closed + 状态标记 + 评论的更轻策略——非默认、不是档位。)
+1. **开**:一个需求 / 缺陷一个 issue。
+   - 先把 doc commit+push 到远端,再开 issue。
+   - 正文 = 一句话需求 + 验收标准 + 指向 doc 的稳定链接(commit permalink / 已合 PR)。
+   - issue 薄、doc 厚:细节进 doc,issue 只留索引 + 状态 + 验收。
+   - "提 issue"和"推 doc"不许分两步漂着;doc 不在远端就别开 issue。
+2. **标**:
+   - 阶段 label 互斥:评估中 / 开发中 / 已完成。
+   - 阻塞 flag 可叠加:待澄清 / `待业务确认`;`待业务确认` = 等业务方 / owner 拍板,开工要 surface 给人。
+   - 状态标记:✅🚧⏸️⬜。
+   - 重协调的多端多 agent 项目若觉 lifecycle label 冗余,可在 `collaboration.md` 约定改用 open/closed + 状态标记 + 评论的更轻策略;非默认,不是档位。
 3. **跟进**:进度、决策、方案变化随时写进 issue 评论(留痕即凭据);要别的角色/agent 接手就 **tag**。
 4. **关**:验收过 / 关闭条件满足 → 关。被 PR 收口的用 `Closes #N`;非收口 PR 只用 `Refs #N`,issue 保持 open。
-   - **🚧 决策闸 carve-out(裁决 ≠ 收口)**:若 issue 是「裁决只是选了条路、这条路还要等下游 spike/数据验证才算数」的**决策闸**(典型:私信走 web 还是 App,取决于一个 spike 能不能跑通)——**别在裁决时关**。正文必带一行**关闭条件**(什么证据才收口 + 跑不过转哪条路);并给人一句「**只回复决策、别关本 issue**——关闭由开发按关闭条件统一做」;裁决后 label 不进终态、挂到那条 spike 上,闸合上才关。否则裁决一关 = 选路被当收口 = 会说谎的凭据(§1.8)。纯裁决(拍完即定,如选型)不吃这条,照旧"裁决即关"。
+   - **🚧 决策闸 carve-out(裁决 ≠ 收口)**:
+     - 若 issue 是“裁决只是选路,还要等下游 spike / 数据验证才算数”的决策闸,别在裁决时关。
+     - 正文必带关闭条件:什么证据才收口 + 跑不过转哪条路。
+     - 给人一句“只回复决策,别关本 issue;关闭由开发按关闭条件统一做”。
+     - 裁决后 label 不进终态,挂到那条 spike 上;闸合上才关。
+     - 纯裁决(拍完即定,如选型)不吃这条,照旧裁决即关。
 
 ## PR 生命周期(agent 操作)
 
@@ -36,7 +49,11 @@
 2. **提交信息**:commit 前必须用 `$commit-msg` skill 读当前 diff 生成/校验 commit message;不许直接手写 `git commit -m ...` 绕过。若 skill 无法调用,先明说原因再提交。
 3. **提 PR**:正文 `Refs #N`(收口用 `Closes #N`)+ 改了什么 + 验收怎么过 + 链接 issue/doc。
 4. **审 + 合(按风险 · 撒手档)**:
-   - **低风险 / 可逆**(纯函数、UI、文档、测试)→ agent 自审(过 code review 公约)+ **自动合**,人不等。**文档(req/design doc)内容的审 = brainstorming 收口那一步,不在 PR 再审一遍 → 默认直接推 main;main 受保护才开 PR(仍自动合)。代码不吃这条豁免,照走 PR + 新眼睛 review。**
+   - **低风险 / 可逆**(纯函数、UI、普通 req / design 文档、测试)→ agent 自审(过 code review 公约)+ 自动合,人不等。
+     - req / design doc 内容的审 = brainstorming 收口那一步,不在 PR 再审一遍。
+     - 普通 req / design 文档默认直接推 main;main 受保护才开 PR(仍自动合)。
+     - 治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架不吃文档低风险豁免,回 owner 人审。
+     - 代码不吃这条豁免,照走 PR + 新眼睛 review。
    - **高风险 / 不可逆**(生产库 schema、付费 API 全量、改远端、删数据)→ **回人审**才合;审是**独立一道**,不是 AI 自己盖章。
 5. **合后**:删分支;`Closes #N` 自动关 issue;只用了 `Refs #N` 则不因合并而关,只有验收 / 关闭条件已满足时才手动关 + 自检凭据保真。
 
@@ -47,7 +64,10 @@
 
 ## 凭据细则(吸自 taoxi-geo)
 
-- **issue 评论 vs PR 评论**:为半年后 / 别的 agent / merge 后还能查 → 写 **issue**(留痕·总线);针对这次 diff 的代码评审来回 → 写 **PR**。方案变更(换思路 / 改字段 / 调 schema)必回写一句到 issue,别只留 PR / commit。
+- **issue 评论 vs PR 评论**:
+  - 为半年后 / 别的 agent / merge 后还能查 → 写 issue(留痕·总线)。
+  - 针对这次 diff 的代码评审来回 → 写 PR。
+  - 方案变更(换思路 / 改字段 / 调 schema)必回写一句到 issue,别只留 PR / commit。
 - **issue 评论凭据分层**:评论不是越长越好,但**会影响后续判断的评论不能短**。
   - **必须写厚评论**:决策 / 决策修正;spike / live / 调研 / 侦察有结论;PR 合并后的阶段总结;issue 关闭或部分验收完成但保持 open;label / 状态关键变化(高风险、待澄清、暂缓、阻塞解除、开发中→待验收等);原凭据勘误 / 翻案 / 校正;残项迁移到别的 issue / ADR / milestone;出现阻塞或解除条件;高风险闸命中 / 解除;给 owner / 另一角色 / 后续 agent 的执行菜单且会影响路线。
   - **厚评论最小信息**:当前状态、做了什么、证据(PR / commit / 测试 / live / 截图 / 日志 / 文档链接)、判定(过闸 / 不过闸 / 保持 open / 可关闭 / 需人审)、边界(本轮不证明什么)、残项归属、下一步。标题可合并,不强制套固定模板;不适用写"无 / 不适用",但不能省掉判断依据、边界和下一步。
@@ -58,4 +78,4 @@
 - **起手 freshness(多会话 / 多 agent)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再信本地 SOP / 代码——本地常是旧快照、或停在别的分支。**业务会话顺带 `gh issue list --label 待业务确认`:有就一条条念给 owner 当场拍、没有一句带过**(别让等人决策的 issue 烂着没人 surface)。
 - **接 issue 先验链接(消费侧凭据校验)**:起手照 issue 工作前,**先验它指的 doc 在远端解析得开**(fetch + 按工作 ref 找路径)。解析不到 = **坏交接 / 会说谎的凭据**(issue 说"详见此 doc"、doc 却不在)→ **反弹回开 issue 的角色**(评论 tag + ⏸️ 待澄清),**别自己补 doc**(自补 = 伪造需求 · STANDARD §1.8 + §1.9)。
 - **取活先判细化(消费侧 · 别抓起就写)**:开发取活后 agent 先帮判一轮——够清楚且小 → 直接干;不清楚 / 太大 → 先端内 brainstorm 拆;**缺的是业务该给的"要什么"(含产品形态)→ 反弹业务(§1.9 carve-out)、不自补**(反例 geo-reverse #2:开发凭"永不阻塞"自己把需求补了)。
-- **收工 = 写凭据时点(owner 说"收工 / 结束")**:这就是红线「不擅自 push」要的那个**明确指令**——把本会话收口的 doc 按上面 Issue / PR 生命周期推远端(**文档推 main、代码走 PR**),开 / 更 issue 指稳定链接、自检保真。**不重抄步骤,照上面那两套生命周期走即可。**
+- **收工 = 写凭据时点(owner 说"收工 / 结束")**:这就是红线「不擅自 push」要的那个**明确指令**——把本会话收口的 doc 按上面 Issue / PR 生命周期推远端(**普通 req / design 文档推 main;治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架回 owner 人审;代码走 PR**),开 / 更 issue 指稳定链接、自检保真。**不重抄步骤,照上面那两套生命周期走即可。**

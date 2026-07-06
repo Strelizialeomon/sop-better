@@ -24,9 +24,18 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
    - **几个端**:数后端/服务/子项目(单 backend / 前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约/按端文档**。
    - **几个人**:扫 `docs/collaboration*`、agent 指令文件(`AGENTS.md`)、旧残留(`CLAUDE.md` / `.claude/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。(issue+PR 人人都有、不据此判人数)
    - **风险**:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
-3. **比"该有 vs 实际"**:STANDARD §3 由"几端 / 几人"推出"该有的结构";扫项目实际有的治理文件/仪式;两边相减。
-   - **🔄 加比"模板版本"(揪漂移根因)**:项目的治理 doc 多是 `$sop-init` 从 `$SOP_HOME/master/` 生成的**快照**,但 **母本随 STANDARD 进化、已生成的项目不会自动跟着长**。把项目的 `issue-pr-workflow.md` / `collaboration*.md` / agent 指令文件(`AGENTS.md`)约束块跟当前 `master/` **对应 layer** 文件**比一遍**(**layer-gated**:只比该项目触发命中的层——单端别拿 layer-multiend 比、否则正确剪掉的层被误报缺;**slot-masked**:`{{槽}}` 是洞、不参与比,否则填好的项目值被当漂移):母本有、项目缺的**新规则 / carve-out** = **漂移根因**(报为下方「凭据失真 / 结构缺失」· kind `missing` · 建议**回灌**)。目标项目没有 `AGENTS.md` = `missing`;存在 `CLAUDE.md` / `.claude/` = `stale`,建议迁移到 `AGENTS.md` 并删除旧入口,不保留桥接。⚠️ 比的是「缺了该有的新护栏」,**不是逐字一致**——项目可有正当本地偏离(右尺寸),别把合理差异报成漂移。**但近似 ≠ 覆盖(exp-010 · 防被近似版骗过)**:项目有某护栏的**近似版**时别停在"大原则盖到了"就判无漂移——**逐条语义比**(非逐字、非靠字面标记):看母本那条有没有针对某**具体场景 / 边界的限定**(carve-out、反例、"即使 X 也要 Y"式例外),项目近似版**只搬了大原则、漏了那个限定** = 仍 `missing` + **标信心**。普通措辞 / 详略差异仍按"合理本地偏离"宽放(别扩成事事都报 → audit 自己变 cry wolf)。**🔁 双向比(exp-013 · 减法残留也是漂移)**:模板不只会**长**、也会**删 / 合 / 改名**(如 exp-012 删极简块 + S/C/T 档)。除了上面"项目**缺**模板新增护栏"(`missing`),必须**逆查"项目还**留着**模板已删的块 / 档 / 文件"**(kind `stale`):约束块是已废的**极简块**、用了已删**档位编号 / 升级触发词**(`S0·C0` / `升S2·C1` 等)、引用已删 / 改名的模板(`collaboration-c2` / `s2-contracts`)、保留已废 `CLAUDE.md` 入口 = `stale` → 报 + 建议**换成现行块**(极简块 → 标准块那条流程;旧入口 → `AGENTS.md`)。**只查 missing 会让减法残留静默存活**(py-script 真复跑实证:audit 只换了档位词的皮、漏了极简块整块该换标准块 · STANDARD §5.2)。
-4. **主线覆盖闸(防漏停顿点)**:在输出 findings 前,必须先填 6 行表;这是覆盖检查,不是第六类 finding。**无权威锚点不得填覆盖**:每行都要先指向当前 `STANDARD.md` / `master/` 母本 / `skills/sop-audit/SKILL.md` 的对应规则,再指向目标项目落点;只在目标项目里搜到近似关键词,不能算覆盖。**证据行必须直接证明该判断**:相邻文件、泛化模板、只写"改了什么"这类弱证据不能拿来证明三件套 / 风险 / 收口分工。**高频入口冲突不得写覆盖**。
+3. **比"该有 vs 实际"**:STANDARD §3 由端 / 人 / 并行 agent 推出该有结构;扫项目实际治理文件 / 仪式;两边相减。
+   - **结构相减**:第 2 个端 → contracts + 端级 `AGENTS.md`;真并行多 agent → worktree + 协调骨架;第 2 个人 → collaboration handoff。
+   - **模板版本差**:治理 doc 多是 `$sop-init` 从 `$SOP_HOME/master/` 生成的快照。按目标项目触发命中的 layer,比项目 `issue-pr-workflow.md` / `collaboration*.md` / `AGENTS.md` 与当前 `master/` 对应文件。
+   - **layer-gated**:只比项目触发命中的层;单端别拿 layer-multiend 比。
+   - **slot-masked**:`{{槽}}` 是洞,不参与漂移判断。
+   - **missing**:母本有、项目缺的新规则 / carve-out = 漂移根因;建议回灌。
+   - **stale**:项目留着模板已删的块 / 档 / 文件,如极简块、旧档位编号、旧模板名、`CLAUDE.md` / `.claude/`;建议换成现行块或迁到 `AGENTS.md`。
+   - **近似 ≠ 覆盖**:项目有近似版时逐条语义比。若母本有具体边界 / carve-out,项目只搬大原则、漏限定,仍报 `missing` 并标信心。普通措辞 / 详略差异按合理本地偏离宽放。
+4. **主线覆盖闸(防漏停顿点)**:在输出 findings 前,必须先填 6 行表;这是覆盖检查,不是第六类 finding。
+   - **权威锚点**:每行先指向当前 `STANDARD.md` / `master/` / `skills/sop-audit/SKILL.md` 对应规则,再指向项目落点。只搜到项目侧近似关键词,不能算覆盖。
+   - **证据强度**:证据行必须直接证明判断。相邻文件、泛化模板、只写"改了什么"这类弱证据不能证明三件套 / 风险 / 收口分工。
+   - **入口冲突**:高频入口冲突不得写覆盖。
    ```md
    ## 主线覆盖闸
 
@@ -39,12 +48,42 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
    | 高风险治理项 | 覆盖 / 部分覆盖 / 冲突 / 缺失 / 偏离 | 母本 file:line -> 项目 file:line / 缺落点 |
    | 结构触发 | 匹配 / 部分覆盖 / 缺失 / 预建 / 偏离 | STANDARD file:line -> 项目结构证据 |
    ```
-   - **状态词口径**:`覆盖/匹配`=触发的必查 surface 都有等价规则且无高频入口冲突;`部分覆盖`=主文档有规则但入口不全 / 执行点缺失 / 低频提示缺引用;`冲突`=一个高频入口写新规则、另一个高频入口仍写旧规则;`缺失`=触发条件已满足但无执行落点,或只有 spec / 历史记录没进执行 SOP;`偏离`=有明确本地替代方案且能说明等价;`过重/预建`=未触发却提前上结构或低风险小事被流程拖重。`n/a` 只写在证据里,不作为表格主状态。
-   - **先判 surface 适用性**:surface 是「存在则查、触发才必备」。已触发且缺文件 / 缺规则 = `缺失`;未触发且不存在 = `n/a`,不算缺失;未触发却存在治理骨架 = `预建` 或 `过重`;文件存在则必须查内容,内容冲突不能被文件存在掩盖。PR 模板不存在时记 `n/a`,不自动报缺失。第 2 个端触发 `docs/contracts/` 和端级 `AGENTS.md`;串行只豁免 worktree / coordination,不豁免端级身份文档。多端项目只要 `docs/contracts/` 或任一端级 `AGENTS.md` 这类必备 surface 缺失,结构触发就写 `缺失` 并按 P2 `mismatch` 处理,不能因另一 surface 已存在写 `部分覆盖`。
-   - **必查 surface(只列高频入口 + 执行落点,别扩成全仓背题清单)**:Refs/Closes 查 PR 模板、根 `AGENTS.md` 速查、`docs/project/issue-pr-workflow.md`、`collaboration.md` 中 PR 流程;三件套查 workflow 是否明确定义 doc / issue / PR,根 `AGENTS.md` / `collaboration.md` 是否漏 PR 或互相替代;issue 评论分层查 workflow 厚/短评论触发 + 最小字段,根 `AGENTS.md` 自检短引用;查证闭环查根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、是否过度联网/确认/长卡片;高风险治理项查根高风险闸、workflow PR 合并规则、PR 模板风险区;结构触发查端 / 人 / 并行 agent 三触发、实际目录、`docs/contracts/`、端级 `AGENTS.md`、协作 doc、worktree / coordination 是否按需存在。
-   - **报告装配校验(防查到了却报漏)**:① 同一主线项若多个高频入口都冲突,合并成一个 finding,但 target / evidence 必须列全;规则冲突 kind 用 `mismatch`,别误写 `nopushback`。② PR 模板若把“文档”列低风险,必须继续查是否显式排除治理 doc(`AGENTS.md` / SOP / collaboration / workflow / PR 模板自身)和 `docs/contracts/` / 跨端契约骨架;根 `AGENTS.md` 已要求人审而模板漏列 = 高风险治理项 `部分覆盖` 并进 finding。③ 三件套判 `覆盖` 时,证据必须直接证明 doc / issue / PR 三者分工;只证明 issue+doc 或只证明 PR “改了什么/验收”不够,最多 `部分覆盖`。
-   - **判定顺序**:先 `冲突` → `缺失` → `部分覆盖` → `过重/预建` → `偏离` → `覆盖/匹配`。顺序的目的:先抓会误导 agent 行动的错误,最后才给覆盖。
-   - **状态转 findings**:`覆盖 / 匹配` 不进 findings;`冲突` 通常进 finding,若在 PR 模板 / 根 `AGENTS.md` / workflow 这类高频入口,优先级不低于 P2/P3;`缺失` 进入 finding,结构触发缺失按 STANDARD §5.2 优先判 P2 `mismatch`;`部分覆盖` 看缺口位置,缺高频执行入口则进 finding,只缺低频提示引用可 P3 或收尾风险;`预建 / 过重` 按 STANDARD §5.1/§5.2 判 severity;`偏离` 必须一句话判断等价理由,不成立就改成 `缺失` 或 `冲突`。**主线表必须和 findings 对账**:凡 `冲突 / 缺失 / 部分覆盖 / 预建 / 过重` 未进入 findings,必须在收尾卡写明豁免理由,不能表里报异常、findings 里静默消失。表固定 6 行,新增主线必须替换旧项,不能追加成清单膨胀。
+   - **状态词口径**:
+     - `覆盖/匹配`:触发的必查 surface 都有等价规则,且无高频入口冲突。
+     - `部分覆盖`:主文档有规则,但入口不全 / 执行点缺失 / 低频提示缺引用。
+     - `冲突`:一个高频入口写新规则,另一个仍写旧规则。
+     - `缺失`:触发条件已满足但无执行落点,或只有 spec / 历史记录没进执行 SOP。
+     - `偏离`:有明确本地替代方案且能说明等价。
+     - `过重/预建`:未触发却提前上结构,或低风险小事被流程拖重。
+   - **surface 适用性**:
+     - surface 是“存在则查、触发才必备”。
+     - 已触发且缺文件 / 缺规则 = `缺失`。
+     - 未触发且不存在 = `n/a`,只写证据里,不做表格主状态。
+     - 未触发却存在治理骨架 = `预建` 或 `过重`。
+     - 文件存在必须查内容,内容冲突不能被文件存在掩盖。
+     - PR 模板不存在时记 `n/a`,不自动报缺失。
+     - 第 2 个端触发 `docs/contracts/` 和端级 `AGENTS.md`;串行只豁免 worktree / coordination。
+   - **必查 surface(高频入口 + 执行落点)**:
+     - Refs/Closes:PR 模板、根 `AGENTS.md` 速查、workflow、collaboration PR 流程。
+     - 三件套:workflow 是否明确定义 doc / issue / PR;根 `AGENTS.md` / collaboration 是否漏 PR 或互相替代。
+     - issue 评论分层:workflow 厚/短评论触发 + 最小字段;根 `AGENTS.md` 自检短引用。
+     - 查证闭环:根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、是否过度联网 / 确认 / 长卡片。
+     - 高风险治理项:根高风险闸、workflow PR 合并规则、PR 模板风险区。
+     - 结构触发:端 / 人 / 并行 agent 三触发、实际目录、contracts、端级 `AGENTS.md`、协作 doc、worktree / coordination。
+   - **报告装配校验**:
+     - 同一主线项多个高频入口冲突,合并成一个 finding,但 target / evidence 必须列全;规则冲突 kind 用 `mismatch`。
+     - PR 模板把“文档”列低风险时,继续查是否显式排除治理 doc(`AGENTS.md` / SOP / collaboration / workflow / PR 模板自身)和 `docs/contracts/` / 跨端契约骨架。
+     - 三件套判 `覆盖` 时,证据必须直接证明 doc / issue / PR 三者分工;证明不全最多 `部分覆盖`。
+   - **判定顺序**:`冲突` → `缺失` → `部分覆盖` → `过重/预建` → `偏离` → `覆盖/匹配`。
+   - **状态转 findings**:
+     - `覆盖 / 匹配` 不进 findings。
+     - `冲突` 通常进 finding;高频入口优先级不低于 P2/P3。
+     - `缺失` 进 finding;结构触发缺失按 STANDARD §5.2 优先判 P2 `mismatch`。
+     - `部分覆盖` 看缺口位置;缺高频执行入口则进 finding。
+     - `预建 / 过重` 按 STANDARD §5.1/§5.2 判 severity。
+     - `偏离` 必须一句话判断等价理由;不成立就改成 `缺失` 或 `冲突`。
+     - 主线表必须和 findings 对账;异常项未进入 findings 时,必须在收尾卡写豁免理由。
+     - 表固定 6 行,新增主线必须替换旧项,不能追加。
 5. **按 §5 五类出 finding,每条标 severity + 证据**。**查法细则全在 STANDARD §5(第 1 步已读),本技能不重抄(重抄必漂移),这里只定 severity 映射**:
    - **P1 过度治理(头号)**= §5.1(人手跑的仪式过重 + 死规则笼子;「只算人掏的成本、agent 自动维护不算」见铁律)。
    - **P2 结构错配**= §5.2(含 ④删除残留 · kind `mismatch`/`stale`);**P2 沟通闭环缺环 / 口号化 / 过度阻塞**= §5.3(反驳+说人话、查证、分流、调研、执行验证、收口)。
