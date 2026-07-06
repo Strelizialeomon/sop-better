@@ -286,3 +286,8 @@
 - **护栏**:`$sop-audit` 的 6 行主线表中,`冲突 / 缺失 / 部分覆盖 / 预建 / 过重` 要么进入 findings,要么在收尾卡写豁免理由;证据行必须直接证明判断,不能拿相邻文件或泛化模板证明三件套 / 风险 / 收口分工。多端缺 `docs/contracts/` 或端级 `AGENTS.md` 任一必备 surface,结构触发就是 `缺失 / P2 mismatch`,不是部分覆盖。
 - **配套清理**:STANDARD / `$sop-init` 里「多端 = 默认 worktree」的旧影子要拆掉;具名项目例子会随项目演进变 stale,权威标准里优先用抽象形态例子。
 - **证据**:exp-032
+
+### ✅ 审计报告要做装配校验:同类证据合并、风险分流、覆盖证据强度
+- **缺口**:覆盖闸和 findings 对账后,报告仍可能“查到了但装配漏”:同一主线项多个高频入口冲突只报一个;PR 模板把“文档”列低风险却没排除治理 doc / contracts;三件套判覆盖时证据没同时证明 doc / issue / PR。
+- **护栏**:`$sop-audit` 不新增主线项,只补报告装配校验:同类冲突 finding 的 target / evidence 必须列全,规则冲突 kind 用 `mismatch`;PR 风险区必须区分普通文档与 `AGENTS.md` / SOP / collaboration / workflow / PR 模板自身 / `docs/contracts` / 跨端骨架;三件套覆盖证据必须直接证明三者分工,否则最多部分覆盖。
+- **证据**:exp-033
