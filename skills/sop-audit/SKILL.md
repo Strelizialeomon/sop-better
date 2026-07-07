@@ -67,7 +67,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      - Refs/Closes:PR 模板、根 `AGENTS.md` 速查、workflow、collaboration PR 流程。
      - 三件套:workflow 是否明确定义 doc / issue / PR;根 `AGENTS.md` / collaboration 是否漏 PR 或互相替代。
      - issue 评论分层:workflow 厚/短评论触发 + 最小字段;根 `AGENTS.md` 自检短引用。
-     - 查证闭环:根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、是否过度联网 / 确认 / 长卡片。
+     - 查证闭环:根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、UI 风格来源闸(仅新增 / 大改 UI)、是否过度联网 / 确认 / 长卡片 / 样式确认。
      - 高风险治理项:根高风险闸、workflow PR 合并规则、PR 模板风险区。
      - 结构触发:端 / 人 / 并行 agent 三触发、实际目录、contracts、端级 `AGENTS.md`、协作 doc、worktree / coordination。
    - **报告装配校验**:
@@ -86,7 +86,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      - 表固定 6 行,新增主线必须替换旧项,不能追加。
 5. **按 §5 五类出 finding,每条标 severity + 证据**。**查法细则全在 STANDARD §5(第 1 步已读),本技能不重抄(重抄必漂移),这里只定 severity 映射**:
    - **P1 过度治理(头号)**= §5.1(人手跑的仪式过重 + 死规则笼子;「只算人掏的成本、agent 自动维护不算」见铁律)。
-   - **P2 结构错配**= §5.2(含 ④删除残留 · kind `mismatch`/`stale`);**P2 沟通闭环缺环 / 口号化 / 过度阻塞**= §5.3(反驳+说人话、查证、分流、调研、执行验证、收口)。
+   - **P2 结构错配**= §5.2(含 ④删除残留 · kind `mismatch`/`stale`);**P2 沟通闭环缺环 / 口号化 / 过度阻塞**= §5.3(反驳+说人话、查证、分流、调研、执行验证、收口;含新增 / 大改 UI 漏确认风格来源,以及脚本 / 后端 / 既有样式小修被拖进样式确认)。
    - **P3 结构缺失**= §5.4;**P3 凭据失真 / 交接断裂**= §5.5(含 doc/issue/PR 三件套分工失真、悬空链接、开工/收工书挡〔所有项目〕、协作总线断节、评论凭据塌缩、决策闸误关)。
    - **P0 仅指针**:扫到硬编码密钥/凭据 → 只点一句"另走安全 track",**不在本体检展开**。
 6. **出双轨报告**:
