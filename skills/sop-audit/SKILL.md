@@ -21,11 +21,11 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 
 1. **读 `STANDARD.md`**(§3 一条流程+结构按现实长 + §5 查法 + §1 公约)。
 2. **测目标项目的实际(几个端 / 几个人 / 风险)**:
-   - **几个端**:数后端/服务/子项目(单 backend / 前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约/按端文档**。
+   - **几个端**:数后端/服务/子项目(单 backend / 前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约/按端操作台**。
    - **几个人**:扫 `docs/collaboration*`、agent 指令文件(`AGENTS.md`)、旧残留(`CLAUDE.md` / `.claude/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。(issue+PR 人人都有、不据此判人数)
    - **风险**:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
 3. **比"该有 vs 实际"**:STANDARD §3 由端 / 人 / 并行 agent 推出该有结构;扫项目实际治理文件 / 仪式;两边相减。
-   - **结构相减**:第 2 个端 → contracts + 端级 `AGENTS.md`;真并行多 agent → worktree + 协调骨架;第 2 个人 → collaboration handoff。
+   - **结构相减**:第 2 个端 → contracts + 端级 `AGENTS.md` 操作台;真并行多 agent → worktree + 协调骨架;第 2 个人 → collaboration handoff。
    - **模板版本差**:治理 doc 多是 `$sop-init` 从 `$SOP_HOME/master/` 生成的快照。按目标项目触发命中的 layer,比项目 `issue-pr-workflow.md` / `collaboration*.md` / `AGENTS.md` 与当前 `master/` 对应文件。
    - **layer-gated**:只比项目触发命中的层;单端别拿 layer-multiend 比。
    - **slot-masked**:`{{槽}}` 是洞,不参与漂移判断。
@@ -62,14 +62,14 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      - 未触发却存在治理骨架 = `预建` 或 `过重`。
      - 文件存在必须查内容,内容冲突不能被文件存在掩盖。
      - PR 模板不存在时记 `n/a`,不自动报缺失。
-     - 第 2 个端触发 `docs/contracts/` 和端级 `AGENTS.md`;串行只豁免 worktree / coordination。
+     - 第 2 个端触发 `docs/contracts/` 和端级 `AGENTS.md`;端级文件需覆盖最小操作面(scope / 取活 / Step 3 / Step 4 / 评论留痕 / review / 本端 local),不能只是身份桥接;串行只豁免 worktree / coordination。
    - **必查 surface(高频入口 + 执行落点)**:
      - Refs/Closes:PR 模板、根 `AGENTS.md` 速查、workflow、collaboration PR 流程。
      - 三件套:workflow 是否明确定义 doc / issue / PR;根 `AGENTS.md` / collaboration 是否漏 PR 或互相替代。
      - issue 评论分层:workflow 厚/短评论触发 + 最小字段;根 `AGENTS.md` 自检短引用。
      - 查证闭环:根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、UI 风格来源闸(仅新增 / 大改 UI)、是否过度联网 / 确认 / 长卡片 / 样式确认。
      - 高风险治理项:根高风险闸、workflow PR 合并规则、PR 模板风险区。
-     - 结构触发:端 / 人 / 并行 agent 三触发、实际目录、contracts、端级 `AGENTS.md`、协作 doc、worktree / coordination。
+     - 结构触发:端 / 人 / 并行 agent 三触发、实际目录、contracts、端级 `AGENTS.md` 的最小操作面、协作 doc、worktree / coordination。
    - **报告装配校验**:
      - 同一主线项多个高频入口冲突,合并成一个 finding,但 target / evidence 必须列全;规则冲突 kind 用 `mismatch`。
      - PR 模板把“文档”列低风险时,继续查是否显式排除治理 doc(`AGENTS.md` / SOP / collaboration / workflow / PR 模板自身)和 `docs/contracts/` / 跨端契约骨架。

@@ -35,7 +35,9 @@
 | `{{ends}}` | multiend / parallel / coordination | 端清单（如 admin / backend / frontend / crawler） |
 | `{{End}}` / `{{end}}` / `{{end_dir}}` | end-role（每端一份） | 端名首字大写 / scope 小写 / 端目录名 |
 | `{{project}}` | end-role | 项目名 |
+| `{{base_branch}}` | end-role | 工作基线分支（如 `master` / `main` / `dev`） |
 | `{{stack}}` / `{{end_docs}}` / `{{impl_vocab}}` | end-role | 本端技术栈 / 本端独有常读 doc / 实施层词汇（Step 3 brainstorm 拍的） |
+| `{{end_milestones}}` / `{{end_high_risk}}` | end-role | 本端特有评论里程碑 / 本端特有高风险项；没有就删整行，不留“无”占位 |
 
 > 各 layer 文件头注里也自带槽说明（单一真相源，本表是索引，别两处都写细节）。
 

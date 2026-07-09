@@ -302,3 +302,8 @@
 - **缺口**:短时间连续迭代后,规则本身大多是对的,但权威解释、执行动作、审计检查混在同一层,agent 读起来像背补丁清单,不是顺着 flow 做事。
 - **护栏**:先做无语义新增重排:STANDARD 只留原则 / 边界 / 指针,master 承载执行动作,skill 承载检查表。验收不能只 grep 关键词,要用承重墙矩阵确认关键护栏仍有权威点 / 执行点 / 必要审计点,再用真实项目压力样本复核没瘦丢。
 - **证据**:exp-034
+
+### ⚠️ 端级 AGENTS 不能薄成桥接:Codex 自动加载入口要能直接开工
+- **缺口**:真实 worktree 对比后发现,go_dispatch / taoxi_mini 的端内 `CLAUDE.md` 约 34-58 行,能直接给 scope agent 提供 cwd、scope、取活、Step 3、Step 4、评论里程碑和本端约定;但 media-ops 的 Codex 端 `AGENTS.md` 只有约 20 行身份 / 边界 / 常读文件,taoxi_mini 的 Codex 端 `AGENTS.md` 多数只是桥接到 `CLAUDE.md`。Codex-only 后,若端级 `AGENTS.md` 只做桥接或索引,agent 进端目录时不会自动拿到端内开工操作面,容易漏读根 / 协作 / workflow。
+- **护栏**:多端项目的端级 `AGENTS.md` 是**端内操作台**,不是百科全书,也不是空指针。它不复述根红线,但必须覆盖最小操作面:推荐 cwd / scope / 取活、取活先判、Step 3 端内 spec + 评论 announce、Step 4 实施 + 变更必评论、PR `Refs`/最终 `Closes`、新眼睛 review、本端评论里程碑、本端常读文件和技术栈。`$sop-init` 生成端文件时要填这些槽;`$sop-audit` 看到“文件存在但只有身份/常读/桥接”要按结构错配报,不能算覆盖。
+- **证据**:exp-036
