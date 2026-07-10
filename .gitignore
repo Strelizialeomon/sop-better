@@ -6,3 +6,6 @@
 
 # 本地笔记(不入 git,如安全待办)
 *.local.md
+
+# 本地隔离 worktree
+.worktrees/
