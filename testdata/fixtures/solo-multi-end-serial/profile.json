@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "sop_version": "0.1.0",
+  "project": {
+    "name": "serial-app",
+    "description": "单人多端串行项目",
+    "default_branch": "main",
+    "sop_initialized_on": "2026-07-10"
+  },
+  "ends": [
+    {
+      "name": "backend",
+      "display_name": "Backend",
+      "path": "backend",
+      "stack": "Go",
+      "docs": ["docs/contracts/README.md"]
+    },
+    {
+      "name": "frontend",
+      "display_name": "Frontend",
+      "path": "frontend",
+      "stack": "React",
+      "docs": ["docs/contracts/README.md"]
+    }
+  ],
+  "humans": [
+    {"id": "owner", "roles": ["product", "developer"]}
+  ],
+  "parallel_agents": false,
+  "risk": "controlled",
+  "house_style": [],
+  "risk_items": ["push 保护分支", "deploy", "删除数据"]
+}

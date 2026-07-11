@@ -1,0 +1,17 @@
+{
+  "description": "one owner, one end, serial execution",
+  "default_branch": "main",
+  "required_files": [
+    ".github/ISSUE_TEMPLATE/sop-task.md",
+    ".gitignore",
+    ".sop/lock.json",
+    ".sop/profile.json",
+    "AGENTS.md",
+    "README.md",
+    "docs/decisions/0001-sop-structure-evolution.md",
+    "docs/decisions/adr-template.md",
+    "docs/project/issue-pr-workflow.md"
+  ],
+  "required_end_text": [],
+  "forbidden_end_text": []
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "sop_version": "0.1.0",
+  "project": {
+    "name": "shared-api",
+    "description": "两人协作的单端 API 项目",
+    "default_branch": "dev",
+    "sop_initialized_on": "2026-07-10"
+  },
+  "ends": [
+    {
+      "name": "backend",
+      "display_name": "Backend",
+      "path": "backend",
+      "stack": "Go",
+      "docs": ["README.md"]
+    }
+  ],
+  "humans": [
+    {"id": "product-owner", "roles": ["product"]},
+    {"id": "developer", "roles": ["developer"]}
+  ],
+  "parallel_agents": false,
+  "risk": "controlled",
+  "house_style": [],
+  "risk_items": ["push 保护分支", "deploy", "删除数据"]
+}

@@ -307,3 +307,8 @@
 - **缺口**:真实 worktree 对比后发现,go_dispatch / taoxi_mini 的端内 `CLAUDE.md` 约 34-58 行,能直接给 scope agent 提供 cwd、scope、取活、Step 3、Step 4、评论里程碑和本端约定;但 media-ops 的 Codex 端 `AGENTS.md` 只有约 20 行身份 / 边界 / 常读文件,taoxi_mini 的 Codex 端 `AGENTS.md` 多数只是桥接到 `CLAUDE.md`。Codex-only 后,若端级 `AGENTS.md` 只做桥接或索引,agent 进端目录时不会自动拿到端内开工操作面,容易漏读根 / 协作 / workflow。
 - **护栏**:多端项目的端级 `AGENTS.md` 是**端内操作台**,不是百科全书,也不是空指针。它不复述根红线,但必须覆盖最小操作面:推荐 cwd / scope / 取活、取活先判、Step 3 端内 spec + 评论 announce、Step 4 实施 + 变更必评论、PR `Refs`/最终 `Closes`、新眼睛 review、本端评论里程碑、本端常读文件和技术栈。`$sop-init` 生成端文件时要填这些槽;`$sop-audit` 看到“文件存在但只有身份/常读/桥接”要按结构错配报,不能算覆盖。
 - **证据**:exp-036
+
+### ✅ 项目内 lock / journal 不能自证权限:破坏性动作还要本机可信凭据
+- **前提**:会删除、恢复或回退项目文件的 SOP 工具,必须同时提供本机状态目录里的可信 provenance / transaction authorization、精确 `diff`、原子事务、故障注入和失败前后快照;项目自己可改的 lock / journal 只能描述状态,不能单独授权动作。
+- **证据**:exp-037
+- **代价 / 翻车点**:换新机器要先用未改动的当前 profile + 匹配版本跑一次完整 `check` 建立本机信任;本结论只在本地发布通道和 schema 1 做到 L3 静态 / 本机验证,不能外推成公网供应链、真实 Windows 或跨 schema 已完成。

@@ -1,0 +1,10 @@
+* text=auto
+
+STANDARD.md text eol=lf
+manifest.json text eol=lf
+master/** text eol=lf
+schemas/** text eol=lf
+skills/** text eol=lf
+*.go text eol=lf
+*.json text eol=lf
+*.yml text eol=lf

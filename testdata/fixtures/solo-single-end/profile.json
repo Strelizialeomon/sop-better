@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "sop_version": "0.1.0",
+  "project": {
+    "name": "solo-api",
+    "description": "单人单端 API 项目",
+    "default_branch": "main",
+    "sop_initialized_on": "2026-07-10"
+  },
+  "ends": [
+    {
+      "name": "backend",
+      "display_name": "Backend",
+      "path": "backend",
+      "stack": "Go",
+      "docs": ["README.md"]
+    }
+  ],
+  "humans": [
+    {"id": "owner", "roles": ["product", "developer"]}
+  ],
+  "parallel_agents": false,
+  "risk": "reversible",
+  "house_style": [],
+  "risk_items": ["push 保护分支", "deploy", "删除数据"]
+}

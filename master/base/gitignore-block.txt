@@ -1,0 +1,5 @@
+.env
+.env.*
+!.env.example
+.sop/transaction.json
+.sop/transaction-data/

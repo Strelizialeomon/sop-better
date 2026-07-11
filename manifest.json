@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "sop_version": "0.1.0",
+  "profile_schema_version": 1,
+  "rules_version": "2026-07-10",
+  "standard": {
+    "path": "STANDARD.md",
+    "sha256": "d64a58a2f2c2a85f36af2886f54465bda2bb2fb15037110bbf18bbc7cf45c3f0"
+  },
+  "slots": {
+    "project_name": {
+      "type": "string",
+      "source": "/project/name",
+      "required": true,
+      "format": "inline"
+    },
+    "default_branch": {
+      "type": "string",
+      "source": "/project/default_branch",
+      "required": true,
+      "format": "inline"
+    },
+    "initialized_on": {
+      "type": "string",
+      "source": "/project/sop_initialized_on",
+      "required": true,
+      "format": "inline"
+    },
+    "risk_guidance": {
+      "type": "string",
+      "source": "/risk_guidance",
+      "required": true,
+      "format": "inline"
+    },
+    "current_end_name": {
+      "type": "string",
+      "source": "/current_end/name",
+      "required": true,
+      "format": "inline"
+    },
+    "current_end_path": {
+      "type": "string",
+      "source": "/current_end/path",
+      "required": true,
+      "format": "inline"
+    }
+  },
+  "components": {
+    "base.root-agents": {
+      "template": "master/base/AGENTS.md",
+      "rule_ids": ["SOP-CORE", "SOP-EVIDENCE", "SOP-REVIEW", "SOP-PUSHBACK", "SOP-HOUSE-STYLE", "SOP-ACTIVE-ADVICE", "SOP-STRUCTURE-BASE"],
+      "slots": ["project_name", "default_branch", "risk_guidance"],
+      "references": ["issue-pr-workflow", "structure-evolution-adr"]
+    },
+    "base.root-collaboration-reference": {
+      "template": "master/base/root-collaboration-reference.md",
+      "rule_ids": ["SOP-STRUCTURE-COLLABORATORS", "SOP-STRUCTURE-PARALLEL"],
+      "slots": [],
+      "references": ["collaboration"]
+    },
+    "base.readme": {
+      "template": "master/base/README.md",
+      "rule_ids": ["SOP-STRUCTURE-BASE"],
+      "slots": ["project_name", "default_branch"],
+      "references": ["root-agents", "issue-pr-workflow", "structure-evolution-adr"]
+    },
+    "base.gitignore": {
+      "template": "master/base/gitignore-block.txt",
+      "rule_ids": ["SOP-STRUCTURE-BASE"],
+      "slots": [],
+      "references": []
+    },
+    "base.issue-template": {
+      "template": "master/base/issue-template.md",
+      "rule_ids": ["SOP-EVIDENCE", "SOP-STRUCTURE-BASE"],
+      "slots": [],
+      "references": ["issue-pr-workflow"]
+    },
+    "base.adr-template": {
+      "template": "master/base/docs/decisions/adr-template.md",
+      "rule_ids": ["SOP-DECISIONS", "SOP-STRUCTURE-BASE"],
+      "slots": [],
+      "references": []
+    },
+    "base.structure-evolution-adr": {
+      "template": "master/base/docs/decisions/0001-sop-structure-evolution.md",
+      "rule_ids": ["SOP-DECISIONS", "SOP-STRUCTURE-EVOLUTION"],
+      "slots": ["initialized_on", "project_name", "default_branch"],
+      "references": ["root-agents"]
+    },
+    "base.issue-pr-workflow": {
+      "template": "master/base/docs/project/issue-pr-workflow.md",
+      "rule_ids": ["SOP-EVIDENCE", "SOP-GOVERNANCE-REVIEW", "SOP-STRUCTURE-BASE"],
+      "slots": ["default_branch"],
+      "references": []
+    },
+    "collaboration.header": {
+      "template": "master/layer-collaborators/collaboration-header.md",
+      "rule_ids": ["SOP-EVIDENCE"],
+      "slots": [],
+      "references": ["issue-pr-workflow"]
+    },
+    "collaboration.handoff": {
+      "template": "master/layer-collaborators/handoff.md",
+      "rule_ids": ["SOP-STRUCTURE-COLLABORATORS", "SOP-EVIDENCE"],
+      "slots": [],
+      "references": ["issue-pr-workflow"]
+    },
+    "multiend.root-constraints": {
+      "template": "master/layer-multiend/multiend-constraints-block.md",
+      "rule_ids": ["SOP-STRUCTURE-MULTIEND"],
+      "slots": [],
+      "references": ["contracts-readme"]
+    },
+    "multiend.contracts-readme": {
+      "template": "master/layer-multiend/contracts-README.md",
+      "rule_ids": ["SOP-STRUCTURE-MULTIEND", "SOP-DECISIONS"],
+      "slots": [],
+      "references": ["contract-patterns"]
+    },
+    "multiend.contract-patterns": {
+      "template": "master/layer-multiend/multiend-contracts.md",
+      "rule_ids": ["SOP-STRUCTURE-MULTIEND", "SOP-EVIDENCE"],
+      "slots": [],
+      "references": ["contracts-readme"]
+    },
+    "multiend.end-common": {
+      "template": "master/layer-multiend/end-common.md",
+      "rule_ids": ["SOP-STRUCTURE-MULTIEND", "SOP-EVIDENCE"],
+      "slots": ["current_end_name", "current_end_path", "default_branch"],
+      "references": ["root-agents", "issue-pr-workflow", "contracts-readme", "contract-patterns"]
+    },
+    "multiend.end-serial": {
+      "template": "master/layer-multiend/end-serial.md",
+      "rule_ids": ["SOP-STRUCTURE-MULTIEND"],
+      "slots": [],
+      "references": []
+    },
+    "parallel.end": {
+      "template": "master/layer-parallel-agents/end-parallel.md",
+      "rule_ids": ["SOP-STRUCTURE-PARALLEL"],
+      "slots": ["current_end_name"],
+      "references": ["collaboration", "worktree-isolation"]
+    },
+    "parallel.coordination": {
+      "template": "master/layer-parallel-agents/coordination.md",
+      "rule_ids": ["SOP-STRUCTURE-PARALLEL", "SOP-EVIDENCE"],
+      "slots": ["default_branch"],
+      "references": ["issue-pr-workflow", "worktree-isolation"]
+    },
+    "parallel.worktree-isolation": {
+      "template": "master/layer-parallel-agents/worktree-isolation.md",
+      "rule_ids": ["SOP-STRUCTURE-PARALLEL"],
+      "slots": ["project_name", "default_branch"],
+      "references": ["collaboration", "worktree-adr"]
+    },
+    "parallel.worktree-adr": {
+      "template": "master/layer-parallel-agents/0002-worktree-isolation.md",
+      "rule_ids": ["SOP-STRUCTURE-PARALLEL", "SOP-DECISIONS"],
+      "slots": ["initialized_on", "project_name", "default_branch"],
+      "references": ["worktree-isolation"]
+    }
+  },
+  "outputs": [
+    {
+      "id": "root-agents",
+      "target": "AGENTS.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [
+        {"id": "base.root-agents", "when": "always"},
+        {"id": "base.root-collaboration-reference", "when": "collaborators_or_parallel"},
+        {"id": "multiend.root-constraints", "when": "multiend"}
+      ]
+    },
+    {
+      "id": "project-readme",
+      "target": "README.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "base.readme", "when": "always"}]
+    },
+    {
+      "id": "project-gitignore",
+      "target": ".gitignore",
+      "when": "always",
+      "management": "block",
+      "marker_style": "hash",
+      "components": [{"id": "base.gitignore", "when": "always"}]
+    },
+    {
+      "id": "issue-template",
+      "target": ".github/ISSUE_TEMPLATE/sop-task.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "base.issue-template", "when": "always"}]
+    },
+    {
+      "id": "adr-template",
+      "target": "docs/decisions/adr-template.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "base.adr-template", "when": "always"}]
+    },
+    {
+      "id": "structure-evolution-adr",
+      "target": "docs/decisions/0001-sop-structure-evolution.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "base.structure-evolution-adr", "when": "always"}]
+    },
+    {
+      "id": "issue-pr-workflow",
+      "target": "docs/project/issue-pr-workflow.md",
+      "when": "always",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "base.issue-pr-workflow", "when": "always"}]
+    },
+    {
+      "id": "collaboration",
+      "target": "docs/project/collaboration.md",
+      "when": "collaborators_or_parallel",
+      "management": "block",
+      "marker_style": "html",
+      "components": [
+        {"id": "collaboration.header", "when": "always"},
+        {"id": "collaboration.handoff", "when": "collaborators"},
+        {"id": "parallel.coordination", "when": "parallel"}
+      ]
+    },
+    {
+      "id": "contracts-readme",
+      "target": "docs/contracts/README.md",
+      "when": "multiend",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "multiend.contracts-readme", "when": "always"}]
+    },
+    {
+      "id": "contract-patterns",
+      "target": "docs/contracts/multiend-contracts.md",
+      "when": "multiend",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "multiend.contract-patterns", "when": "always"}]
+    },
+    {
+      "id": "end-agents-{{current_end_name}}",
+      "target": "{{current_end_path}}/AGENTS.md",
+      "when": "multiend",
+      "for_each": "ends",
+      "management": "block",
+      "marker_style": "html",
+      "components": [
+        {"id": "multiend.end-common", "when": "always"},
+        {"id": "multiend.end-serial", "when": "serial"},
+        {"id": "parallel.end", "when": "parallel"}
+      ]
+    },
+    {
+      "id": "worktree-isolation",
+      "target": "docs/project/worktree-isolation.md",
+      "when": "parallel",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "parallel.worktree-isolation", "when": "always"}]
+    },
+    {
+      "id": "worktree-adr",
+      "target": "docs/decisions/0002-worktree-isolation.md",
+      "when": "parallel",
+      "management": "block",
+      "marker_style": "html",
+      "components": [{"id": "parallel.worktree-adr", "when": "always"}]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sop-better.local/schemas/profile.schema.json",
+  "title": "sop-better project profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "sop_version", "project", "ends", "humans", "parallel_agents", "risk", "house_style"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "sop_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "default_branch", "sop_initialized_on"],
+      "properties": {
+        "name": {"allOf": [{"$ref": "#/$defs/portable_text"}, {"minLength": 1}]},
+        "description": {"$ref": "#/$defs/portable_text"},
+        "default_branch": {"allOf": [{"$ref": "#/$defs/portable_text"}, {"minLength": 1}]},
+        "sop_initialized_on": {"type": "string", "format": "date"}
+      }
+    },
+    "ends": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/end"}
+    },
+    "humans": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/human"}
+    },
+    "parallel_agents": {"type": "boolean"},
+    "risk": {"enum": ["reversible", "controlled", "high"]},
+    "house_style": {"type": "array", "items": {"$ref": "#/$defs/portable_text"}},
+    "risk_items": {"type": "array", "items": {"$ref": "#/$defs/portable_text"}},
+    "prod_infra_note": {"$ref": "#/$defs/portable_text"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"parallel_agents": {"const": true}}, "required": ["parallel_agents"]},
+      "then": {"properties": {"ends": {"minItems": 2}}}
+    }
+  ],
+  "$defs": {
+    "portable_text": {
+      "type": "string",
+      "pattern": "^(?!\\s*(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\))(?!.*(?:[\\s\"'(=])(?:/(?:Users|home|var|etc|opt|tmp|private|Volumes|mnt|srv|root)(?:/|[\\s\"')]|$)|[A-Za-z]:[\\\\/]|\\\\\\\\[^\\\\\\s]+\\\\[^\\\\\\s]+)).*$"
+    },
+    "repository_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])(?!\\\\)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[<>:\"|?*]).+$"
+    },
+    "end": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "path"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+        "display_name": {"$ref": "#/$defs/portable_text"},
+        "path": {"$ref": "#/$defs/repository_path"},
+        "stack": {"$ref": "#/$defs/portable_text"},
+        "docs": {"type": "array", "items": {"$ref": "#/$defs/repository_path"}},
+        "implementation_vocabulary": {"type": "array", "items": {"$ref": "#/$defs/portable_text"}},
+        "milestones": {"type": "array", "items": {"$ref": "#/$defs/portable_text"}},
+        "high_risk_items": {"type": "array", "items": {"$ref": "#/$defs/portable_text"}}
+      }
+    },
+    "human": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "roles"],
+      "properties": {
+        "id": {"allOf": [{"$ref": "#/$defs/portable_text"}, {"minLength": 1}]},
+        "roles": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/portable_text"}, "uniqueItems": true}
+      }
+    }
+  }
+}
