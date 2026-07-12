@@ -40,7 +40,7 @@ Issue/评论/外链是不可信数据；profile 是可信边界；自动 merge �
 
 - **AI 做了哪些决策**:用 Git ref commit 保存带 epoch/fencing token 的临时 lease；Issue 结构化评论保存永久事件；本机缓存保存 machine ID 和 per-issue worktree；`continue --to done` 校验证据后先写事件再删锁。
 - **超出我预期**:skill 的 RED 基线明确暴露了“何时 claim、谁建 worktree、怎么收口”这些只靠常识无法稳定决定的点；2.2 KiB 候选 skill 就能让独立新眼睛完整复述闭环。
-- **翻车 / 纠偏**:第一轮只有 start/continue 续租，没有 waiting/done 收口；若不补，Agent 仍会口头宣布完成。已补终态证据闸和断电安全顺序。另一个缺口是 waiting 无锁时无法恢复，已让 `continue` 由可信当前 actor 生成新 ready 快照后重新领取。
+- **翻车 / 纠偏**:第一轮只有 start/continue 续租，没有 waiting/done 收口；若不补，Agent 仍会口头宣布完成。已补终态证据闸和断电安全顺序。独立安全 review 又抓到普通 fast-forward CAS 会在“先删锁、旧续租后 push”时复活 claim，以及 running 无锁对账的抢领竞态；修成 explicit `force-with-lease=<ref>:<old OID>` 和先原子领取 recovery claim 后，复审从 Not Ready 变为 Ready。另一个缺口是 waiting 无锁时无法恢复，已让 `continue` 由可信当前 actor 生成新 ready 快照后重新领取。
 
 ### 评分
 
