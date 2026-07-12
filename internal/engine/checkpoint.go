@@ -395,7 +395,7 @@ func rollbackProjectLocked(projectRoot string, checkpointID string, profile conf
 	if strings.TrimSpace(targetLock.GeneratorVersion) == "" || strings.TrimSpace(targetLock.RulesVersion) == "" {
 		return fmt.Errorf("checkpoint %s lock is missing generator or rules version; project was not changed", checkpointID)
 	}
-	if profile.SchemaVersion != manifest.ProfileSchemaVersion || profile.SOPVersion != manifest.SOPVersion {
+	if !manifest.SupportsProfileSchema(profile.SchemaVersion) || profile.SOPVersion != manifest.SOPVersion {
 		return errors.New("current profile is incompatible with checkpoint engine/assets; project was not changed")
 	}
 	targetProfileData, err := os.ReadFile(filepath.Join(root, "profile.json"))
@@ -410,7 +410,7 @@ func rollbackProjectLocked(projectRoot string, checkpointID string, profile conf
 	if err != nil {
 		return fmt.Errorf("parse checkpoint profile: %w; project was not changed", err)
 	}
-	if targetProfile.SchemaVersion != manifest.ProfileSchemaVersion {
+	if !manifest.SupportsProfileSchema(targetProfile.SchemaVersion) {
 		return fmt.Errorf("checkpoint %s profile schema %d is unsupported by the current engine; project was not changed", checkpointID, targetProfile.SchemaVersion)
 	}
 	if targetProfile.SOPVersion != targetLock.SOPVersion {

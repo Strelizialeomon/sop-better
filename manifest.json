@@ -2,6 +2,7 @@
   "schema_version": 1,
   "sop_version": "0.1.0",
   "profile_schema_version": 1,
+  "profile_schema_versions": [1, 2],
   "rules_version": "2026-07-10",
   "standard": {
     "path": "STANDARD.md",
@@ -51,6 +52,12 @@
       "rule_ids": ["SOP-CORE", "SOP-EVIDENCE", "SOP-REVIEW", "SOP-PUSHBACK", "SOP-HOUSE-STYLE", "SOP-ACTIVE-ADVICE", "SOP-STRUCTURE-BASE"],
       "slots": ["project_name", "default_branch", "risk_guidance"],
       "references": ["issue-pr-workflow", "structure-evolution-adr"]
+    },
+    "base.root-agents-loop": {
+      "template": "master/base/AGENTS-loop.md",
+      "rule_ids": ["SOP-CORE", "SOP-EVIDENCE", "SOP-REVIEW", "SOP-PUSHBACK", "SOP-HOUSE-STYLE", "SOP-ACTIVE-ADVICE", "SOP-STRUCTURE-BASE"],
+      "slots": ["project_name", "risk_guidance"],
+      "references": []
     },
     "base.root-collaboration-reference": {
       "template": "master/base/root-collaboration-reference.md",
@@ -169,7 +176,8 @@
       "management": "block",
       "marker_style": "html",
       "components": [
-        {"id": "base.root-agents", "when": "always"},
+        {"id": "base.root-agents", "when": "legacy"},
+        {"id": "base.root-agents-loop", "when": "loop"},
         {"id": "base.root-collaboration-reference", "when": "collaborators_or_parallel"},
         {"id": "multiend.root-constraints", "when": "multiend"}
       ]

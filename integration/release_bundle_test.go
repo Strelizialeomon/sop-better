@@ -61,6 +61,7 @@ func TestBuildCreatesVersionedVerifiedBundle(t *testing.T) {
 	assertSameFile(t, filepath.Join(sourceRoot, "master", "base.txt"), filepath.Join(bundleRoot, "assets", "master", "base.txt"))
 	assertSameFile(t, filepath.Join(sourceRoot, "schemas", "profile.schema.json"), filepath.Join(bundleRoot, "assets", "schemas", "profile.schema.json"))
 	assertSameFile(t, filepath.Join(sourceRoot, "skills", "sop-init", "SKILL.md"), filepath.Join(bundleRoot, "marketplace", "plugins", "sop-better", "skills", "sop-init", "SKILL.md"))
+	assertSameFile(t, filepath.Join(sourceRoot, "skills", "sop-run", "SKILL.md"), filepath.Join(bundleRoot, "marketplace", "plugins", "sop-better", "skills", "sop-run", "SKILL.md"))
 	assertSameFile(t, filepath.Join(sourceRoot, "STANDARD.md"), filepath.Join(bundleRoot, "marketplace", "plugins", "sop-better", "rules", "STANDARD.md"))
 	for _, skill := range []string{"sop-init", "sop-audit"} {
 		skillDir := filepath.Join(bundleRoot, "marketplace", "plugins", "sop-better", "skills", skill)
@@ -798,6 +799,7 @@ func createReleaseSource(t *testing.T, version string) string {
 	writeFile(t, filepath.Join(root, "schemas", "profile.schema.json"), []byte("{\"type\":\"object\"}\n"))
 	writeFile(t, filepath.Join(root, "skills", "sop-init", "SKILL.md"), []byte("---\nname: sop-init\ndescription: Initialize a test SOP.\n---\n\n# SOP init\n\nRules: ../../rules/STANDARD.md\nSchema: ../../rules/schemas/profile.schema.json\n"))
 	writeFile(t, filepath.Join(root, "skills", "sop-audit", "SKILL.md"), []byte("---\nname: sop-audit\ndescription: Audit a test SOP.\n---\n\n# SOP audit\n\nRules: ../../rules/STANDARD.md\nSchema: ../../rules/schemas/profile.schema.json\n"))
+	writeFile(t, filepath.Join(root, "skills", "sop-run", "SKILL.md"), []byte("---\nname: sop-run\ndescription: Run a test SOP task.\n---\n\n# SOP run\n"))
 	return root
 }
 

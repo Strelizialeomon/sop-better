@@ -19,14 +19,15 @@ var (
 )
 
 type Manifest struct {
-	SchemaVersion        int                      `json:"schema_version"`
-	SOPVersion           string                   `json:"sop_version"`
-	ProfileSchemaVersion int                      `json:"profile_schema_version"`
-	RulesVersion         string                   `json:"rules_version"`
-	Standard             StandardSpec             `json:"standard"`
-	Slots                map[string]SlotSpec      `json:"slots"`
-	Components           map[string]ComponentSpec `json:"components"`
-	Outputs              []OutputSpec             `json:"outputs"`
+	SchemaVersion         int                      `json:"schema_version"`
+	SOPVersion            string                   `json:"sop_version"`
+	ProfileSchemaVersion  int                      `json:"profile_schema_version"`
+	ProfileSchemaVersions []int                    `json:"profile_schema_versions,omitempty"`
+	RulesVersion          string                   `json:"rules_version"`
+	Standard              StandardSpec             `json:"standard"`
+	Slots                 map[string]SlotSpec      `json:"slots"`
+	Components            map[string]ComponentSpec `json:"components"`
+	Outputs               []OutputSpec             `json:"outputs"`
 }
 
 type StandardSpec struct {
@@ -89,6 +90,21 @@ func LoadManifest(path string) (Manifest, error) {
 	if manifest.ProfileSchemaVersion != 1 {
 		return Manifest{}, errors.New("manifest.profile_schema_version: must be 1")
 	}
+	if len(manifest.ProfileSchemaVersions) > 0 {
+		seen := make(map[int]struct{}, len(manifest.ProfileSchemaVersions))
+		for index, version := range manifest.ProfileSchemaVersions {
+			if version != 1 && version != 2 {
+				return Manifest{}, fmt.Errorf("manifest.profile_schema_versions[%d]: must be 1 or 2", index)
+			}
+			if _, exists := seen[version]; exists {
+				return Manifest{}, fmt.Errorf("manifest.profile_schema_versions[%d]: is duplicated", index)
+			}
+			seen[version] = struct{}{}
+		}
+		if _, includesDefault := seen[manifest.ProfileSchemaVersion]; !includesDefault {
+			return Manifest{}, errors.New("manifest.profile_schema_versions: must include profile_schema_version")
+		}
+	}
 	if !semanticVersionPattern.MatchString(manifest.SOPVersion) {
 		return Manifest{}, errors.New("manifest.sop_version: must be semantic version X.Y.Z")
 	}
@@ -99,6 +115,18 @@ func LoadManifest(path string) (Manifest, error) {
 		return Manifest{}, err
 	}
 	return manifest, nil
+}
+
+func (manifest Manifest) SupportsProfileSchema(version int) bool {
+	if len(manifest.ProfileSchemaVersions) == 0 {
+		return version == manifest.ProfileSchemaVersion
+	}
+	for _, supported := range manifest.ProfileSchemaVersions {
+		if version == supported {
+			return true
+		}
+	}
+	return false
 }
 
 func validateManifestRequiredFields(data []byte, manifest Manifest) error {
@@ -321,7 +349,7 @@ func (manifest Manifest) ValidateAssets(assetRoot string) error {
 
 func knownCondition(condition string) bool {
 	switch condition {
-	case "always", "collaborators", "multiend", "parallel", "serial", "collaborators_or_parallel":
+	case "always", "collaborators", "multiend", "parallel", "serial", "collaborators_or_parallel", "legacy", "loop":
 		return true
 	default:
 		return false

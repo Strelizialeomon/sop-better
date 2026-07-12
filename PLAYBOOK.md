@@ -312,3 +312,8 @@
 - **前提**:会删除、恢复或回退项目文件的 SOP 工具,必须同时提供本机状态目录里的可信 provenance / transaction authorization、精确 `diff`、原子事务、故障注入和失败前后快照;项目自己可改的 lock / journal 只能描述状态,不能单独授权动作。
 - **证据**:exp-037
 - **代价 / 翻车点**:换新机器要先用未改动的当前 profile + 匹配版本跑一次完整 `check` 建立本机信任;本结论只在本地发布通道和 schema 1 做到 L3 静态 / 本机验证,不能外推成公网供应链、真实 Windows 或跨 schema 已完成。
+
+### ✅ 长运行 Agent SOP 要靠短入口 + 机械状态，不靠 agent 读全文拼流程
+- **前提**:唯一写权落成原子 claim + epoch/fencing token；目标、路径、checks 和 risk 落成可信 capsule；`done` 由验收、checks、独立 review、PR 和最终验证的证据闸决定；先跑无 skill 压力基线，证明入口确实消除了顺序歧义。
+- **证据**:exp-038
+- **代价 / 翻车点**:当前只完成隔离 worktree、Git 裸仓竞态与 fake GitHub API 验证；真实 Windows、双登录 GitHub 网络分区、ruleset / CI claim-ref 隔离和后台 daemon 未验，不得标稳定版。

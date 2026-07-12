@@ -298,6 +298,7 @@ func rejectOutputOverlap(outputRoot, sourceRoot string) error {
 		filepath.Join(sourceRoot, "schemas"),
 		filepath.Join(sourceRoot, "skills", "sop-init"),
 		filepath.Join(sourceRoot, "skills", "sop-audit"),
+		filepath.Join(sourceRoot, "skills", "sop-run"),
 	} {
 		resolvedSnapshot, err := canonicalPath(snapshot)
 		if err != nil {
@@ -886,6 +887,7 @@ func populate(stage, sourceRoot, pluginRoot string, options Options, contract so
 		{filepath.Join(assetRoot, "schemas"), filepath.Join(pluginOutput, "rules", "schemas")},
 		{filepath.Join(sourceRoot, "skills", "sop-init"), filepath.Join(pluginOutput, "skills", "sop-init")},
 		{filepath.Join(sourceRoot, "skills", "sop-audit"), filepath.Join(pluginOutput, "skills", "sop-audit")},
+		{filepath.Join(sourceRoot, "skills", "sop-run"), filepath.Join(pluginOutput, "skills", "sop-run")},
 	} {
 		count, err := copyTree(pair[0], pair[1])
 		if err != nil {
@@ -1110,6 +1112,7 @@ func verifySnapshotCopies(root string) error {
 	for _, path := range []string{
 		"marketplace/plugins/sop-better/skills/sop-init/SKILL.md",
 		"marketplace/plugins/sop-better/skills/sop-audit/SKILL.md",
+		"marketplace/plugins/sop-better/skills/sop-run/SKILL.md",
 	} {
 		if _, err := os.Stat(filepath.Join(root, filepath.FromSlash(path))); err != nil {
 			return fmt.Errorf("required snapshot %s: %w", path, err)

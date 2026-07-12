@@ -33,6 +33,27 @@ type Profile struct {
 	HouseStyle     []string `json:"house_style"`
 	RiskItems      []string `json:"risk_items,omitempty"`
 	ProdInfraNote  string   `json:"prod_infra_note,omitempty"`
+	Runtime        *Runtime `json:"runtime,omitempty"`
+}
+
+type Runtime struct {
+	Mode                     string              `json:"mode"`
+	Tracker                  string              `json:"tracker"`
+	StartMode                string              `json:"start_mode"`
+	AutoMerge                string              `json:"auto_merge"`
+	LeaseTimeoutSeconds      int                 `json:"lease_timeout_seconds"`
+	HeartbeatIntervalSeconds int                 `json:"heartbeat_interval_seconds"`
+	Trust                    RuntimeTrust        `json:"trust"`
+	Checks                   map[string][]string `json:"checks"`
+}
+
+type RuntimeTrust struct {
+	GitHub GitHubTrust `json:"github"`
+}
+
+type GitHubTrust struct {
+	TrustedActorIDs []int64 `json:"trusted_actor_ids"`
+	TrustedAppIDs   []int64 `json:"trusted_app_ids"`
 }
 
 type Project struct {
@@ -81,8 +102,8 @@ func ParseProfile(data []byte) (Profile, error) {
 	if err := rejectJSONNull(raw, "profile"); err != nil {
 		return Profile{}, err
 	}
-	if profile.SchemaVersion != 1 {
-		return Profile{}, errors.New("profile.schema_version: must be 1")
+	if profile.SchemaVersion != 1 && profile.SchemaVersion != 2 {
+		return Profile{}, errors.New("profile.schema_version: must be 1 or 2")
 	}
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
@@ -126,8 +147,19 @@ func rejectJSONNull(value any, path string) error {
 }
 
 func (profile Profile) Validate() error {
-	if profile.SchemaVersion != 1 {
-		return errors.New("profile.schema_version: must be 1")
+	if profile.SchemaVersion != 1 && profile.SchemaVersion != 2 {
+		return errors.New("profile.schema_version: must be 1 or 2")
+	}
+	if profile.SchemaVersion == 2 && profile.Runtime == nil {
+		return errors.New("profile.runtime: is required for schema_version 2")
+	}
+	if profile.SchemaVersion == 1 && profile.Runtime != nil {
+		return errors.New("profile.runtime: requires schema_version 2")
+	}
+	if profile.Runtime != nil {
+		if err := profile.Runtime.Validate(); err != nil {
+			return err
+		}
 	}
 	if !semanticVersionPattern.MatchString(profile.SOPVersion) {
 		return errors.New("profile.sop_version: must be semantic version X.Y.Z")
@@ -175,6 +207,17 @@ func (profile Profile) Validate() error {
 	case "reversible", "controlled", "high":
 	default:
 		return errors.New("profile.risk: must be one of reversible, controlled, high")
+	}
+	if profile.Runtime != nil {
+		if profile.Risk != "reversible" {
+			return errors.New("profile.risk: Loop MVP requires reversible risk")
+		}
+		if profile.ParallelAgents {
+			return errors.New("profile.parallel_agents: Loop MVP does not support parallel_agents")
+		}
+		if len(profile.Ends) != 1 {
+			return errors.New("profile.ends: Loop MVP requires exactly 1 end")
+		}
 	}
 	if profile.ParallelAgents && len(profile.Ends) < 2 {
 		return errors.New("profile.parallel_agents: requires at least 2 ends")
@@ -277,6 +320,73 @@ func (profile Profile) Validate() error {
 			}
 			roles[role] = struct{}{}
 		}
+	}
+	return nil
+}
+
+func (runtime Runtime) Validate() error {
+	if runtime.Mode != "loop-v1-experimental" {
+		return errors.New("profile.runtime.mode: must be loop-v1-experimental")
+	}
+	if runtime.Tracker != "github" {
+		return errors.New("profile.runtime.tracker: must be github")
+	}
+	if runtime.StartMode != "manual" {
+		return errors.New("profile.runtime.start_mode: must be manual in loop-v1-experimental")
+	}
+	if runtime.AutoMerge != "disabled" {
+		return errors.New("profile.runtime.auto_merge: must be disabled in the Loop MVP")
+	}
+	if runtime.LeaseTimeoutSeconds <= 0 {
+		return errors.New("profile.runtime.lease_timeout_seconds: must be positive")
+	}
+	if runtime.HeartbeatIntervalSeconds <= 0 {
+		return errors.New("profile.runtime.heartbeat_interval_seconds: must be positive")
+	}
+	if runtime.HeartbeatIntervalSeconds > runtime.LeaseTimeoutSeconds/3 {
+		return errors.New("profile.runtime.heartbeat_interval_seconds: must not exceed one third of lease_timeout_seconds")
+	}
+	if len(runtime.Trust.GitHub.TrustedActorIDs) == 0 {
+		return errors.New("profile.runtime.trust.github.trusted_actor_ids: requires at least 1 trusted actor")
+	}
+	if err := validatePositiveUniqueIDs("profile.runtime.trust.github.trusted_actor_ids", runtime.Trust.GitHub.TrustedActorIDs); err != nil {
+		return err
+	}
+	if err := validatePositiveUniqueIDs("profile.runtime.trust.github.trusted_app_ids", runtime.Trust.GitHub.TrustedAppIDs); err != nil {
+		return err
+	}
+	if len(runtime.Checks) == 0 {
+		return errors.New("profile.runtime.checks: requires at least 1 check group")
+	}
+	groups := make([]string, 0, len(runtime.Checks))
+	for group := range runtime.Checks {
+		groups = append(groups, group)
+	}
+	sort.Strings(groups)
+	for _, group := range groups {
+		commands := runtime.Checks[group]
+		if len(commands) == 0 {
+			return fmt.Errorf("profile.runtime.checks.%s: requires at least 1 command", group)
+		}
+		for index, command := range commands {
+			if strings.TrimSpace(command) == "" || strings.ContainsAny(command, "\r\n") {
+				return fmt.Errorf("profile.runtime.checks.%s[%d]: must be one non-empty line", group, index)
+			}
+		}
+	}
+	return nil
+}
+
+func validatePositiveUniqueIDs(field string, ids []int64) error {
+	seen := make(map[int64]struct{}, len(ids))
+	for index, id := range ids {
+		if id <= 0 {
+			return fmt.Errorf("%s[%d]: must be positive", field, index)
+		}
+		if _, exists := seen[id]; exists {
+			return fmt.Errorf("%s[%d]: is duplicated", field, index)
+		}
+		seen[id] = struct{}{}
 	}
 	return nil
 }

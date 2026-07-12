@@ -57,6 +57,8 @@ func run(args []string) error {
 		return runRender(args[1:], assetRoot)
 	case "project":
 		return runProject(args[1:], assetRoot)
+	case "task":
+		return runTask(args[1:], assetRoot)
 	default:
 		return fmt.Errorf("unknown command %q", args[0])
 	}
@@ -258,8 +260,8 @@ func loadContract(projectRoot, assetRoot string) (config.Profile, config.Manifes
 }
 
 func validateProfileManifest(profile config.Profile, manifest config.Manifest) error {
-	if profile.SchemaVersion != manifest.ProfileSchemaVersion {
-		return fmt.Errorf("profile.schema_version %d is incompatible with manifest profile schema %d", profile.SchemaVersion, manifest.ProfileSchemaVersion)
+	if !manifest.SupportsProfileSchema(profile.SchemaVersion) {
+		return fmt.Errorf("profile.schema_version %d is incompatible with manifest supported profile schemas %v", profile.SchemaVersion, manifest.ProfileSchemaVersions)
 	}
 	if profile.SOPVersion != manifest.SOPVersion {
 		return fmt.Errorf("profile.sop_version %s is incompatible with manifest SOP version %s", profile.SOPVersion, manifest.SOPVersion)
@@ -276,6 +278,10 @@ Commands:
   render
   project checkpoints
   project rollback
+  task start <issue>
+  task continue <issue>
+  task status <issue>
+  task explain <issue>
   release check
   release diff
   release upgrade

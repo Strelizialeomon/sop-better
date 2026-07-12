@@ -613,6 +613,10 @@ func conditionMatches(condition string, profile config.Profile) (bool, error) {
 		return !profile.ParallelAgents, nil
 	case "collaborators_or_parallel":
 		return len(profile.Humans) >= 2 || profile.ParallelAgents, nil
+	case "legacy":
+		return profile.Runtime == nil, nil
+	case "loop":
+		return profile.Runtime != nil && profile.Runtime.Mode == "loop-v1-experimental", nil
 	default:
 		return false, fmt.Errorf("unknown condition %q", condition)
 	}

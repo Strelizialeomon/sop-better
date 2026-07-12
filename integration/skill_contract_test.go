@@ -77,3 +77,24 @@ func TestSopAuditSkillStartsWithMechanicalCheckWithoutCheckoutCoupling(t *testin
 		}
 	}
 }
+
+func TestSopRunSkillKeepsTheRuntimeLoopClosed(t *testing.T) {
+	repoRoot := repositoryRoot(t)
+	data, err := os.ReadFile(filepath.Join(repoRoot, "skills", "sop-run", "SKILL.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	contents := string(data)
+	for _, required := range []string{
+		"sopctl task start", "sopctl task continue", "sopctl task status", "任务胶囊",
+		"不得手工创建 worktree", "测试 → 独立 review → 修复", "done", "waiting", "running",
+		"不得阅读整份运行时设计来决定下一步", "远端副作用",
+	} {
+		if !strings.Contains(contents, required) {
+			t.Errorf("sop-run is missing %q", required)
+		}
+	}
+	if len(data) > 4096 {
+		t.Errorf("sop-run is %d bytes, want at most 4096", len(data))
+	}
+}
