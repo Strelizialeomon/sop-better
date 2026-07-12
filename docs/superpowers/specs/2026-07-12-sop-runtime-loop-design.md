@@ -96,15 +96,15 @@ Codex Goal / runner
 
 本设计优先采用官方一手资料:
 
-1. Codex 会聚合全局、仓库和当前目录的 `AGENTS.md`;项目目录中的 `AGENTS.md` 聚合默认受 32 KiB 上限约束。skills metadata 也会加入初始输入,但官方资料没有说明它与 project-doc 共用同一个 32 KiB 上限。常驻指令仍应是高信号入口,具体流程按需加载。  
+1. Codex 会聚合全局、仓库和当前目录的 `AGENTS.md`;项目目录中的 `AGENTS.md` 聚合默认受 32 KiB 上限约束。skills metadata 也会加入初始输入,但官方资料没有说明它与 project-doc 共用同一个 32 KiB 上限。常驻指令仍应是高信号入口,具体流程按需加载。
    [OpenAI · Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)
-2. OpenAI 的 Harness Engineering 实践把“可读环境、可执行约束、测试和反馈 Loop”作为 agent 可靠性的地基;文档不足以独自保持系统一致。  
+2. OpenAI 的 Harness Engineering 实践把“可读环境、可执行约束、测试和反馈 Loop”作为 agent 可靠性的地基;文档不足以独自保持系统一致。
    [OpenAI · Harness engineering](https://openai.com/index/harness-engineering/)
-3. Symphony 把 Issue Tracker 作为控制面,每个任务映射到独立 workspace,持续运行、失败恢复;但其后续经验也明确反对把 agent 当成死板状态节点,应给目标、工具和边界。  
+3. Symphony 把 Issue Tracker 作为控制面,每个任务映射到独立 workspace,持续运行、失败恢复;但其后续经验也明确反对把 agent 当成死板状态节点,应给目标、工具和边界。
    [OpenAI · Symphony 介绍](https://openai.com/index/open-source-codex-orchestration-symphony/) · [Symphony 规范](https://github.com/openai/symphony)
-4. OpenAI 长任务指南强调可验证目标、可审阅的外部记忆、持久线程、定期唤醒和不可逆动作的人审。  
+4. OpenAI 长任务指南强调可验证目标、可审阅的外部记忆、持久线程、定期唤醒和不可逆动作的人审。
    [OpenAI · Codex-maxxing for long-running work](https://openai.com/index/codex-maxxing-long-running-work/)
-5. GitHub Git References API 支持创建冲突;GitHub GraphQL `updateRefs` 支持用 `beforeOid` 比较旧值并原子更新,可用于跨机器唯一领取与安全接管。  
+5. GitHub Git References API 支持创建冲突;GitHub GraphQL `updateRefs` 支持用 `beforeOid` 比较旧值并原子更新,可用于跨机器唯一领取与安全接管。
    [GitHub · Git References REST API](https://docs.github.com/en/rest/git/refs) · [GitHub · Git GraphQL reference](https://docs.github.com/en/graphql/reference/git)
 
 这些资料只提供方向。最终是否放行,仍以本项目的机械测试和真实 Codex 对照实验为准。
