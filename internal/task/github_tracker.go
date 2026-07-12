@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os/exec"
 	"regexp"
 	"sort"
@@ -33,6 +34,53 @@ type GitHubRepository struct {
 	NodeID        string `json:"node_id"`
 	DefaultBranch string `json:"default_branch"`
 	FullName      string `json:"full_name"`
+	Permissions   struct {
+		Push bool `json:"push"`
+	} `json:"permissions"`
+}
+
+func (tracker GitHubTracker) PreflightWrite(ctx context.Context, repository GitHubRepository) error {
+	if !repository.Permissions.Push {
+		return errors.New("GitHub preflight cannot prove contents write permission")
+	}
+	var rulesets []json.RawMessage
+	if err := tracker.apiJSON(ctx, nil, &rulesets, "repos/{owner}/{repo}/rulesets?includes_parents=true"); err != nil {
+		return fmt.Errorf("GitHub preflight cannot inspect repository rulesets: %w", err)
+	}
+	return nil
+}
+
+func (tracker GitHubTracker) VerifyMergedPullRequest(ctx context.Context, repoNodeID, fullName, pullRequestURL string) (string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(pullRequestURL))
+	if err != nil || parsed.Scheme != "https" || !strings.EqualFold(parsed.Host, "github.com") {
+		return "", errors.New("completion pull request URL must be an https://github.com URL")
+	}
+	parts := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+	if len(parts) != 4 || parts[0]+"/"+parts[1] != fullName || parts[2] != "pull" {
+		return "", errors.New("completion pull request must belong to the current repository")
+	}
+	number, err := strconv.Atoi(parts[3])
+	if err != nil || number <= 0 {
+		return "", errors.New("completion pull request URL has an invalid number")
+	}
+	var pull struct {
+		MergedAt *time.Time `json:"merged_at"`
+		Head     struct {
+			SHA string `json:"sha"`
+		} `json:"head"`
+		Base struct {
+			Repo struct {
+				NodeID string `json:"node_id"`
+			} `json:"repo"`
+		} `json:"base"`
+	}
+	if err := tracker.apiJSON(ctx, nil, &pull, "repos/{owner}/{repo}/pulls/"+strconv.Itoa(number)); err != nil {
+		return "", err
+	}
+	if pull.Base.Repo.NodeID != repoNodeID || pull.MergedAt == nil || strings.TrimSpace(pull.Head.SHA) == "" {
+		return "", errors.New("completion pull request is not a merged PR in the current repository")
+	}
+	return pull.Head.SHA, nil
 }
 
 type GitHubActor struct {
@@ -217,6 +265,28 @@ func (tracker GitHubTracker) AppendStateEvent(ctx context.Context, repoNodeID st
 		return IssueState{}, ErrStateConflict
 	}
 	return updated, nil
+}
+
+func (tracker GitHubTracker) ProjectState(ctx context.Context, _ string, issueNumber int, state BusinessState) error {
+	payload := map[string]string{"state": "open"}
+	if state == StateDone {
+		payload["state"] = "closed"
+		payload["state_reason"] = "completed"
+	}
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	endpoint := "repos/{owner}/{repo}/issues/" + strconv.Itoa(issueNumber)
+	output, err := tracker.runGH(ctx, data, "api", endpoint, "--method", http.MethodPatch, "--input", "-")
+	if err != nil {
+		return err
+	}
+	var response githubIssue
+	if err := json.Unmarshal([]byte(output), &response); err != nil {
+		return fmt.Errorf("decode GitHub issue projection response: %w", err)
+	}
+	return nil
 }
 
 func (tracker GitHubTracker) ServerClock() ServerClock {

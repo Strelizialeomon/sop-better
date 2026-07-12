@@ -37,6 +37,12 @@ sopctl task continue <issue> --to done --reason "最终结果" --evidence <evide
 
 `done` 证据必须覆盖验收、profile 的全部 checks、独立 review 零阻断、PR URL 和 PR 头部最终验证；命令会先写永久事件，再释放 claim。不得手工评论假装收口。
 
+`evidence.json` 最小格式；`sopctl` 会联网确认 PR 已 merge、review SHA 等于 PR head，并在该 worktree 重跑 profile checks：
+
+```json
+{"acceptance_verified":true,"review_completed":true,"blocking_findings":0,"review_reference":"<review URL/记录>","reviewed_head_sha":"<PR head SHA>","pull_request_url":"<PR URL>","final_verification":"<验收证据摘要>"}
+```
+
 ## 何时问 owner
 
 仅在命令要求确认、目标/范围需要改变、出现高风险动作、可信证据不足或冲突无法可靠排序时询问。普通实现选择、可逆修复和 review 循环不反复打断 owner。

@@ -36,6 +36,7 @@ func TestControllerStartsAndContinuesSameRun(t *testing.T) {
 	leases := newTestLeaseService(claims)
 	reconciler := Reconciler{Claims: claims, Issues: issues, Leases: leases, NewEventID: func() (string, error) { return "evt-1", nil }}
 	repository := initWorkspaceTestRepository(t)
+	baseSHA := strings.TrimSpace(runGit(t, repository, "rev-parse", "HEAD"))
 	controller := Controller{
 		Profile: profile, Leases: leases, Reconciler: reconciler,
 		Workspaces: WorkspaceManager{Root: filepath.Join(t.TempDir(), "workspaces")},
@@ -43,7 +44,7 @@ func TestControllerStartsAndContinuesSameRun(t *testing.T) {
 
 	started, err := controller.Start(context.Background(), StartRequest{
 		Snapshot: snapshot, Attestation: attestation, CurrentActorID: 123456,
-		RunID: "run-1", MachineID: "mac-1", StateRevision: 7, BaseSHA: "abc123",
+		RunID: "run-1", MachineID: "mac-1", StateRevision: 7, BaseSHA: baseSHA,
 		RepositoryPath: repository,
 	})
 	if err != nil {
@@ -55,12 +56,20 @@ func TestControllerStartsAndContinuesSameRun(t *testing.T) {
 	claims.setNow(now.Add(time.Minute))
 	continued, err := controller.Continue(context.Background(), ContinueRequest{
 		RepoNodeID: "R_repo", IssueNumber: 31, RunID: "run-1", MachineID: "mac-1",
+		Snapshot: snapshot, Attestation: attestation, CurrentActorID: 123456, RepositoryPath: repository,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if continued.Claim.OID == started.Claim.OID {
 		t.Fatal("Continue() did not renew the lease with CAS")
+	}
+	current, exists, err := claims.Read(context.Background(), "R_repo", 31)
+	if err != nil || !exists || current.OID != continued.Claim.OID {
+		t.Fatalf("Continue() returned stale claim: current=%#v result=%#v err=%v", current, continued.Claim, err)
+	}
+	if !continued.Workspace.Resumed || continued.Capsule.SnapshotHash != started.Capsule.SnapshotHash {
+		t.Fatalf("Continue() did not restore capsule/workspace: %#v", continued)
 	}
 }
 
@@ -98,7 +107,8 @@ func TestControllerCompletesOnlyWithChecksReviewPRAndFinalVerification(t *testin
 		Evidence: CompletionEvidence{
 			AcceptanceVerified: true, ChecksPassed: map[string]bool{"test": true},
 			ReviewCompleted: true, BlockingFindings: 0,
-			PullRequestURL: "https://github.com/acme/repo/pull/31", FinalVerification: "go test ./... passed after PR head",
+			ReviewReference: "github-pr-review://31", ReviewedHeadSHA: "abc123",
+			PullRequestURL: "https://github.com/acme/repo/pull/31", MergedHeadSHA: "abc123", FinalVerification: "go test ./... passed after PR head",
 		},
 	})
 	if err != nil {
@@ -130,6 +140,48 @@ func TestControllerWaitingRequiresReasonAndReleasesClaim(t *testing.T) {
 	if _, exists, _ := claims.Read(context.Background(), "R_repo", 31); exists {
 		t.Fatal("waiting task retained its claim")
 	}
+}
+
+func TestControllerLeavesClaimForReconcileWhenDoneProjectionFails(t *testing.T) {
+	profile := loopProfile()
+	now := time.Date(2026, 7, 12, 3, 0, 0, 0, time.UTC)
+	claims := newMemoryClaimStore(now)
+	baseIssues := &memoryIssueStateStore{state: StateRunning, revision: 8}
+	issues := &projectingIssueStore{memoryIssueStateStore: baseIssues, fail: true}
+	leases := newTestLeaseService(claims)
+	claim := mustClaim(t, leases, "run-1")
+	reconciler := Reconciler{Claims: claims, Issues: issues, Leases: leases, NewEventID: func() (string, error) { return "evt-done", nil }}
+	controller := Controller{Profile: profile, Leases: leases, Reconciler: reconciler}
+	evidence := CompletionEvidence{
+		AcceptanceVerified: true, ChecksPassed: map[string]bool{"test": true}, ReviewCompleted: true,
+		ReviewReference: "review://1", ReviewedHeadSHA: "abc", PullRequestURL: "https://github.com/acme/repo/pull/31",
+		MergedHeadSHA: "abc", FinalVerification: "passed",
+	}
+	if _, err := controller.Close(context.Background(), CloseRequest{Claim: claim, Target: StateDone, Reason: "done", Evidence: evidence}); err == nil {
+		t.Fatal("projection failure unexpectedly completed")
+	}
+	if _, exists, _ := claims.Read(context.Background(), "R_repo", 31); !exists {
+		t.Fatal("claim was released before done projection succeeded")
+	}
+	issues.fail = false
+	if _, err := reconciler.Reconcile(context.Background(), ReconcileRequest{RepoNodeID: "R_repo", IssueNumber: 31}); err != nil {
+		t.Fatal(err)
+	}
+	if _, exists, _ := claims.Read(context.Background(), "R_repo", 31); exists {
+		t.Fatal("reconcile did not release claim after projection repair")
+	}
+}
+
+type projectingIssueStore struct {
+	*memoryIssueStateStore
+	fail bool
+}
+
+func (store *projectingIssueStore) ProjectState(context.Context, string, int, BusinessState) error {
+	if store.fail {
+		return errors.New("projection failed")
+	}
+	return nil
 }
 
 func approvedTask(t *testing.T, profile config.Profile) (Snapshot, Attestation) {

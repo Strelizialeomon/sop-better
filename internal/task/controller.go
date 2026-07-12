@@ -35,15 +35,21 @@ type StartResult struct {
 }
 
 type ContinueRequest struct {
-	RepoNodeID  string
-	IssueNumber int
-	RunID       string
-	MachineID   string
+	RepoNodeID     string
+	IssueNumber    int
+	RunID          string
+	MachineID      string
+	Snapshot       Snapshot
+	Attestation    Attestation
+	CurrentActorID int64
+	RepositoryPath string
 }
 
 type ContinueResult struct {
-	Claim StoredClaim
-	State ReconcileResult
+	Claim     StoredClaim
+	State     ReconcileResult
+	Capsule   Capsule
+	Workspace Workspace
 }
 
 type CompletionEvidence struct {
@@ -51,7 +57,10 @@ type CompletionEvidence struct {
 	ChecksPassed       map[string]bool `json:"checks_passed"`
 	ReviewCompleted    bool            `json:"review_completed"`
 	BlockingFindings   int             `json:"blocking_findings"`
+	ReviewReference    string          `json:"review_reference"`
+	ReviewedHeadSHA    string          `json:"reviewed_head_sha"`
 	PullRequestURL     string          `json:"pull_request_url"`
+	MergedHeadSHA      string          `json:"merged_head_sha"`
 	FinalVerification  string          `json:"final_verification"`
 }
 
@@ -94,7 +103,14 @@ func (controller Controller) Start(ctx context.Context, request StartRequest) (S
 	if err != nil {
 		return StartResult{}, fmt.Errorf("reconcile claimed task: %w", err)
 	}
-	workspace, err := controller.Workspaces.Prepare(ctx, request.RepositoryPath, request.Snapshot.IssueNumber, controller.Profile.Project.DefaultBranch)
+	claim, exists, err := controller.Leases.Store.Read(ctx, request.Snapshot.RepoNodeID, request.Snapshot.IssueNumber)
+	if err != nil {
+		return StartResult{}, fmt.Errorf("read guarded task claim: %w", err)
+	}
+	if !exists || claim.Claim.RunID != request.RunID || claim.Claim.MachineID != request.MachineID {
+		return StartResult{}, ErrLeaseLost
+	}
+	workspace, err := controller.Workspaces.Prepare(ctx, request.RepositoryPath, request.Snapshot.IssueNumber, request.BaseSHA)
 	if err != nil {
 		return StartResult{}, err
 	}
@@ -115,6 +131,10 @@ func (controller Controller) Continue(ctx context.Context, request ContinueReque
 	if current.Claim.RunID != strings.TrimSpace(request.RunID) || current.Claim.MachineID != strings.TrimSpace(request.MachineID) {
 		return ContinueResult{}, ErrLeaseLost
 	}
+	capsule, err := BuildCapsule(controller.Profile, request.Snapshot, request.Attestation, request.CurrentActorID)
+	if err != nil {
+		return ContinueResult{}, err
+	}
 	renewed, err := controller.Leases.Renew(ctx, current)
 	if err != nil {
 		return ContinueResult{}, err
@@ -126,7 +146,18 @@ func (controller Controller) Continue(ctx context.Context, request ContinueReque
 			return ContinueResult{}, err
 		}
 	}
-	return ContinueResult{Claim: renewed, State: state}, nil
+	renewed, exists, err = controller.Leases.Store.Read(ctx, request.RepoNodeID, request.IssueNumber)
+	if err != nil {
+		return ContinueResult{}, fmt.Errorf("read guarded task claim after reconcile: %w", err)
+	}
+	if !exists || renewed.Claim.RunID != request.RunID || renewed.Claim.MachineID != request.MachineID {
+		return ContinueResult{}, ErrLeaseLost
+	}
+	workspace, err := controller.Workspaces.Prepare(ctx, request.RepositoryPath, request.IssueNumber, current.Claim.BaseSHA)
+	if err != nil {
+		return ContinueResult{}, err
+	}
+	return ContinueResult{Claim: renewed, State: state, Capsule: capsule, Workspace: workspace}, nil
 }
 
 func (controller Controller) Close(ctx context.Context, request CloseRequest) (ReconcileResult, error) {
@@ -144,11 +175,7 @@ func (controller Controller) Close(ctx context.Context, request CloseRequest) (R
 	default:
 		return ReconcileResult{}, errors.New("task can close only to waiting or done")
 	}
-	renewed, err := controller.Leases.Renew(ctx, request.Claim)
-	if err != nil {
-		return ReconcileResult{}, err
-	}
-	return controller.Reconciler.Transition(ctx, renewed, request.Target, request.Reason, evidence)
+	return controller.Reconciler.Transition(ctx, request.Claim, request.Target, request.Reason, evidence)
 }
 
 func validateCompletionEvidence(profile config.Profile, evidence CompletionEvidence) error {
@@ -166,8 +193,14 @@ func validateCompletionEvidence(profile config.Profile, evidence CompletionEvide
 	if !evidence.ReviewCompleted || evidence.BlockingFindings != 0 {
 		return errors.New("done requires completed independent review with zero blocking findings")
 	}
+	if strings.TrimSpace(evidence.ReviewReference) == "" || evidence.ReviewedHeadSHA != evidence.MergedHeadSHA {
+		return errors.New("done requires review evidence bound to the merged PR head SHA")
+	}
 	if strings.TrimSpace(evidence.PullRequestURL) == "" {
 		return errors.New("done requires a pull request URL")
+	}
+	if strings.TrimSpace(evidence.MergedHeadSHA) == "" {
+		return errors.New("done requires GitHub-verified merged PR head SHA")
 	}
 	if strings.TrimSpace(evidence.FinalVerification) == "" {
 		return errors.New("done requires final verification evidence")

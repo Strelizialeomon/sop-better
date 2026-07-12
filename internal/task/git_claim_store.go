@@ -95,7 +95,8 @@ func (store *GitClaimStore) CompareAndSwap(ctx context.Context, expectedOID stri
 	if err != nil {
 		return StoredClaim{}, err
 	}
-	if _, err := store.git(ctx, nil, "push", "--porcelain", store.remote(), oid+":"+ref); err != nil {
+	lease := "--force-with-lease=" + ref + ":" + expectedOID
+	if _, err := store.git(ctx, nil, "push", "--porcelain", lease, store.remote(), oid+":"+ref); err != nil {
 		if isGitRefConflict(err) {
 			return StoredClaim{}, ErrRefConflict
 		}

@@ -22,15 +22,15 @@ type WorkspaceManager struct {
 	GitBinary string
 }
 
-func (manager WorkspaceManager) Prepare(ctx context.Context, repository string, issueNumber int, baseBranch string) (Workspace, error) {
+func (manager WorkspaceManager) Prepare(ctx context.Context, repository string, issueNumber int, baseRevision string) (Workspace, error) {
 	if strings.TrimSpace(manager.Root) == "" {
 		return Workspace{}, errors.New("workspace root is required")
 	}
 	if issueNumber <= 0 {
 		return Workspace{}, errors.New("workspace issue number must be positive")
 	}
-	if strings.TrimSpace(baseBranch) == "" {
-		return Workspace{}, errors.New("workspace base branch is required")
+	if strings.TrimSpace(baseRevision) == "" {
+		return Workspace{}, errors.New("workspace base revision is required")
 	}
 	repositoryID, repositoryPath, err := canonicalRepositoryID(repository)
 	if err != nil {
@@ -53,7 +53,13 @@ func (manager WorkspaceManager) Prepare(ctx context.Context, repository string, 
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return Workspace{}, fmt.Errorf("create workspace parent: %w", err)
 	}
-	if _, err := manager.git(ctx, repositoryPath, "worktree", "add", "-b", branch, path, baseBranch); err != nil {
+	if _, err := manager.git(ctx, repositoryPath, "show-ref", "--verify", "--quiet", "refs/heads/"+branch); err == nil {
+		if _, err := manager.git(ctx, repositoryPath, "worktree", "add", path, branch); err != nil {
+			return Workspace{}, fmt.Errorf("restore per-issue worktree: %w", err)
+		}
+		return Workspace{Path: path, Branch: branch, Resumed: true}, nil
+	}
+	if _, err := manager.git(ctx, repositoryPath, "worktree", "add", "-b", branch, path, baseRevision); err != nil {
 		return Workspace{}, fmt.Errorf("create per-issue worktree: %w", err)
 	}
 	return Workspace{Path: path, Branch: branch}, nil

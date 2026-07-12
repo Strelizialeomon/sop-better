@@ -80,6 +80,41 @@ func TestSnapshotFromIssueRejectsTemplatePlaceholder(t *testing.T) {
 	}
 }
 
+func TestGitHubTrackerRequiresCompletionPullRequestToBeMergedInSameRepository(t *testing.T) {
+	tracker := GitHubTracker{Command: func(_ context.Context, _ []byte, args ...string) (string, error) {
+		if strings.Contains(strings.Join(args, " "), "/pulls/31") {
+			return `{"number":31,"merged_at":"2026-07-12T04:00:00Z","head":{"sha":"abc123"},"base":{"repo":{"node_id":"R_repo"}}}`, nil
+		}
+		return "", fmt.Errorf("unexpected command")
+	}}
+	sha, err := tracker.VerifyMergedPullRequest(context.Background(), "R_repo", "acme/repo", "https://github.com/acme/repo/pull/31")
+	if err != nil || sha != "abc123" {
+		t.Fatalf("VerifyMergedPullRequest() sha=%q error=%v", sha, err)
+	}
+	if _, err := tracker.VerifyMergedPullRequest(context.Background(), "R_repo", "acme/repo", "https://github.com/evil/repo/pull/31"); err == nil {
+		t.Fatal("cross-repository PR URL was accepted")
+	}
+}
+
+func TestGitHubTrackerProjectsDoneByClosingIssue(t *testing.T) {
+	var payload map[string]string
+	tracker := GitHubTracker{Command: func(_ context.Context, input []byte, args ...string) (string, error) {
+		if !strings.Contains(strings.Join(args, " "), "--method PATCH") {
+			return "", fmt.Errorf("expected PATCH")
+		}
+		if err := json.Unmarshal(input, &payload); err != nil {
+			return "", err
+		}
+		return `{"number":31}`, nil
+	}}
+	if err := tracker.ProjectState(context.Background(), "R_repo", 31, StateDone); err != nil {
+		t.Fatal(err)
+	}
+	if payload["state"] != "closed" || payload["state_reason"] != "completed" {
+		t.Fatalf("projection payload = %v", payload)
+	}
+}
+
 type fakeGitHubAPI struct {
 	mu       sync.Mutex
 	comments []githubComment

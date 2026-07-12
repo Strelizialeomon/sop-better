@@ -13,7 +13,8 @@ func TestWorkspaceManagerCreatesAndResumesOneWorktreePerIssue(t *testing.T) {
 	repo := initWorkspaceTestRepository(t)
 	manager := WorkspaceManager{Root: filepath.Join(t.TempDir(), "workspaces")}
 
-	first, err := manager.Prepare(context.Background(), repo, 31, "main")
+	baseSHA := strings.TrimSpace(runGit(t, repo, "rev-parse", "HEAD"))
+	first, err := manager.Prepare(context.Background(), repo, 31, baseSHA)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +28,7 @@ func TestWorkspaceManagerCreatesAndResumesOneWorktreePerIssue(t *testing.T) {
 		t.Fatalf("checked out branch = %q, want %q", got, first.Branch)
 	}
 
-	second, err := manager.Prepare(context.Background(), repo, 31, "main")
+	second, err := manager.Prepare(context.Background(), repo, 31, baseSHA)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,16 +42,36 @@ func TestWorkspaceManagerUsesDifferentPathsForDifferentRepositories(t *testing.T
 	repoOne := initWorkspaceTestRepository(t)
 	repoTwo := initWorkspaceTestRepository(t)
 	manager := WorkspaceManager{Root: root}
-	one, err := manager.Prepare(context.Background(), repoOne, 31, "main")
+	oneBase := strings.TrimSpace(runGit(t, repoOne, "rev-parse", "HEAD"))
+	twoBase := strings.TrimSpace(runGit(t, repoTwo, "rev-parse", "HEAD"))
+	one, err := manager.Prepare(context.Background(), repoOne, 31, oneBase)
 	if err != nil {
 		t.Fatal(err)
 	}
-	two, err := manager.Prepare(context.Background(), repoTwo, 31, "main")
+	two, err := manager.Prepare(context.Background(), repoTwo, 31, twoBase)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if one.Path == two.Path {
 		t.Fatalf("repositories collided at %s", one.Path)
+	}
+}
+
+func TestWorkspaceManagerRestoresMissingWorktreeFromExistingIssueBranch(t *testing.T) {
+	repo := initWorkspaceTestRepository(t)
+	manager := WorkspaceManager{Root: filepath.Join(t.TempDir(), "workspaces")}
+	baseSHA := strings.TrimSpace(runGit(t, repo, "rev-parse", "HEAD"))
+	first, err := manager.Prepare(context.Background(), repo, 31, baseSHA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runGit(t, repo, "worktree", "remove", first.Path)
+	restored, err := manager.Prepare(context.Background(), repo, 31, baseSHA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !restored.Resumed || restored.Path != first.Path {
+		t.Fatalf("restored = %#v", restored)
 	}
 }
 

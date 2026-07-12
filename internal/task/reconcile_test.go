@@ -54,7 +54,10 @@ func TestReconcileReleasesClaimAfterPermanentStateWasWritten(t *testing.T) {
 func TestReconcileMovesOrphanedRunningIssueToWaiting(t *testing.T) {
 	fixture := newReconcileFixture(t, StateRunning)
 
-	result, err := fixture.reconciler.Reconcile(context.Background(), ReconcileRequest{RepoNodeID: "R_repo", IssueNumber: 31})
+	result, err := fixture.reconciler.Reconcile(context.Background(), ReconcileRequest{
+		RepoNodeID: "R_repo", IssueNumber: 31,
+		RecoveryClaim: &ClaimRequest{RunID: "run-reconcile", MachineID: "reconciler", ActorID: 1, BaseSHA: "abc123"},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,6 +85,25 @@ func TestReconcileDoesNotOverwriteNewerOwnerDecision(t *testing.T) {
 	}
 	if got := fixture.issues.snapshot().State; got != StateWaiting {
 		t.Fatalf("state = %q, newer owner waiting decision was overwritten", got)
+	}
+}
+
+func TestReconcileReleasesRecoveryClaimWhenStateAppendConflicts(t *testing.T) {
+	fixture := newReconcileFixture(t, StateRunning)
+	fixture.issues.beforeAppend = func(store *memoryIssueStateStore) {
+		store.beforeAppend = nil
+		store.state = StateWaiting
+		store.revision++
+	}
+	_, err := fixture.reconciler.Reconcile(context.Background(), ReconcileRequest{
+		RepoNodeID: "R_repo", IssueNumber: 31,
+		RecoveryClaim: &ClaimRequest{RunID: "run-reconcile", MachineID: "reconciler", ActorID: 1, BaseSHA: "abc123"},
+	})
+	if !errors.Is(err, ErrStateConflict) {
+		t.Fatalf("Reconcile() error = %v, want ErrStateConflict", err)
+	}
+	if _, exists, _ := fixture.claims.Read(context.Background(), "R_repo", 31); exists {
+		t.Fatal("recovery claim leaked after append conflict")
 	}
 }
 
