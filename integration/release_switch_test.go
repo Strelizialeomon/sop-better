@@ -355,11 +355,8 @@ func TestSameVersionInstallerReconcilesHealthAndPrintsCustomStateUsage(t *testin
 		t.Fatalf("initial install: %v", err)
 	}
 	bootstrapPath := filepath.Join(stateHome, "bin", "sopctl"+executableSuffix())
-	stateHomeUsage := "SOP_STATE_HOME='" + stateHome + "'"
-	if runtime.GOOS == "windows" {
-		stateHomeUsage = "$env:SOP_STATE_HOME = '" + stateHome + "'"
-	}
-	for _, expected := range []string{stateHomeUsage, "'" + bootstrapPath + "'"} {
+	stateHomeAssignment := map[bool]string{false: "SOP_STATE_HOME='", true: "$env:SOP_STATE_HOME = '"}[runtime.GOOS == "windows"]
+	for _, expected := range []string{stateHomeAssignment + stateHome + "'", "'" + bootstrapPath + "'"} {
 		if !strings.Contains(output.String(), expected) {
 			t.Fatalf("custom state usage is missing %q:\n%s", expected, output.String())
 		}

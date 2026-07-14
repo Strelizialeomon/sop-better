@@ -443,19 +443,10 @@ func TestBuildRejectsOutputInsideSourceSnapshot(t *testing.T) {
 }
 
 func TestBuildRejectsFIFOManifestWithoutHanging(t *testing.T) {
-	mkfifo, err := exec.LookPath("mkfifo")
-	if err != nil {
-		t.Skip("mkfifo is not available on this platform")
-	}
 	repoRoot := repositoryRoot(t)
 	sourceRoot := createReleaseSource(t, testReleaseVersion)
 	manifestPath := filepath.Join(sourceRoot, "manifest.json")
-	if err := os.Remove(manifestPath); err != nil {
-		t.Fatal(err)
-	}
-	if output, err := exec.Command(mkfifo, manifestPath).CombinedOutput(); err != nil {
-		t.Fatalf("create FIFO: %v\n%s", err, output)
-	}
+	replaceFileWithNativeFIFOOrSkip(t, manifestPath)
 	binary := buildReleaseBinary(t, repoRoot)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -668,10 +659,6 @@ func TestVerifyRejectsDivergentMasterSnapshots(t *testing.T) {
 }
 
 func TestVerifyRejectsFIFOWithoutHanging(t *testing.T) {
-	mkfifo, err := exec.LookPath("mkfifo")
-	if err != nil {
-		t.Skip("mkfifo is not available on this platform")
-	}
 	repoRoot := repositoryRoot(t)
 	sourceRoot := createReleaseSource(t, testReleaseVersion)
 	bundleRoot := filepath.Join(t.TempDir(), "bundle")
@@ -681,12 +668,7 @@ func TestVerifyRejectsFIFOWithoutHanging(t *testing.T) {
 	}
 
 	fifoPath := filepath.Join(bundleRoot, "assets", "master", "base.txt")
-	if err := os.Remove(fifoPath); err != nil {
-		t.Fatal(err)
-	}
-	if output, err := exec.Command(mkfifo, fifoPath).CombinedOutput(); err != nil {
-		t.Fatalf("create FIFO: %v\n%s", err, output)
-	}
+	replaceFileWithNativeFIFOOrSkip(t, fifoPath)
 	binary := buildReleaseBinary(t, repoRoot)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -953,6 +935,26 @@ func buildReleaseBinary(t *testing.T, repoRoot string) string {
 		t.Fatalf("build sop-release: %v\n%s", err, output)
 	}
 	return binary
+}
+
+func replaceFileWithNativeFIFOOrSkip(t *testing.T, path string) {
+	mkfifo, err := exec.LookPath("mkfifo")
+	if err != nil {
+		t.Skip("mkfifo is not available on this platform")
+	}
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if output, err := exec.Command(mkfifo, path).CombinedOutput(); err != nil {
+		t.Fatalf("create FIFO: %v\n%s", err, output)
+	}
+	info, err := os.Lstat(path)
+	if err != nil {
+		t.Skipf("native runtime cannot inspect mkfifo output: %v", err)
+	}
+	if info.Mode()&os.ModeNamedPipe == 0 {
+		t.Skipf("mkfifo did not create a native named pipe: %s", info.Mode())
+	}
 }
 
 func buildInstallableBundle(t *testing.T, repoRoot, bundleRoot, version string) {
