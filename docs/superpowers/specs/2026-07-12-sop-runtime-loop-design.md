@@ -1,8 +1,8 @@
 # sop-better 双层 Agent Loop 设计
 
 - **日期**:2026-07-12
-- **状态**:六段设计已获 owner 口头批准;正式文本待 owner 复核
-- **Spec review**:独立新眼睛已审;首轮 2 Critical / 8 Important / 1 Minor 全部修订,两轮针对性复核后 Ready
+- **状态**:六段设计已获 owner 口头批准;增量复审设计已获 owner 采纳,正式文本待 owner 复核
+- **Spec review**:原六段已完成独立新眼睛审查;本次增量复审补丁独立复核 Ready（0 Critical / Important）
 - **目标环境**:多台自有机器;macOS + Codex、Windows + Codex
 - **启动策略**:先手动“开工 #N”,稳定后再增加后台自动取活
 - **验证策略**:机械测试 + 真实 Codex 行为实验双保险
@@ -350,7 +350,7 @@ sources:
 
 ### 6.4 Reviewer 胶囊
 
-独立 reviewer 获得自包含输入:
+首次完整 review 的独立 reviewer 获得自包含输入:
 
 - 目标与逐条验收。
 - 本次完整 diff。
@@ -359,7 +359,20 @@ sources:
 - 范围内与范围外声明。
 - 输出格式:blocking / non-blocking / invalid hypothesis。
 
-reviewer 不依赖主 agent 的对话历史,也不要求全文读取项目 SOP。
+修复后的复审不再重扫整条任务分支。它获得:
+
+- 上次 `reviewed_head_sha` 到当前 HEAD 的增量 diff。
+- 尚未关闭的 finding 台账及本轮声称关闭的 finding。
+- 改动函数 / 模块的完整上下文、相关契约和必须守住的不变量。
+- 本轮受影响检查结果与上次完整 review 引用。
+
+每条 finding 使用稳定 ID,记录 `severity / status / paths / invariant / evidence / disposition`。review 结果追加为连续覆盖链:
+
+```text
+base_sha -> full_review_head -> delta_review_head ... -> final_head
+```
+
+每段至少保存 `base_sha / head_sha / mode(full|delta) / finding_ids / review_reference`。覆盖链和 finding 台账由 controller 根据实际 reviewer run 生成 canonical task event,Issue / PR 只做永久投影;执行 agent 不能靠手填 JSON 自证审过。链有缺口、HEAD 对不上或 blocking 未关闭时,不能进入 `merge-eligible`。reviewer 不依赖主 agent 的对话历史,也不要求全文读取项目 SOP。
 
 ### 6.5 冲突处理
 
@@ -409,6 +422,13 @@ blocking? ──是──> 核实 → 修复 → 重新验证
 
 项目 profile 明确 `format / lint / test / build / structure` 命令。agent 不临场猜必跑项。
 
+验证分两层,但只有一套命令真相源:
+
+- **内循环**:manifest / profile 按 changed paths 确定受影响 check groups;每轮修复只跑这些组。无匹配、映射冲突或改动触及共享基础设施时 fail closed,升级为全量。
+- **最终闸**:最终 HEAD 必须跑 profile 的全部 check groups;内循环通过不能代替最终全量结果。
+
+每次记录实际命令、HEAD、耗时和结果。路径映射只决定“本轮先跑哪些”,不能把 profile 必跑项永久豁免。
+
 不能运行时必须记录:
 
 - 未验证项。
@@ -421,7 +441,10 @@ blocking? ──是──> 核实 → 修复 → 重新验证
 - blocking finding 必须核实。
 - 成立则修改;不成立则用代码、测试或规范证据反驳。
 - 没有证据时继续调查,不能盲从或忽略。
-- 修改后重新跑受影响验证并重新 review。
+- 首轮完整 review 后保存 review 覆盖链和 finding 台账;修改后跑受影响验证,只复审上次 reviewed HEAD 到当前 HEAD 的增量及受影响上下文。
+- 以下任一情况使增量游标失效,必须对当前任务 scope 重新完整 review:base / snapshot / scope hash 改变;review 链不连续;修复越出 finding 声明范围;改动触及公开契约、schema、权限 / 信任边界、lease / 并发或状态机;reviewer 有证据要求扩大范围。
+- 重新完整 review 的边界是当前任务 scope,不是无条件重扫整个仓库;其中高风险模块必须展开读取受影响函数、调用链、契约和不变量,不能只看 diff hunk。
+- 复审只负责关闭旧 finding 与发现本轮增量引入的问题;不重复审查已被连续 review 链覆盖且未受影响的文件。
 
 ### 7.3 熔断
 
@@ -628,6 +651,9 @@ snapshot_hash: sha256:...
       "test": ["..."],
       "build": ["..."]
     },
+    "check_triggers": {
+      "test": ["internal/**", "cmd/**"]
+    },
     "trust": {
       "github": {
         "trusted_actor_ids": [123456],
@@ -641,6 +667,7 @@ snapshot_hash: sha256:...
 约束:
 
 - 不提交机器绝对路径、密钥或访问 token。
+- `check_triggers` 的 key 必须指向已有 check group,pattern 必须是规范化的仓库相对路径。内循环只跑命中的组;没有任何组命中时 fail closed 跑全部组;未配置 trigger 的组仍在最终闸必跑。
 - 本机 workspace、缓存、machine ID 和 checkpoint 放版本化安装定义的本机状态目录。
 - 实时任务状态放 GitHub,不再提交第三份 `.sop/state.json`。
 - schema 校验要求 heartbeat interval 不大于 lease TTL 的三分之一;不满足就拒绝启动。
@@ -715,6 +742,8 @@ PR / reviewer 状态
 - 重启后不重复已完成动作、不丢任务、不误标 `done`。
 - lease 超时、续租、接管、失去 lease 与条件删除覆盖竞态测试。
 - capsule 同输入确定输出;字段来源、范围和大小可校验。
+- review 覆盖链必须从任务 base 连续到最终 HEAD;缺段、错 SHA、伪造关闭 finding 或 unresolved blocking 均不能进入 `merge-eligible / done`。
+- changed paths 到 check groups 的映射必须确定;无匹配 / 冲突时升级全量,不能静默少跑。
 - 超范围 diff、高风险、失败检查不能进入自动合并。
 - macOS / Windows 对同 profile 生成同义结果,路径格式按平台正确。
 - 恶意 Issue 正文、恶意评论和恶意外链不能改变 commands、skills、scope、风险或权限。
@@ -724,7 +753,7 @@ PR / reviewer 状态
 
 ### 12.2 真实 Codex 对照场景
 
-第一批 14 个场景:
+第一批 16 个场景:
 
 1. 简单 Bug 自动完成。
 2. 需求不清进入 `waiting`。
@@ -740,6 +769,8 @@ PR / reviewer 状态
 12. 网络中断后恢复。
 13. 恶意 Issue / 评论 / 外链试图注入指令或扩大权限。
 14. 跨端父 Issue 被要求直接写多个 scope。
+15. 首轮完整 review 后修复两个已知竞态,复审只读增量 diff + finding 台账 + 受影响并发上下文。
+16. review base、scope hash 或高风险边界变化导致增量游标失效,系统重新完整 review 当前任务 scope。
 
 每个场景对比旧 SOP 与新 Loop:
 
@@ -749,6 +780,7 @@ PR / reviewer 状态
 - 开工前读取的 SOP 文件和常驻指令字节数。
 - 规则冲突是否被发现。
 - 测试 / review 是否真实运行。
+- 首轮 / 复审输入字节数、review wall time、受影响 / 全量检查 wall time、有效 / 无效 finding 数。
 - 最终代码、Issue、PR、任务锁是否一致。
 
 实验契约继续强制继承 2026-07-10 稳定化设计 §8.2～§8.7,本设计补充为:
@@ -760,12 +792,15 @@ PR / reviewer 状态
 - 实验开始前固定成功分母、允许波动、熔断判据和放行阈值;失败后不得临时改口径。
 - “是否全文读取 SOP”从 Codex 轨迹中的文件读取记录与初始输入字节统计,不靠 agent 自述。
 - 基础设施 / 网络 / 模型服务失败单列,不算 candidate 行为失败,也不算通过。
+- 增量复审与完整复审使用同一模型、reasoning effort、sandbox 和已知 finding 输入,各独立运行 3 次;先用已知竞态修复做 closure 回归,再由最终完整安全审查兜底查漏。
 
 ### 12.3 第一版放行标准
 
 - 并发领取无重复 owner。
 - 故障点均能恢复或进入明确 `waiting`。
 - 安全场景 100% 通过。
+- 增量复审必须关闭已知 finding,最终完整安全审查不得发现仅因增量模式漏掉的新 blocking;否则立即停用增量模式。
+- 在不降低上述安全结果前提下,增量复审中位 wall time 不高于同输入完整复审的 50%;这是首轮实验放行阈值,不是未经实测的长期承诺。
 - 低风险场景在一次“开工”后不再索要过程确认。
 - 高风险场景准确停在人工闸之前。
 - agent 开工不读取完整 `STANDARD.md` 或完整 workflow。
