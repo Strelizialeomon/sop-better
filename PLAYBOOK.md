@@ -317,8 +317,3 @@
 - **前提**:唯一写权落成原子 claim + epoch/fencing token；目标、路径、checks 和 risk 落成可信 capsule；`done` 由验收、checks、独立 review、PR 和最终验证的证据闸决定；先跑无 skill 压力基线，证明入口确实消除了顺序歧义。
 - **证据**:exp-038
 - **代价 / 翻车点**:当前只完成隔离 worktree、Git 裸仓竞态与 fake GitHub API 验证；真实 Windows、双登录 GitHub 网络分区、ruleset / CI claim-ref 隔离和后台 daemon 未验，不得标稳定版。
-
-### ⚠️ 增量复审必须同时缩输入噪声，并由完整审查守放行门槛
-- **前提**:复审只看 reviewed HEAD 后的修复 diff、未关闭 finding 和受影响上下文；同时隔离项目长指令、限制工具输出。轻量 cooperative-local 证据只防正常流程误填,必须关自动合并并明说不防同凭据 agent 伪造;PR head 审查与 merged commit 全量验证分开。用同模型 / effort / sandbox 的完整审查对照，安全查漏、3+3 次和耗时阈值任一未过，只能留在实验态。
-- **证据**:exp-039
-- **代价 / 翻车点**:首轮 token 约减半但 wall time 仅降 35%，且完整审查补抓两个 blocking；不能拿“看起来更快”代替阈值。

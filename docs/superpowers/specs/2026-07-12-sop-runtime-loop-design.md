@@ -121,7 +121,7 @@ cooperative-local 始终由 owner 说“开工 #N”手动启动;后台 `sopctl 
 
 ### 3.1 必须做到
 
-- owner 一次说“开工 #N”后,低风险任务持续运行到完成或真正需要人决定。
+- owner 一次说“开工 #N”后,低风险任务自动运行到 `merge-eligible`;外部 owner / 保护流程完成合并后,owner 手动说“继续 #N”触发终态核验。
 - 多台机器 / 多个 agent 不会同时拥有同一个任务。
 - agent 开工无需全文读取 `STANDARD.md` 或完整 workflow。
 - agent 获得一份小而完整的任务胶囊:目标、验收、范围、证据、下一步、停止条件。

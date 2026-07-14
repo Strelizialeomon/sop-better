@@ -41,8 +41,6 @@ $sop-init = 固定公约(照搬) + 读本项目的 [端/协作人/风险] 参数
 3. **跳 writing-plans + 补偿**:不跑 writing-plans;代价用两条硬补——**spec 验收标准必须可检验** + **code review 必留**。原则是:plan 越轻,验收越硬,review 越严。<!-- rule:SOP-REVIEW -->
    - **适用范围**:所有生成物都吃这条。协作 / 流程 SOP 也不许把开发流程建在 writing-plans 上。
    - **代码新眼睛**:代码完成后,派独立子代理喂 spec / 验收 + diff + 决策快照,查合规 / bug / 优化;非阻断直接改,阻断才 escalate。
-   - **Loop 增量复审**:首次完整 review 后,修复轮只审 `上次 reviewed HEAD..当前 HEAD` + 未关闭 finding 台账 + 受影响完整上下文;base / snapshot / scope / 公共契约 / 状态边界变化即游标失效,重跑完整 review。
-   - **凭据与验证闸**:轻量 Loop 只在 cooperative-local 信任模型下运行:controller 根据真实 reviewer run 写 workflow evidence event,CLI 不接受执行 agent 手填 review evidence;但不宣称能防持同一 GitHub 凭据的 agent 直接伪造 marker。该模式固定手动 start + 禁止自动 merge,不得用于敌对输入或无人值守;修复内循环按 changed paths 跑受影响 checks,PR head 必须被连续 review 覆盖,最终全量 checks 必须跑在已进入默认分支的 merged commit。
    - **spec 新眼睛**:spec 收口后、交实现前,也派独立子代理审 spec。三查:实证与信源可信(权威一手 > GH issue / StackOverflow);验收是否可机检;范围 / 形态 / 边界是否清楚。
    - **review 口径**:findings 是待核实假设,交作者 / owner 解;琐碎 spec(改一行 / 纯查事实 / 无真环境可摸)免。
    - **收口标准**:需求 / spec 聊到「验收 + 主流程 + 范围 + 形态 + UI 风格来源(仅新增 / 大改 UI)」钉死即收口,不是聊到完美。

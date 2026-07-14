@@ -6,7 +6,7 @@
   "rules_version": "2026-07-10",
   "standard": {
     "path": "STANDARD.md",
-    "sha256": "ad8bec51f5313e43e74a67576726d087cce97ebf19c9617f61097231a93b0a18"
+    "sha256": "d64a58a2f2c2a85f36af2886f54465bda2bb2fb15037110bbf18bbc7cf45c3f0"
   },
   "slots": {
     "project_name": {
