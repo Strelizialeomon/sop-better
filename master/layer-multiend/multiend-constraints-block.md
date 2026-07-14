@@ -1,5 +1,8 @@
-## 5. 多端约束
+<!-- master/layer-multiend/multiend-constraints-block.md —— 触发:有第 2 个端(≥2 端)。
+     $sop-init 用这几条**填** base/AGENTS.md 母本的 `{{multiend_constraints}}` 槽(生成时落入根 agent 指令文件;槽在 §2 工作约束末尾;单端时该槽**整行删** → 不在 doc 中段动刀,守 freshness 不复埋的不变量)。占位符:{{ends}}
+     拆分自原 templates/agent-constraints.md「多端追加块」(标准块 + 沟通约束块已嵌进 master/base/AGENTS.md 母本)。-->
 
-- 端清单以 `.sop/profile.json` 为准；每端有独立操作台，跨端事实只在 `docs/contracts/` 定义一次。
-- 各端可独立细化；跨端契约 freeze 需 owner 明确确认。
-- 状态统一用 ✅ 完成 / 🚧 进行 / ⏸️ 搁置 / ⬜ 未开始。
+<!-- 填进 base/AGENTS.md 母本的 {{multiend_constraints}} 槽(仅多端): -->
+- 端划分：{{ends}}。每端有自己的 scope，跨端走 `docs/contracts/` 的单一真相源。
+- 各端独立 brainstorming；跨端契约 freeze 需我明确确认。
+- 状态用标记：✅ 完成 / 🚧 进行 / ⏸️ 搁置 / ⬜ 未开始。

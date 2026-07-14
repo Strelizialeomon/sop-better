@@ -1,47 +1,52 @@
 ---
 name: sop-init
-description: Use when 用户要为项目初始化、增量升级或预览 Codex 开发 SOP，或需要根据端数、真人协作者数、并行 agent 与风险判断项目应有结构。
+description: Use when 用户要给项目新建或增量补开发 SOP,需要按端数/协作人数/风险决定右尺寸结构,生成 Codex AGENTS.md。
 ---
 
 # sop-init
 
-把项目事实和 owner 的决定写进 profile；把生成、差异和机械检查交给同版本 `sopctl`。
+为项目搭开发 SOP 骨架。
 
-## 权威来源
+**配套文件位置(本技能经软链装在 `~/.codex/skills/` 时仍按此绝对路径找)**:`SOP_HOME = /Users/sunchongsheng/code/sop-better/`。下文凡 `STANDARD.md` 指 `$SOP_HOME/STANDARD.md`,`master/` 指 `$SOP_HOME/master/`(母本,按触发分层;槽与收编规则见 `master/SLOTS.md`)。
 
-- 规则语义从本 `SKILL.md` 目录解析 `../../rules/STANDARD.md`。
-- profile 字段从本 `SKILL.md` 目录解析 `../../rules/schemas/profile.schema.json`。
-- 路径从本 skill 所在 plugin 相对解析，不读取开发 checkout。
-- 找不到兼容的 `sopctl`、规则快照或 schema 时，说明安装问题并停止；不得改用手工拼模板。
+唯一真相源是 `STANDARD.md`,**先读它**,本技能只是执行流程,规则以 STANDARD 为准。
+
+## 铁律
+
+**全部公约在 `STANDARD.md` §1(三分法 + 定义/建议/决策 + 各条 · 先读它、以它为准)**——本技能**不重抄**(重抄必漂移)。这里只列本技能**执行时**特有的硬约束:
+
+- **右尺寸校验**:用户要的结构 > 实际有的端/人/协作需求 → 驳回、别预建(§1.5 + §1.9「不假民主」)。真一次性脚本 → 建议别 init(出范围);低风险小项目也不强制 issue / 独立分支 / PR / worktree。
+- **增量幂等**:已有 SOP 只补缺的那层、不砸已有(§3.5)。
+- 其余见下方「流程」「禁止」。
 
 ## 流程
 
-1. 只读检查 Git 根、现有 `.sop/profile.json`、默认分支候选、目录和技术栈。一次性脚本不值得建 SOP 时，直接建议不初始化。
-2. 分开事实与判断：
-   - 从项目确认名称、端目录和可验证的默认分支；不猜 `master`。
-   - 一次问清无法可靠推断的真人协作者数、是否真并行多 agent、风险和 house style。
-   - 三个结构触发互不代替：第 2 位真人触发 handoff；第 2 个端触发 contracts 与端级 `AGENTS.md`；多端且真并行才触发 worktree 与协调规则。
-3. 按 schema 在内存中形成候选 profile。只用仓库相对路径，不放密钥和机器绝对路径；已有 profile 保留未变的 owner 决定。预览阶段不得先覆盖项目里的 `.sop/profile.json`。
-4. 把候选 profile 写到系统临时文件并运行只读预览；流程停止或完成时删除临时文件：
+1. **读 `STANDARD.md`**(§3 一条流程+结构按现实长 + §3.5 演进 + §4 约束块 + §2 参数)。**判新建 or 加层**:目标已有 `AGENTS.md` / docs(跑过)→ **增量模式**:测当前有几个端 / 几个人,**只补缺的那一层、绝不覆盖已有**,只为新加的端/人生成;只有 `CLAUDE.md` 没有 `AGENTS.md` = 旧格式,先迁移成 `AGENTS.md` 并删除 `CLAUDE.md`,不保留桥接;加端若要返工(如接口写死在代码里)**标出来让 owner 抠,不自动重构**。
+2. **定参数**(能从现有代码推断就推断:扫语言/目录/端数;推断不了就**一次问清**,别逐条挤牙膏):
+   - `ends[]`:几个端?admin / backend / frontend / mobile / crawler … → **≥2 个端触发多端结构**(契约 + 每端身份文档);单端不建;worktree / coordination 只在真并行多 agent 时加
+   - `collaborators`:几个人?单人 / 人+多 agent / 多人 → **≥2 个不同的人触发协作 doc**;单人不建。另判断是否真有跨会话跟踪 / 角色交接 / 远端交付需求,决定是否需要 Issue / PR 指南
+   - `risk`:可逆低风险 / 线上不可逆 → 默认撒手档、review 严格度
+   - `house_style[]`:既有技术规范 / 参考项目,按端(如 "Go 后端 → go_dispatch_backend 仓本体")。指参照**本体**(纪律与理由见 STANDARD §2 该行 · exp-008);可给推断候选但**必须 owner 确认、不静默凭记忆填**。答"无" → 约束块占位写"无参照"(立栈走确认闸 · STANDARD §1.9)
+3. **右尺寸校验(反驳在这一步发力)**:反问"这项目真需要一份 SOP 吗?多端 / 多人结构是真有、还是在预建?任务是否真需要 Issue / PR / worktree?"。真一次性脚本 → 建议别 init(出范围);凭空的多端 / 多人结构或流程动作 → **明确建议砍掉并说理由**,不附和。
+4. **生成(copy `master/` 的层 + 填槽 + 剪掉不触发的层 · 先读 `master/SLOTS.md`):** **每个 copy 出来的文件先删顶部 `<!-- … -->` 元注释**(那是给 `$sop-init` 的槽 / 触发说明、不进产物),再填槽——否则 `{{proj}}` 等会连头注里一起被填成乱码。
+   - **agent 指令文件落点**:`master/base/AGENTS.md` 是母本内容源,所有项目都落 `AGENTS.md`。
+   - **总是(所有项目,含单人单端)**:`README.md`、`.gitignore`;涉密钥则 `.env.example`(密钥**绝不**进 git);copy `master/base/` → 项目根 agent 指令文件(填 `{{proj}}`〔别写档位编号 / "单人"窄化词〕/ `{{house_style}}` / `{{default_altitude}}` / `{{risk_gate_items}}` / `{{prod_infra_note}}`)+ `docs/decisions/`(adr-template + 你补 `0001` 样例 + **升级触发 ADR**:"加第 2 个端 → 补契约/按端操作台;多端且真并行多 agent → 补 worktree / coordination;加第 2 个人 → 补协作 doc")+ 单一真相源声明。`docs/project/issue-pr-workflow.md` 可作为“触发时才用”的薄指南生成,但**不要**无条件创建 Issue 模板、label 状态机或把 Issue / PR 写成每个任务前置。
+   - **有第 2 个人(≥2 个不同的人)才加**:copy `master/layer-collaborators/collaboration.md` → `docs/project/collaboration.md`(业务↔开发 handoff:起需求 / 收口标准 / 交棒)。单人 → 不建(角色变焦在 base 公约里恒定)。
+   - **有第 2 个端(≥2 端)才加**:copy `master/layer-multiend/` → `docs/contracts/`(`contracts-README` + `multiend-contracts`:契约握手 + firmness 三级 + req-doc 语义级/实施层边界)+ **按 `ends[]` 给每端用 `end-role-agent` 落 `<端>/AGENTS.md`**(端级操作台:身份 + scope/取活 + Step 3/Step 4 端速查 + 评论里程碑 + 本端 local〔技术栈/常读文件/实施层词汇〕+ 指向根 agent 指令文件工作约束块)+ **用 `multiend-constraints-block` 填根 `AGENTS.md` 的 `{{multiend_constraints}}` 槽**(单端时该槽整行删 · 不中段动刀)。**靠 Codex 自动加载 cwd 最近的 `AGENTS.md` = 进端即定身份**;纪律:**端文件指针不复述通用红线**(复述=漂移源 · STANDARD §1.6),但不能薄到只剩身份/常读文件桥接。
+     - **且 owner 确认"真并行多 agent"才加**(多端里的可选项,不默认):copy `master/layer-parallel-agents/` → `docs/project/worktree-isolation.md`(布局/HEAD race trap/setup+维护/起手按-ref-验/反转条件)+ **把 `coordination.md` 追加进 `docs/project/collaboration.md`**(角色 + 6+1 骨架 + 消息总线 + scope 隔离;若无第 2 个人则 coordination 单独成 collaboration.md)+ `adr-template` 记 worktree ADR。串行 / 单 agent → 不发(过度治理)。
+   - **三触发自检(治 exp-012 挂错闸 · 必做)**:生成后点名验——单人·多端·并行 = base+multiend+parallel,**不要** collaborators;2 人·单端·串行 = base+collaborators,不要后两层;单人·多端·串行 = base+multiend,**不背** worktree。**按触发分流、别拿"目录相邻"当门。**
+   - **escalate 端-agnostic(exp-009)**:§1.9 carve-out 指针在 `layer-collaborators`(→业务方)与 `layer-parallel-agents/coordination`(→coord)两层都在,别只挂并行层。
+5. **没有的端/人/流程不预建**(右尺寸硬约束):单端不建 contracts/按端操作台;单人不建协作 doc;无真并行 / 隔离需求不建 worktree;无跨会话跟踪 / 交接需求不建 Issue 机器;无远端交付 / 评审需求不强制分支 + PR;真一次性脚本压根不跑 `$sop-init`(出范围)。
+6. **报告**:列生成了什么 + 一句"为什么这档够用、没多给"。让 owner **扫 agent 指令文件 + 目录树**即可验收(便宜验证)。
 
-   ```text
-   sopctl diff --project-root <repo> --profile <temporary-profile.json>
-   ```
+## 禁止
 
-   用人话解释候选文件、触发原因和冲突。用户只要预览时停在这里。
-5. 只有用户看过**本次实际 diff** 后明确接受，才运行事务式生成；不能把最初一句“初始化 / 升级”当成对随后具体差异的确认：
-
-   ```text
-   sopctl render --project-root <repo> --profile <temporary-profile.json>
-   sopctl check --project-root <repo>
-   ```
-
-   `render` 会把 profile、托管产物和 lock 放进同一事务；任一步失败都不留下半升级项目。失败时报告“什么没完成、什么没变、下一步怎么做”，不得绕过机械错误。
-6. 收尾只列实际生成/更新的文件、为何当前尺寸够用、未生成哪些未触发层。
-
-## 边界
-
-- 不覆盖同名未托管文件，不覆盖被人工修改的托管块。
-- 不预建不存在的端、真人角色或并行流程。
-- 不生成或保留 `CLAUDE.md`；发现旧格式时先展示迁移差异。
-- 升级工具版本走 `sopctl release ...`，升级项目内容走本流程；两者不能混成一次确认。
+- 写 writing-plans 式重型实施计划。**生成的任何文档(含协作/流程 SOP)都不许把开发流程建在 writing-plans 上**(违背 §1.3)——开发侧直接实现 + code review。
+- **不许凭对用户其它项目(taoxi-geo 等)的记忆另写协作/流程文档**;协作文档一律 copy `master/` 的层,否则会把旧习惯(尤其 writing-plans)偷带进来、自相矛盾(exp-002 根因)。
+- **增量模式整份重 copy 已有层 = 砸 owner 已填的槽 / 正当宽放**:增量只对**新增的层**整份 copy,已有层只块/槽级补缺(§3.5)。
+- 讨好式"为了全面两套都给你建上"——违反右尺寸 + 反驳铁律。
+- 生成或保留 `CLAUDE.md` 桥接文件——本工具已经 Codex-only,旧 `CLAUDE.md` 是待迁移残留。
+- **预建还没有的端 / 人 / 角色的结构**(为想象建仪式 = 最坏的过度治理;真加了才补 · STANDARD §3.5)。
+- 因为 agent 能自动执行,就给所有小改强制 Issue / 独立分支 / PR / worktree 或额外本地编排工具。
+- **增量模式下覆盖/重建已有结构**(只补缺的,不砸 owner 已有的)。
+- 把密钥/凭据写进任何进 git 的文件。

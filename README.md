@@ -1,153 +1,176 @@
 # sop-better
 
-`sop-better` 给 Codex 项目生成和审计开发 SOP。它的重点不是堆更多提示词，而是把规则、模板、程序、对话和安装拆开，让同一份项目配置能被重复生成、检查和回滚。
+`sop-better` 是一个 **Codex-only 开发 SOP 工具仓**。
 
-> 规则的唯一真相源是 [`STANDARD.md`](STANDARD.md)。README 只讲入口、命令和当前边界，不重抄规则正文。
+它产出两个 skill:
 
-## 当前状态
+- `$sop-init`: 给项目生成右尺寸的开发 SOP 骨架。
+- `$sop-audit`: 给现有项目体检,查 SOP 太重、太轻、漂移或凭据失真。
 
-仓库正在做 phase 1（机械稳定性改造），目标是先让多台自有 macOS / Windows 机器稳定使用，再讨论公开分发。
+这个仓的目标不是把规则越写越多,而是把 agent 的工作压成一条能执行的 flow:先查证,再分流,该调研就调研,做完要验证和收口。**给 agent 一条路,不是让它背题。**
 
-- **稳定版**：从校验过的固定版本包和 Codex plugin 安装缓存运行，不跟随 Git 分支变化。
-- **开发版**：在独立 worktree、独立 `CODEX_HOME` 和本地 marketplace 中测试。
-- 仓库 checkout 只是源码，不再是稳定版运行入口。若某台机器仍有 `~/.codex/skills/sop-*` 指向工作树，那是待迁移的旧安装，不能当成新架构已经上线。
+> 唯一真相源是 [`STANDARD.md`](STANDARD.md)。README 只做入口说明,不承载具体规则。
 
-完整方案和迁移顺序见 [`phase-1 稳定性设计`](docs/superpowers/specs/2026-07-10-sop-better-stability-overhaul-design.md)。
+---
 
-## 五层架构
+## 当前主线
 
-| 层 | 负责什么 | 主要入口 |
+### 1. 两层模型
+
+一份 SOP = **不变公约** + **按项目现实生成的结构**。
+
+- 不变公约:人机分工、反驳、查证、review、高风险闸、触发后的凭据保真等。
+- 可变结构:这个项目有几个端、几个人、风险多高,就生成多少结构。
+
+换句话说:安全底线是同一组,具体流程动作和目录结构都按现实长。
+
+### 2. 一条运行 flow
+
+agent 干活默认走这条闭环:
+
+```text
+查证 -> 分流 -> 调研 -> 执行验证 -> 收口
+```
+
+- **查证**:本地事实查代码 / 配置 / 日志 / issue / PR;外部事实查可靠来源。查不到就说不知道。
+- **分流**:低风险局部事直接做;缺目标 / 范围 / 验收、跨边界或高风险就确认。
+- **调研**:给方案 / 设计 / 估算 / 选型前,先给调研结论、主流做法、建议方案、信源和风险。
+- **执行验证**:改完主动跑能跑的验证;不能跑就明说。
+- **收口**:结束时交代状态、验证、风险和推荐下一步。
+
+### 3. 结构按现实长
+
+旧版曾用档位枚举。现在已经收成更简单的触发规则:
+
+| 现实触发 | 才生成什么 |
+|---|---|
+| 有第 2 个端 | 契约、按端身份文档 |
+| 多端还要真并行多 agent | worktree 隔离、多 agent 协调骨架 |
+| 有第 2 个人 | 业务↔开发协作 handoff |
+| 要跨会话跟踪 / 角色交接 | Issue |
+| 要远端交付 / 他人评审 / 保护分支收口 | 分支 + PR |
+
+没有就不建。右尺寸的意思不是“少”,而是“该有的有,不该有的别预建”。
+
+### 4. 协作用三件套
+
+任务触发持久协作 / 交付时,业务↔开发、开发↔开发按这三件套协作:
+
+| 凭据 | 职责 |
+|---|---|
+| doc | 正文 / 真相源:需求、设计、契约、长期决策 |
+| issue | 索引 + 状态 + 消息总线:谁在做、等谁、变化去哪看 |
+| PR | 交付凭据 + 验收 / 收口动作:改了什么、怎么验、是否关闭 issue |
+
+口诀是: **doc 写正文,issue 跑状态和消息,PR 写交付验证**。
+
+低风险、单会话、可逆的小改不为凑齐三件套强制开 Issue / PR。触发 Issue 后,评论再按凭据价值分层:影响后续判断的评论要写厚,只贴链接 / tag / 轻进度才短评。细则在 [`master/base/docs/project/issue-pr-workflow.md`](master/base/docs/project/issue-pr-workflow.md)。
+
+### 5. 代码复审先审变化
+
+第一次复审看“任务起点到当前 HEAD”的完整任务 change;后续复审只看“上次已审 HEAD 到当前 HEAD”的新增 change。reviewer 可以顺着变化查看相关函数、接口、调用方、契约和测试,但不会重新扫描无关仓库。基线失效或历史不连续时,回退到完整任务 change。
+
+---
+
+## 两个 Skill
+
+| Skill | 用途 | 默认行为 |
 |---|---|---|
-| 规则层 | 定义原则、触发条件和安全边界 | [`STANDARD.md`](STANDARD.md) |
-| 生成契约层 | 把规则变成可重复渲染的组件和机器契约 | [`manifest.json`](manifest.json)、[`master/`](master/) |
-| 执行层 | 生成、比较、检查、事务写入和回滚 | `sopctl` 的 bootstrap、manager、engine |
-| 对话层 | 观察项目、向 owner 确认判断、解释结果 | [`$sop-init`](skills/sop-init/SKILL.md)、[`$sop-audit`](skills/sop-audit/SKILL.md) |
-| 分发层 | 固定版本、校验、安装、升级和回退 | [`plugin/`](plugin/)、release bundle |
+| [`$sop-init`](skills/sop-init/SKILL.md) | 给新项目或已长大的项目生成 / 补齐 SOP | 按端数、协作人数、风险右尺寸生成 |
+| [`$sop-audit`](skills/sop-audit/SKILL.md) | 审现有 SOP 是否不合理 | 默认只出报告;owner 明确说改 / go 才动文件 |
 
-简单说：`STANDARD.md` 说“应该怎样”，manifest 和 master 说“要生成什么”，`sopctl` 保证“每次都按同一种方式做”，skills 负责和人沟通，plugin 负责把同一版本送到不同机器。
+当前两个 skill 都已软链进 `~/.codex/skills/`。本仓工作树就是线上版本,改完即生效。
 
-## 项目命令
+没有单独的 `$sop-improve`:audit 找到问题后,owner 点头就改。不为还没出现的需求养第三个 skill。
 
-项目先用 `.sop/profile.json` 记录事实和选择，再由当前版本的 engine 处理托管内容：
+---
 
-```text
-sopctl diff
-sopctl render
-sopctl check
-sopctl project checkpoints
-sopctl project rollback --to <checkpoint>
-```
+## 设计原则
 
-- `diff` 只预览，不改文件。
-- 新建或修改 profile 时，用 `diff --profile <候选文件>` 预览；确认后再用 `render --profile <同一候选文件>`，profile、托管产物和 lock 会一起成功或一起回退。
-- owner 看过差异后，主动运行 `render` 才会写项目。
-- `check` 核对 profile、lock 和生成物是否一致。
-- `project checkpoints` 列出可直接用于回退的检查点 ID；`project rollback` 只恢复项目托管内容，不切换工具版本。
+### 头号敌人:过度治理
 
-可用 `--project-root <path>` 指定别的项目目录。
+对一个人指挥 agent 来说,最常见的问题不是“规则不够”,而是“规则吃掉杠杆”。
 
-## 首次安装：直接运行版本包里的安装器
+所以 `$sop-audit` 头号查:
 
-首次安装不需要 checkout 本仓库，也不需要本机安装 Go。解压与系统匹配、已校验的 release bundle 后，在真实交互终端运行包内安装器：
+- 人是不是被迫跑太多仪式。
+- 单人项目是不是装了多人协作机器。
+- 单端项目是不是预建了多端契约。
+- 小任务是不是被强制开 Issue、分支、PR、worktree 或启动额外编排工具。
+- SOP 是不是越写越像笼子。
 
-```text
-# macOS / Linux
-./bin/sop-install
+agent 自动执行也有耗时、失败和调试成本。是否过度,看它有没有换来真实的跟踪、协作、隔离或交付价值。
 
-# Windows
-.\bin\sop-install.exe
-```
+### 撒手不是盲盒
 
-安装器会先展示版本、完整文件清单和本地发布源，再要求输入完整版本号。管道输入会被拒绝。它会校验整个 bundle，安装同版 manager / engine，激活该版本的 Codex plugin，安装固定 bootstrap，持久记录发布源，最后才提交 `current.json`；中途失败会补偿，进程中断可在下次运行时恢复。同一版本重跑安装器不是空操作：它会用已验证的同版 bundle 修复损坏的版本目录，并重新核对或补齐 runtime、plugin、固定 bootstrap 和发布源。
+本仓默认反对两种极端:
 
-需要把状态目录放到临时位置做验收时，可加 `--state-home <path>`。之后每次运行都必须带上同一个状态目录；安装完成时会打印可直接照抄的命令，例如：
+- 人永远 L0:什么都自己写,agent 只打字。
+- agent 永远盲盒:人完全看不见判断和风险。
 
-```text
-# macOS / Linux
-SOP_STATE_HOME=<path> <path>/bin/sopctl release check
+正确状态是:人定“要什么”,agent 负责“怎么做”;高风险、人类决策、业务边界仍然回到 owner。
 
-# Windows PowerShell
-$env:SOP_STATE_HOME = '<path>'; & '<path>\bin\sopctl.exe' release check
-```
+### 凭据必须保真
 
-phase 1 的发布源是**本地目录**：把各版本包放成 `<发布目录>/<版本号>/`，首装时运行其中的 `bin/sop-install`。安装器默认记录当前版本目录的父目录，也可明确指定共享盘或同步目录：
+issue / PR / doc / ADR 是 agent 的共享内存。
 
-```text
-./bin/sop-install --release-source <发布目录>
-```
+共享内存有用的前提是它是真的:
 
-新开的 Codex session 会自动读取这份配置，不需要继续设置 `SOP_RELEASE_SOURCE`。环境变量仍可用于临时覆盖。HTTPS 下载、外部 SHA pin 和公开更新服务尚未实现；不要把本地通道说成公网供应链已经上线。
+- issue 状态要反映现实。
+- PR 要写验证和风险。
+- doc 链接要能在远端打开。
+- 决策 / 实测 / 收口 / 状态校正不能只写一句短评糊过去。
 
-日常升级不再运行 `sop-install`，而是走下面的 `sopctl release` 命令。固定 bootstrap 只负责按 `current.json` 分发请求，升级和回退都不会覆盖它。
+会说谎的凭据比没有凭据更危险。
 
-## 版本命令：确认后升级
+---
 
-```text
-sopctl release check
-sopctl release diff --to 0.2.0
-sopctl release upgrade --to 0.2.0
-sopctl release rollback
-sopctl release rollback --to <已安装旧版本>
-```
+## 自举方式
 
-`release check` 会验证当前 bundle、manager / engine 握手、固定 bootstrap、Codex plugin 的精确来源；当前项目已有 `.sop` 状态时，还会在项目操作锁内用当前 engine 做完整 `check`，并打印 SOP / profile schema / compatibility。报错后的修复入口是重新运行当前精确版本包内的 `sop-install`。固定 bootstrap 缺失时安装器会补回；内容不同时安装器不会猜测所有权或直接覆盖，错误会给出准确路径，需确认它确实是损坏的受管文件、先人工移走留证，再重跑同版安装器。
+sop-better 用自己的方法造自己:
 
-`release diff` / `release upgrade` 会展示当前包与目标包的真实文件哈希差异。目标 release 的 bootstrap protocol 和 SHA 必须与已安装的固定 bootstrap 一致；phase 1 没有隐式 bootstrap 升级，差异会在 plugin 或 `current.json` 改动前被拒绝。若已有与目标版本匹配的候选 profile，可同时查看目标 engine 的项目差异：
+1. 真实项目里踩坑或验证。
+2. 记一条 [`experiments/`](experiments/)。
+3. 把可复用教训沉到 [`PLAYBOOK.md`](PLAYBOOK.md)。
+4. 真成模式,才回灌到 [`STANDARD.md`](STANDARD.md) / [`master/`](master/) / skills。
+
+近期主线可以从这些实验看:
+
+- exp-024:诚实无知闸。
+- exp-025:沟通规则瘦身成“查证 -> 分流 -> 调研 -> 执行验证 -> 收口”。
+- exp-027:doc / issue / PR 三件套协作主线。
+- exp-028:issue 评论凭据分层。
+- exp-039:change-first review——先审本轮变化,语义上下文按需展开,不重扫无关仓库。
+
+早期设计记录在 [`docs/superpowers/specs/`](docs/superpowers/specs/)。
+
+---
+
+## 仓库结构
 
 ```text
-sopctl release diff --to 0.2.0 --project-root <项目目录> --profile <候选-profile.json>
+sop-better/
+├── README.md                    # 项目入口说明
+├── AGENTS.md                    # 本仓 Codex 工作约定
+├── STANDARD.md                  # 唯一真相源:生成与审计的权威尺
+├── skills/
+│   ├── sop-init/                # 生成右尺寸 SOP
+│   └── sop-audit/               # 审计 / 优化现有 SOP
+├── master/                      # 母本:base + 按触发追加的 layer
+├── docs/superpowers/specs/      # 历史设计 spec
+├── experiments/                 # 每次 dogfood / 回灌实验
+└── PLAYBOOK.md                  # 从实验沉淀出的护栏
 ```
 
-这段项目预览使用真实项目操作锁，但不写项目文件。没有目标兼容的候选 profile 时，命令会明确写 `PROJECT_DIFF unavailable` 和下一步，不把元数据摘要冒充项目差异。同一个已发布 output ID 不允许换 target；这种包会标成 `INCOMPATIBLE`，升级在确认前拒绝。
+---
 
-`release upgrade` 会再次展示这些差异，并要求在真实交互终端输入完整目标版本；管道输入不会被当成确认。新版本校验、预检或 plugin 激活任一步失败，都不应切换 `current` 指针。
+## 读文件顺序
 
-phase 1 发布版本只允许 `1.2.3` 这种 `X.Y.Z`；预发布和 `+build` 元数据等变体尚未开放，避免出现工具版本与项目 SOP 版本不能一一对应、或两个目录升级优先级相同的歧义。
+如果你是第一次看这个仓:
 
-工具升级不会顺手改项目。完整流程有两个确认点：
+1. 先读本 README,知道项目在干什么。
+2. 再读 [`STANDARD.md`](STANDARD.md),看当前权威模型。
+3. 要看生成产物,读 [`master/base/`](master/base/) 和对应 layer。
+4. 要理解规则怎么长出来,读 [`PLAYBOOK.md`](PLAYBOOK.md) 和最近的 `experiments/`。
 
-1. 先确认工具 / plugin 版本变化。
-2. 再看项目级 `diff`，确认后单独执行 `render`。
-
-同样，`release rollback` 只回退工具、engine 和 plugin；项目内容要用 `project rollback` 单独恢复。默认目标损坏或缺失时，命令会扫描并列出校验通过的已安装旧版本，可用 `--to` 明确选择；任意路径、未安装版本、当前版或更高版本都不会被当成回退目标。若项目已有 SOP 状态，回退前会在项目锁内运行目标版本 engine 的完整 `check`，托管文件缺失或被改动时不会切换 plugin / `current.json`。
-
-正式打包的唯一入口是 `sop-release gate`。它要求 source 是 clean 的最终 tag / commit，显式重跑 `git diff-tree --check`、`go vet ./...`、`go test ./...`，并对源码 plugin 与生成后的 plugin 各跑一次官方 validator；随后从这份 checkout 自己交叉编译 bootstrap、`sop-install`、manager、engine，最后组装并复核 bundle。调用前把官方校验脚本路径交给它：
-
-```text
-export SOP_PLUGIN_VALIDATOR="$HOME/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py"
-sop-release gate --source . --plugin-root plugin --output <仓库外目录> \
-  --version <版本> --tag v<版本> --commit <完整-HEAD-SHA> \
-  --release-notes <发布说明> --upgrade-impact <升级影响> \
-  --target-os <darwin|windows> --target-arch <amd64|arm64>
-```
-
-`sop-release verify --bundle <release-dir>` 只复核 bundle 的内部结构和哈希一致性，不能单独证明它来自哪个 Git commit。`assemble-unverified` 只是测试内部组装器，不是发布入口；公开的 `sop-release build` 会直接拒绝绕过 gate。普通项目不需要运行这些维护命令。
-
-tagged GitHub Actions gate 明确运行在预配置标签为 `self-hosted, linux, sop-release` 的发布机上；该机器必须预装 Codex、`uv`，并通过仓库变量 `SOP_PLUGIN_VALIDATOR` 指向本机官方 validator 文件。tagged gate 还会显式开启临时 `CODEX_HOME` 的真实 plugin 安装 / 升级 / 回退测试。普通 hosted runner 没有这些前提，不能冒充正式发布环境。
-
-## macOS / Windows 边界
-
-- 状态目录按系统解析：macOS 使用用户级配置目录，Windows 使用 `%LOCALAPPDATA%`；项目文件只保存相对路径。
-- 每个版本放在独立目录。固定 bootstrap 读取 `current.json` 后启动对应 manager；升级新增目录，不覆盖正在运行的 `.exe`。
-- 至少保留当前版和上一版，工具回退与项目回退互不混在一起。
-- phase 1 只支持带自校验标记的托管块，不支持无法证明文件所有权的全文件托管；删除旧托管块还必须匹配本机状态目录记录的可信 lock，换新机器后先用当前 profile 和匹配版本执行一次 `render` 建立本机凭据。
-- phase 1 的 profile schema 固定为 1；同 schema 的 SOP 版本可回退，未来 schema 2 等 MAJOR 迁移尚未实现跨 schema 回滚编排，会明确拒绝而不是假装成功。
-- CI 配置包含 macOS / Windows 原生测试和 macOS / Windows amd64、arm64 交叉构建；交叉构建成功不等于目标机器已经实跑。
-
-phase 1 目前仍缺一轮**真实自有 Windows + Codex**端到端验收，不能把下面这些当成已经证明：
-
-- plugin 内二进制在 Windows amd64 / arm64 的真实发现与执行路径。
-- Codex 对同名不同版本 plugin 的实际缓存、重装和激活行为。
-- Windows 文件锁、进程中断下的 upgrade、自动恢复和 rollback。
-
-这些项目通过前，不会把开发版冒充稳定版，也不会自动迁移其它机器。
-
-## 从哪里继续读
-
-- 规则语义：[`STANDARD.md`](STANDARD.md)
-- 机器契约：[`manifest.json`](manifest.json) 和 [`schemas/`](schemas/)
-- 设计与未验证边界：[`phase-1 稳定性设计`](docs/superpowers/specs/2026-07-10-sop-better-stability-overhaul-design.md)
-- 实验记录：[`experiments/`](experiments/)
-- 只有实验背书的长期教训：[`PLAYBOOK.md`](PLAYBOOK.md)
-
-改规则时先改 `STANDARD.md`，再同步 manifest / master；每次改动继续走“实验 → 结晶”的自举闭环。
+改规则时反过来:先查 `STANDARD.md`,再动 `master/` 或 skills,最后补 experiment / PLAYBOOK。
