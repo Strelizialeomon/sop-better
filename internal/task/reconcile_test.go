@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -48,6 +49,31 @@ func TestReconcileReleasesClaimAfterPermanentStateWasWritten(t *testing.T) {
 				t.Fatal("claim still exists after terminal reconciliation")
 			}
 		})
+	}
+}
+
+func TestTransitionAllowsRevisionBoundWaitingClaimToFinish(t *testing.T) {
+	fixture := newReconcileFixture(t, StateWaiting)
+	claim := mustClaim(t, fixture.leases, "terminal")
+	result, err := fixture.reconciler.Transition(context.Background(), claim, StateDone, "merged commit verified", &CompletionEvidence{MergedCommitSHA: "merged"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.State != StateDone || result.Action != ReconcileReleasedClaim {
+		t.Fatalf("result = %+v", result)
+	}
+	if _, exists, _ := fixture.claims.Read(context.Background(), "R_repo", 31); exists {
+		t.Fatal("terminal verification claim was not released")
+	}
+}
+
+func TestTransitionRejectsWaitingClaimFromStaleRevision(t *testing.T) {
+	fixture := newReconcileFixture(t, StateWaiting)
+	claim := mustClaim(t, fixture.leases, "terminal")
+	fixture.issues.revision++
+	_, err := fixture.reconciler.Transition(context.Background(), claim, StateDone, "merged commit verified", &CompletionEvidence{MergedCommitSHA: "merged"})
+	if err == nil || !strings.Contains(err.Error(), "waiting revision") {
+		t.Fatalf("Transition() error = %v, want stale waiting revision rejection", err)
 	}
 }
 

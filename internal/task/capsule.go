@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -16,13 +18,16 @@ import (
 
 const maxCapsuleBytes = 4 * 1024
 
+var sha256HexPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
 type Snapshot struct {
-	RepoNodeID    string
-	IssueNumber   int
-	Goal          string
-	Acceptance    []string
-	DocumentURL   string
-	UntrustedBody string
+	RepoNodeID     string
+	IssueNumber    int
+	Goal           string
+	Acceptance     []string
+	DocumentURL    string
+	DocumentSHA256 string
+	UntrustedBody  string
 }
 
 type Attestation struct {
@@ -53,9 +58,10 @@ type Capsule struct {
 }
 
 type ContextReference struct {
-	Kind  string `json:"kind"`
-	Value string `json:"value"`
-	Trust string `json:"trust"`
+	Kind   string `json:"kind"`
+	Value  string `json:"value"`
+	Trust  string `json:"trust"`
+	SHA256 string `json:"sha256,omitempty"`
 }
 
 type Risk struct {
@@ -67,11 +73,18 @@ type Risk struct {
 }
 
 type normalizedSnapshot struct {
-	RepoNodeID  string   `json:"repo_node_id"`
-	IssueNumber int      `json:"issue_number"`
-	Goal        string   `json:"goal"`
-	Acceptance  []string `json:"acceptance"`
-	DocumentURL string   `json:"document_url,omitempty"`
+	RepoNodeID     string   `json:"repo_node_id"`
+	IssueNumber    int      `json:"issue_number"`
+	Goal           string   `json:"goal"`
+	Acceptance     []string `json:"acceptance"`
+	DocumentURL    string   `json:"document_url,omitempty"`
+	DocumentSHA256 string   `json:"document_sha256,omitempty"`
+}
+
+type scopeIdentity struct {
+	Role           string   `json:"role"`
+	AllowedPaths   []string `json:"allowed_paths"`
+	ForbiddenPaths []string `json:"forbidden_paths,omitempty"`
 }
 
 func SnapshotHash(snapshot Snapshot) (string, error) {
@@ -155,7 +168,7 @@ func BuildCapsule(profile config.Profile, snapshot Snapshot, attestation Attesta
 		SnapshotHash: hash,
 	}
 	if normalized.DocumentURL != "" {
-		capsule.RequiredContext = []ContextReference{{Kind: "document", Value: normalized.DocumentURL, Trust: "untrusted-data"}}
+		capsule.RequiredContext = []ContextReference{{Kind: "document", Value: normalized.DocumentURL, Trust: "untrusted-data", SHA256: normalized.DocumentSHA256}}
 	}
 	data, err := json.Marshal(capsule)
 	if err != nil {
@@ -167,12 +180,69 @@ func BuildCapsule(profile config.Profile, snapshot Snapshot, attestation Attesta
 	return capsule, nil
 }
 
+func CapsuleScopeHash(capsule Capsule) (string, error) {
+	return scopeHash(scopeIdentity{
+		Role: strings.TrimSpace(capsule.Role), AllowedPaths: slices.Clone(capsule.AllowedPaths),
+		ForbiddenPaths: slices.Clone(capsule.ForbiddenPaths),
+	})
+}
+
+func ProfileScopeHash(profile config.Profile) (string, error) {
+	if len(profile.Ends) != 1 {
+		return "", errors.New("scope hash requires exactly one project end")
+	}
+	end := profile.Ends[0]
+	allowedPath := strings.TrimSuffix(path.Clean(end.Path), "/") + "/"
+	return scopeHash(scopeIdentity{Role: strings.TrimSpace(end.Name), AllowedPaths: []string{allowedPath}})
+}
+
+func ValidateCapsuleChangedPaths(capsule Capsule, changedPaths []string) error {
+	if len(changedPaths) == 0 {
+		return errors.New("task changed paths are required for scope validation")
+	}
+	for _, changedPath := range changedPaths {
+		if !normalizedChangedPath(changedPath) {
+			return fmt.Errorf("changed path %q is not portable", changedPath)
+		}
+		allowed := false
+		for _, allowedPath := range capsule.AllowedPaths {
+			root := strings.TrimSuffix(allowedPath, "/")
+			allowed = allowed || changedPath == root || strings.HasPrefix(changedPath, root+"/")
+		}
+		for _, forbiddenPath := range capsule.ForbiddenPaths {
+			root := strings.TrimSuffix(forbiddenPath, "/")
+			if changedPath == root || strings.HasPrefix(changedPath, root+"/") {
+				return fmt.Errorf("changed path %q is forbidden by the task capsule", changedPath)
+			}
+		}
+		if !allowed {
+			return fmt.Errorf("changed path %q is outside task capsule allowed_paths", changedPath)
+		}
+	}
+	return nil
+}
+
+func scopeHash(identity scopeIdentity) (string, error) {
+	if identity.Role == "" || len(identity.AllowedPaths) == 0 {
+		return "", errors.New("scope hash requires role and allowed paths")
+	}
+	slices.Sort(identity.AllowedPaths)
+	slices.Sort(identity.ForbiddenPaths)
+	data, err := json.Marshal(identity)
+	if err != nil {
+		return "", fmt.Errorf("encode task scope identity: %w", err)
+	}
+	sum := sha256.Sum256(data)
+	return "sha256:" + hex.EncodeToString(sum[:]), nil
+}
+
 func normalizeSnapshot(snapshot Snapshot) (normalizedSnapshot, error) {
 	normalized := normalizedSnapshot{
-		RepoNodeID:  strings.TrimSpace(snapshot.RepoNodeID),
-		IssueNumber: snapshot.IssueNumber,
-		Goal:        strings.TrimSpace(snapshot.Goal),
-		DocumentURL: strings.TrimSpace(snapshot.DocumentURL),
+		RepoNodeID:     strings.TrimSpace(snapshot.RepoNodeID),
+		IssueNumber:    snapshot.IssueNumber,
+		Goal:           strings.TrimSpace(snapshot.Goal),
+		DocumentURL:    strings.TrimSpace(snapshot.DocumentURL),
+		DocumentSHA256: strings.ToLower(strings.TrimSpace(snapshot.DocumentSHA256)),
 	}
 	for _, acceptance := range snapshot.Acceptance {
 		if trimmed := strings.TrimSpace(acceptance); trimmed != "" {
@@ -191,6 +261,12 @@ func normalizeSnapshot(snapshot Snapshot) (normalizedSnapshot, error) {
 	if len(normalized.Acceptance) == 0 {
 		return normalizedSnapshot{}, errors.New("task snapshot acceptance requires at least one item")
 	}
+	if normalized.DocumentURL == "" && normalized.DocumentSHA256 != "" {
+		return normalizedSnapshot{}, errors.New("task snapshot document_sha256 requires document_url")
+	}
+	if normalized.DocumentURL != "" && !sha256HexPattern.MatchString(normalized.DocumentSHA256) {
+		return normalizedSnapshot{}, errors.New("task snapshot document_url requires a lowercase SHA256 digest")
+	}
 	return normalized, nil
 }
 
@@ -200,4 +276,11 @@ func cloneChecks(checks map[string][]string) map[string][]string {
 		cloned[group] = slices.Clone(commands)
 	}
 	return cloned
+}
+
+func normalizedChangedPath(value string) bool {
+	windowsDrive := len(value) >= 3 && ((value[0] >= 'A' && value[0] <= 'Z') || (value[0] >= 'a' && value[0] <= 'z')) &&
+		value[1] == ':' && value[2] == '/'
+	return value != "" && !strings.Contains(value, `\`) && !filepath.IsAbs(value) && !strings.HasPrefix(value, "/") &&
+		!windowsDrive && path.Clean(value) == value && value != "." && value != ".." && !strings.HasPrefix(value, "../")
 }

@@ -25,6 +25,7 @@ func TestRenderLoopProfileUsesThinRuntimeAgentEntry(t *testing.T) {
 			Tracker:                  "github",
 			StartMode:                "manual",
 			AutoMerge:                "disabled",
+			EvidenceTrust:            "cooperative-local",
 			LeaseTimeoutSeconds:      600,
 			HeartbeatIntervalSeconds: 60,
 			Trust: config.RuntimeTrust{GitHub: config.GitHubTrust{

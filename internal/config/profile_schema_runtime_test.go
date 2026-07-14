@@ -33,10 +33,19 @@ func TestProfileSchemaDeclaresLoopRuntimeContract(t *testing.T) {
 	}
 	runtimeDefinition := schema["$defs"].(map[string]any)["runtime"].(map[string]any)
 	required := runtimeDefinition["required"].([]any)
-	for _, field := range []string{"mode", "tracker", "start_mode", "auto_merge", "lease_timeout_seconds", "heartbeat_interval_seconds", "trust", "checks"} {
+	for _, field := range []string{"mode", "tracker", "start_mode", "auto_merge", "evidence_trust", "lease_timeout_seconds", "heartbeat_interval_seconds", "trust", "checks"} {
 		if !containsJSONText(required, field) {
 			t.Errorf("runtime required does not contain %q: %v", field, required)
 		}
+	}
+	runtimeProperties := runtimeDefinition["properties"].(map[string]any)
+	if got := runtimeProperties["evidence_trust"].(map[string]any)["const"]; got != "cooperative-local" {
+		t.Fatalf("runtime evidence_trust const = %v", got)
+	}
+	githubTrust := schema["$defs"].(map[string]any)["runtime_trust"].(map[string]any)["properties"].(map[string]any)["github"].(map[string]any)
+	githubProperties := githubTrust["properties"].(map[string]any)
+	if _, exists := githubProperties["trusted_app_ids"]; exists {
+		t.Fatal("cooperative-local schema must reject trusted_app_ids instead of implying App isolation")
 	}
 }
 

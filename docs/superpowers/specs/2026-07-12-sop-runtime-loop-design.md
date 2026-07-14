@@ -1,8 +1,8 @@
 # sop-better 双层 Agent Loop 设计
 
 - **日期**:2026-07-12
-- **状态**:六段设计、增量复审和轻量 cooperative-local 信任模型均已获 owner 明确采纳;Loop MVP 保持实验态
-- **Spec review**:原六段、增量复审与 cooperative-local 轻量信任增量均完成独立新眼睛审查 Ready（0 Critical / Important）
+- **状态**:六段设计、轻量 cooperative-local 信任模型与 change-first 增量复审均获 owner 明确采纳;Loop MVP 保持实验态
+- **Spec review**:change-first 增量复审已完成独立新眼睛审查 Ready（0 Critical / Important）
 - **目标环境**:多台自有机器;macOS + Codex、Windows + Codex
 - **启动策略**:cooperative-local 始终手动“开工 #N”;后台模式须另立隔离 controller / broker 设计
 - **验证策略**:机械测试 + 真实 Codex 行为实验双保险
@@ -91,17 +91,11 @@ cooperative-local 始终由 owner 说“开工 #N”手动启动;后台 `sopctl 
 - 第一版不建服务器、数据库、Web 控制台、多租户或通用 DAG 调度器。
 
 ### 1.4 复审凭据的轻量信任选择（owner 2026-07-14 决策）
-
-对比过三种形态:独立系统服务能真正隔离 GitHub App 凭据,但需要管理员安装和跨平台高权限 worker;GitHub 侧 broker 隔离清楚,但排队与远端启动会抵消复审提速;本地 cooperative-local 最轻,但只能防误操作,不能防持同一 GitHub 凭据的执行 agent 故意绕过。owner 明确选择第三种,先验证“复审更快”本身。
-
-因此第一版不建 daemon,不要求管理员权限,也不把 GitHub review marker 宣称为防伪签名。它只在正常 `sopctl` 路径内重建连续覆盖链、阻止手填 evidence JSON、拦截旧 lease / 错 SHA / 超范围改动。若执行 agent 直接调用 GitHub API 伪造同格式评论,本版不能可靠识别;不可信仓库、会处理敌对输入的任务和无人值守自动合并不得启用此模式。以后要扩大到这三类场景,必须另立隔离 controller / broker 设计,不能悄悄把 App token 塞回当前进程。
-
+对比过三种形态:独立系统服务能真正隔离 GitHub App 凭据,但需要管理员安装和跨平台高权限 worker;GitHub 侧 broker 隔离清楚,但排队与远端启动会抵消复审提速;本地 cooperative-local 最轻,但只能防误操作,不能防持同一 GitHub 凭据的执行 agent 故意绕过。owner 明确选择第三种,先验证“复审更快”本身。因此第一版不建 daemon,不要求管理员权限,也不把 GitHub review marker 宣称为防伪签名。它只在正常 `sopctl` 路径内重建连续覆盖链、阻止手填 evidence JSON、拦截旧 lease / 错 SHA / 超范围改动。若执行 agent 直接调用 GitHub API 伪造同格式评论,本版不能可靠识别;不可信仓库、会处理敌对输入的任务和无人值守自动合并不得启用此模式。以后要扩大到这三类场景,必须另立隔离 controller / broker 设计,不能悄悄把 App token 塞回当前进程。
 ---
 
 ## 2. 外部调研依据
-
 本设计优先采用官方一手资料:
-
 1. Codex 会聚合全局、仓库和当前目录的 `AGENTS.md`;项目目录中的 `AGENTS.md` 聚合默认受 32 KiB 上限约束。skills metadata 也会加入初始输入,但官方资料没有说明它与 project-doc 共用同一个 32 KiB 上限。常驻指令仍应是高信号入口,具体流程按需加载。
    [OpenAI · Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)
 2. OpenAI 的 Harness Engineering 实践把“可读环境、可执行约束、测试和反馈 Loop”作为 agent 可靠性的地基;文档不足以独自保持系统一致。
@@ -112,9 +106,8 @@ cooperative-local 始终由 owner 说“开工 #N”手动启动;后台 `sopctl 
    [OpenAI · Codex-maxxing for long-running work](https://openai.com/index/codex-maxxing-long-running-work/)
 5. GitHub Git References API 支持创建冲突;GitHub GraphQL `updateRefs` 支持用 `beforeOid` 比较旧值并原子更新,可用于跨机器唯一领取与安全接管。
    [GitHub · Git References REST API](https://docs.github.com/en/rest/git/refs) · [GitHub · Git GraphQL reference](https://docs.github.com/en/graphql/reference/git)
-
+6. Gerrit Patch Set 支持比较任意两轮,GitHub 也能在新提交后让旧批准失效并要求最新 push 获批,共同支持“首轮完整、后续相邻版本且连续覆盖”的模型。[Gerrit · Patch Sets](https://gerrit-review.googlesource.com/Documentation/concept-patch-sets.html) · [GitHub · Managing a branch protection rule](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule)
 这些资料只提供方向。最终是否放行,仍以本项目的机械测试和真实 Codex 对照实验为准。
-
 ---
 
 ## 3. 目标与非目标
@@ -237,9 +230,7 @@ owner:“开工 #31”
 不得以“我先做到这里,你看看”作为第四种模糊出口。没有命中人工闸时,agent 继续运行。
 
 ### 5.3 后台模式（本设计明确不做）
-
 cooperative-local 没有 `sopctl watch`,配置与 CLI 都拒绝后台启动。无人值守领取会把“同凭据 agent 可绕过”的已知边界放大成真实自动化风险,所以必须留给未来隔离信任模式另立设计,不能作为本路线的后续开关。
-
 ### 5.4 多 Agent 写入所有权
 
 铁律是 **一个可写 Issue = 一个写 lease = 一个 worktree / branch owner**。
@@ -347,35 +338,18 @@ sources:
 可信身份不是“仓库成员都算”。cooperative-local profile 显式登记稳定 GitHub actor ID;login 只用于显示。attestation 必须绑定 `repo node ID + issue number + snapshot hash + actor ID + sop_version + server time`。`$sop-run` 用当前 `gh` 登录身份的 actor ID 与 profile 对表;未知、不匹配或无法查询时 fail closed。新增 / 删除 trusted actor 属于高风险 profile 变更,必须 owner 明确批准。可信 GitHub App ID 只属于未来隔离 controller 模式,轻量版不假装消费它。
 
 ### 6.4 Reviewer 胶囊
-
 首次完整 review 的独立 reviewer 获得自包含输入:
-
 - 目标与逐条验收。
 - 本次完整 diff。
 - 决策快照。
 - 测试 / 构建结果。
 - 范围内与范围外声明。
 - 输出格式:blocking / non-blocking / invalid hypothesis。
-
 controller 先拒绝 dirty worktree并锁定本轮 `head_sha`,再为该提交创建两个临时 detached worktree:checks 在可写但用后即弃的一份运行,reviewer 在另一份 read-only sandbox 中读取；两份都在开始 / 结束核对 exact HEAD 和 tracked clean,结束后清理。这样测试产物不会污染 reviewer 上下文,任何 HEAD 漂移、对象缺失或 tracked 文件变化都不写 review event。
-
-若任务使用“Issue 薄、doc 厚”,轻量版只接受当前仓库内、绑定完整 commit SHA 的文档链接。ready snapshot 保存 `document_url + document_sha256`;review 前重新取同一版本、核对 digest,物化成 reviewer 可读的本地只读文件。链接可变、跨仓、超大小、无法下载或 digest 不符时进入 `waiting`,不能只把 URL 丢给禁网 reviewer。
-
-修复后的复审不再重扫整条任务分支。它获得:
-
-- 上次 `reviewed_head_sha` 到当前 HEAD 的增量 diff。
-- 尚未关闭的 finding 台账及本轮声称关闭的 finding。
-- 改动函数 / 模块的完整上下文、相关契约和必须守住的不变量。
-- 本轮受影响检查结果与上次完整 review 引用。
-
-每条 finding 使用稳定 ID,记录 `severity / status / paths / invariant / evidence / disposition`。review 结果追加为连续覆盖链:
-
-```text
-base_sha -> full_review_head -> delta_review_head ... -> final_head
-```
-
-每段至少保存 `base_sha / head_sha / mode(full|delta) / finding_ids / review_reference`。覆盖链和 finding 台账由 controller 根据实际 reviewer run 生成 workflow evidence event,Issue / PR 做永久投影;CLI 不接受执行 agent 手填 review JSON。事件仍绑定 run / lease epoch / fencing token / snapshot / scope / HEAD,用于发现正常流程里的旧写入、断链和错位,但 cooperative-local 模式不把当前用户写出的 marker 当成对恶意 agent 的防伪证明。链有缺口、HEAD 对不上或 blocking 未关闭时,正常 `sopctl` 路径不能进入 `merge-eligible`。reviewer 不依赖主 agent 的对话历史,也不要求全文读取项目 SOP。
-
+若任务使用“Issue 薄、doc 厚”,轻量版只接受当前仓库内、绑定完整 commit SHA 的文档链接,单份上限 64 KiB。ready snapshot 保存 `document_url + document_sha256`;review 前重新取同一版本、核对 digest,物化成 reviewer 可读的本地只读文件。链接可变、跨仓、超大小、无法下载或 digest 不符时进入 `waiting`,不能只把 URL 丢给禁网 reviewer。
+首轮 canonical review 前必须已有同仓 draft PR;`task review --pull-request <URL>` 先由 GitHub 核实 PR number、base repo / ref、实际 merge-base 与 head SHA。首轮审 merge-base→PR HEAD,后续默认审上一 reviewed HEAD→当前 HEAD 的全部 change;新增、删除、重命名和高风险文件同样走 delta,不靠白名单或正则决定。reviewer 从精确 diff 自取 changed paths（胶囊不重复塞任务级路径）,同时获得未关闭 finding 和检查结果;每个 change 读取所在函数 / 类型 / 模块,若影响接口、调用、状态、并发或数据格式,继续读相关调用方、契约、测试和不变量。“只审 change”不等于只看红绿行:reviewer 先看 diff stat / name-status,再逐个 hunk 展开必要语义上下文;停止条件是已能判断本轮 change 的影响,而不是读过固定文件数,也不会重扫与本轮 change 无语义关系的任务文件。
+coverage 由事件所属仓库身份加 `pr_number / base_ref / merge_base_sha` 绑定。仅在没有 review HEAD、上一 SHA 不可用、goal / acceptance / snapshot / scope 变化、PR 被替换或 retarget、base / merge-base 变化、覆盖链有缺口时,才从当前 PR merge-base full reset。改动量大、新增 / 删除 / 重命名、触及 API / 并发 / 配置或 reviewer 需要多读调用链,都不是自动 full 条件;change 很广就扩大相关上下文,无法取得必要证据则返回具体缺失项并拒绝通过。
+每条 finding 使用稳定且不复用的 ID,记录 `severity / status / paths / invariant / evidence / disposition`;coverage 连续为 `PR_merge_base --full--> H1 --delta--> H2 --delta--> current_PR_head`。第一段必须是 `full` 且从当前 review basis 的 merge-base 起步;后续 `delta` 的 base 必须精确等于上一段 head。记录至少保存 `review_basis / base_sha / head_sha / mode / finding updates / review_reference`。coverage 和 finding 台账由 controller 根据实际 reviewer run 生成 workflow evidence event,Issue / PR 做永久投影;CLI 不接受执行 agent 手填 review JSON。事件仍绑定 run / lease epoch / fencing token / snapshot / scope / HEAD,用于发现正常流程里的旧写入、错 SHA 和错位,但 cooperative-local 模式不把当前用户写出的 marker 当成对恶意 agent 的防伪证明。PR identity / basis 不同、coverage 起点不对、链有缺口、最终 HEAD 对不上或 blocking 未关闭时,正常 `sopctl` 路径不能进入 `merge-eligible`。reviewer 不依赖主 agent 的对话历史,也不要求全文读取项目 SOP。每个 `full` 段开启新的 coverage generation;旧 generation 由不可变 review events 归档,旧 open blocking findings 作为待核实假设交给新 full reviewer逐条重开、resolved 或 invalid,不能因 reset 静默消失。active ledger 由新 full 输出重建,merge gate 只读当前 generation;finding ID 跨 generation 单调递增且不复用。
 ### 6.5 冲突处理
 
 遇到全局 / 项目 `AGENTS.md`、skill、任务胶囊或 owner 临时指令冲突时:
@@ -421,47 +395,34 @@ blocking? ──是──> 核实 → 修复 → 重新验证
 ```
 
 ### 7.1 机械验证
-
 项目 profile 明确 `format / lint / test / build / structure` 命令。agent 不临场猜必跑项。
-
-验证分两层,但只有一套命令真相源:
-
-- **内循环**:manifest / profile 按 changed paths 确定受影响 check groups;每轮修复只跑这些组。无匹配、映射冲突或改动触及共享基础设施时 fail closed,升级为全量。
+只有一套命令真相源。change-first reviewer 与检查提速分开验证,本轮先改变 review 输入,不靠未验证的路径分类器同时少跑测试:
+- **内循环**:每轮复审前在 exact HEAD 的隔离 worktree 跑 profile 全部 check groups。
 - **最终闸**:PR head 必须被 review 覆盖链连续覆盖;merge 后另取实际进入配置默认分支的 merged commit,在隔离 worktree 跑 profile 的全部 check groups。PR head 上的内循环结果不能代替 merged commit 全量结果。
-
-每次记录实际命令、HEAD、耗时和结果。路径映射只决定“本轮先跑哪些”,不能把 profile 必跑项永久豁免。
-
+每次记录实际命令、HEAD、耗时和结果。3+3 实验先分别记录 reviewer 与 checks wall time;若 checks 被实测为下一主瓶颈,后续只考虑 profile 显式指定“修复轮快速检查组 + merge-eligible 前全部检查”,不让 controller 根据路径猜测试。该后续变化另设验收,不预埋 `check_triggers`。
 不能运行时必须记录:
 
 - 未验证项。
 - 不能运行的原因。
 - 对结论的影响。
 - 恢复验证所需条件。
-
 ### 7.2 Review 处理
-
 - blocking finding 必须核实。
 - 成立则修改;不成立则用代码、测试或规范证据反驳。
 - 没有证据时继续调查,不能盲从或忽略。
-- 首轮完整 review 后保存 review 覆盖链和 finding 台账;修改后跑受影响验证,只复审上次 reviewed HEAD 到当前 HEAD 的增量及受影响上下文。
-- 以下任一情况使增量游标失效,必须对当前任务 scope 重新完整 review:base / snapshot / scope hash 改变;review 链不连续;修复越出 finding 声明范围;改动触及公开契约、schema、权限 / 信任边界、lease / claim store、controller、并发或状态机;无法可靠分析 diff;reviewer 有证据要求扩大范围。识别器无法解析时必须 fail closed 回退完整 review。
-- Phase 1 不靠跨语言正则猜“这是不是公共 API”。增量模式默认关闭;profile 必须显式给出 `delta_review_paths` 低风险 allowlist,且本轮每个 changed path 同时命中 allowlist、未命中内置保护边界、属于未关闭 finding 的既有路径,才允许 delta。缺配置、未知文件类型、rename / type-change 越出 allowlist 或任一判断失败都完整 review。行级正则只能额外触发 full,不能单独授予 delta。
-- 重新完整 review 的边界是当前任务 scope,不是无条件重扫整个仓库;其中高风险模块必须展开读取受影响函数、调用链、契约和不变量,不能只看 diff hunk。
-- 复审只负责关闭旧 finding 与发现本轮增量引入的问题;不重复审查已被连续 review 链覆盖且未受影响的文件。
-
+- 每轮保存绑定当前 PR review basis 的连续 coverage 和 finding 台账;首轮从 PR merge-base 完整审,后续从上一 review HEAD 审到当前 PR HEAD。
+- delta review 必须审本轮全部 change,并按语义需要展开受影响函数、调用链、契约和不变量;不能只看 diff hunk,也不能把展开上下文偷换成重扫全部旧 diff。
+- delta 是覆盖链的默认第二段及后续段,不是 profile 开关;Phase 1 没有 `delta_review_paths`、跨语言边界表或隐藏快捷路径。
+- snapshot / scope / PR identity / base repo / base ref / merge-base 变化或覆盖链断裂时重置为 full;改动路径、文件操作类型和风险标签本身不触发 full。
 ### 7.3 熔断
-
 以下任一情况进入 `waiting`:
-
 - 同一失败签名连续三次且没有新证据。
 - reviewer 与执行 agent 围绕同一点三轮没有新证据。
 - 测试环境损坏,改业务代码不能推进。
 - 验收条件互相矛盾。
 - 必须扩大产品范围或修改冻结契约。
 - 任务锁 / 远端状态持续异常。
-
 熔断记录必须写明:已完成、卡点、已尝试、证据、已排除方案、需要 owner 决定什么、决定后从哪里恢复。
-
 ### 7.4 完成条件
 
 进入 `merge-eligible` 之前必须满足:
@@ -477,12 +438,12 @@ blocking? ──是──> 核实 → 修复 → 重新验证
 ```text
 checks / review 通过
 → run phase = merge-eligible（Issue 仍 running）
-→ pre-merge 重新计算风险、scope、checks 与 approvals
+→ pre-merge 重新核对 PR identity / base repo / base ref / merge-base / head,并计算风险、scope、checks 与 approvals
 → 低风险产出可合并 PR / 高风险等待 owner 决定
 → 写 `waiting(awaiting-external-merge, PR URL, PR head)` 永久事件并释放 claim
 → owner 或现有仓库保护流程在 Loop 外合并
 → owner 说“继续 #N”,controller 对 waiting revision 原子领取 terminal-verification lease
-→ 核验 PR head 的 review 覆盖,再核验默认分支实际 merged commit 并在该提交跑最终 checks；未 merge、head 不符或 checks 失败则仍回 waiting 并释放 claim
+→ 重核 PR identity / base / merge-base / head 与 review coverage,再核验默认分支实际 merged commit 并在该提交跑最终 checks；未 merge、basis / head 不符或 checks 失败则仍回 waiting 并释放 claim
 → 追加最终证据事件,关闭 Issue 并投影为 done
 → 使用旧 OID 条件删除 claim
 ```
@@ -617,33 +578,24 @@ snapshot_hash: sha256:...
 - 绕过失败检查或高风险合并闸。
 
 ### 9.3 合并
-
 - cooperative-local 第一版固定 `auto_merge=disabled`;完成条件满足后只产出可合并 PR,由现有保护规则或 owner 合并。
-- 自动合并推迟到隔离 controller / broker 另立设计后;不能只改 profile 字段偷偷打开。
 - 高风险或不可逆:进入 `waiting`,等待 owner 明确确认。
 - 发现额外优化:另开 Issue,不偷带进当前任务。
-
 风险不是 agent 自报字段。`sopctl` 在 start 与 pre-merge 两次计算 attestation:
-
 - 输入包括 touched paths、diff 类型、执行命令、依赖 / schema / contract 变化、生产 / 成本 / 安全规则、既有 owner approvals。
 - 输出写入 capsule / run event:`risk_class`、命中规则、来源、可逆证据和批准记录。
 - `unknown` 一律按高风险处理。
 - “开工 #N”只授权任务分支写入;不授权合并。
 - agent 可以提供风险判断证据,但不能自己降低机械命中的风险等级。
-
 ---
 
 ## 10. 项目配置与用户入口
-
 项目继续只提交两个 sop-better 状态文件:
-
 ```text
 .sop/profile.json  # 项目事实、运行策略与 owner 决策
 .sop/lock.json     # 上次生成版本、组件与托管内容 hash
 ```
-
 运行配置示意:
-
 ```json
 {
   "runtime": {
@@ -658,10 +610,6 @@ snapshot_hash: sha256:...
       "test": ["..."],
       "build": ["..."]
     },
-    "check_triggers": {
-      "test": ["internal/**", "cmd/**"]
-    },
-    "delta_review_paths": ["internal/leaf/**"],
     "trust": {
       "github": {
         "trusted_actor_ids": [123456]
@@ -670,29 +618,22 @@ snapshot_hash: sha256:...
   }
 }
 ```
-
 约束:
-
 - 不提交机器绝对路径、密钥或访问 token。
-- 本轮 schema migration 在 experimental runtime 内完成:`evidence_trust` 新增为必填且只能是 `cooperative-local`;`delta_review_paths` 新增为可选、缺省空数组;`trusted_app_ids` 从必填移除,但轻量模式只要字段出现就拒绝（空数组也失败）,并提示它不提供隔离。`additionalProperties:false` 继续保留。旧实验 profile 必须重新 render,并新增“旧 profile 迁移 / 新字段合法 / App 字段误导 / delta 缺省 full”schema + Go 双层 fixture。
+- 本轮 schema migration 在 experimental runtime 内完成:`evidence_trust` 新增为必填且只能是 `cooperative-local`;`trusted_app_ids` 从必填移除,但轻量模式只要字段出现就拒绝（空数组也失败）,并提示它不提供隔离。`additionalProperties:false` 继续保留。旧实验 profile 必须重新 render;delta 由 canonical review chain 自动决定,不增加路径 allowlist 或 profile 开关;按路径挑 checks 的字段不进入 Phase 1 schema。
 - `cooperative-local` 只允许 `start_mode=manual`、`auto_merge=disabled`;不启动后台 watch,不用于明确以对抗性 prompt injection 为威胁的仓库 / 任务或无人值守自动合并。
-- `check_triggers` 为兼容旧 profile 的可选优化;配置后 key 必须指向已有 check group,pattern 必须是规范化的仓库相对路径。内循环只跑命中的组;任一 changed path 无匹配、映射冲突或未配置时都 fail closed 跑全部组;所有组仍在 merged commit 最终闸必跑。
-- `delta_review_paths` 可选且默认空;只声明 owner 已确认适合增量复审的低风险叶子实现路径,不能覆盖内置 schema / trust / lease / controller / 并发 / 公共契约保护边界。
+- 每轮 review 和 merged commit 最终闸暂时都运行 profile 全部 check groups;先单独验证 change-first reviewer 的收益。Phase 1 不接受 `check_triggers` 或 `delta_review_paths`。
 - 本机 workspace、缓存、machine ID 和 checkpoint 放版本化安装定义的本机状态目录。
 - 实时任务状态放 GitHub,不再提交第三份 `.sop/state.json`。
 - schema 校验要求 heartbeat interval 不大于 lease TTL 的三分之一;不满足就拒绝启动。
 - 当前 `gh` actor、attestation actor 与 profile trust roots 不匹配时拒绝启动;不把 login 名称或仓库 write 权限当成稳定身份。`trusted_app_ids` 留给未来隔离 controller 模式另立 schema,在 cooperative-local profile 中出现即拒绝,避免制造“已经防伪”的错觉。
-
 用户日常只需:
-
 ```text
 开工 #31
 继续 #31
 查看 #31
 ```
-
 公开命令保持小:
-
 ```text
 sopctl task start <issue>
 sopctl task continue <issue>
@@ -754,9 +695,12 @@ PR / reviewer 状态
 - capsule 同输入确定输出;字段来源、范围和大小可校验。
 - review 的 checks 与 reviewer 必须分别运行在 exact `head_sha` 的 clean detached worktree;dirty、HEAD 漂移、tracked 文件变化或 type-change / rename 隐藏旧路径均 fail closed。
 - doc-backed 任务必须把同仓 pinned commit 文档按 digest 物化给 reviewer;可变 / 跨仓 / 缺失文档不能只传 URL 后继续。
-- review 覆盖链必须从任务 base 连续到 PR head;缺段、错 SHA、CLI 手填 review evidence 或 unresolved blocking 均不能经正常 `sopctl` 路径进入 `merge-eligible / done`。直接用同一 GitHub 凭据伪造 marker 不在 cooperative-local 的保证范围;done 仍必须确认 PR 合入配置默认分支,并在实际 merged commit 上重跑全量 checks。
-- changed paths 到 task scope 和 check groups 的映射必须确定;超范围、任一路径无匹配 / 冲突时升级或拒绝,不能静默少跑。
-- delta review 默认关闭;任一路径未命中 `delta_review_paths` 或命中内置保护边界时必须 full。
+- review 覆盖链必须绑定同一 PR identity / base repo / base ref / merge-base,以 merge-base→首轮 HEAD 的 full 段起步,后续 delta 段首尾连续到 PR head;缺段、错 SHA、CLI 手填 review evidence 或 unresolved blocking 均不能经正常 `sopctl` 路径进入 `merge-eligible / done`。直接用同一 GitHub 凭据伪造 marker 不在 cooperative-local 的保证范围;done 仍必须确认同一 PR 合入配置默认分支,并在实际 merged commit 上重跑全量 checks。
+- changed paths 到 task scope 的映射必须确定;超范围时拒绝,不能静默扩大任务。
+- 首轮 review 必须从当前 PR merge-base 完整覆盖当前 PR HEAD;第二轮起必须只覆盖上一 review HEAD 到当前 HEAD 的全部 tree change。新增 / 删除 / 重命名 / 高风险路径仍产出 delta,不能静默漏 change 或按文件类型回退 full。
+- delta reviewer 必须能发现旧 finding 之外的新问题;机械反向测试构造“修复 F-001 时顺手引入 F-002”,若只关闭旧 finding 即失败。
+- snapshot / scope / PR identity / base repo / base ref / merge-base 改变、上一 SHA 不可用或覆盖链断裂必须 full reset;同一 HEAD 换 PR base 不得复用 coverage,普通 tree change 不得触发 full。
+- full reset 必须归档旧 generation,把旧 open blocking 带入新 full 逐条 disposition,并保证 finding ID 不复用。
 - 超范围 diff、高风险、失败检查不能产出可合并结论;轻量版不存在自动合并。
 - macOS / Windows 对同 profile 生成同义结果,路径格式按平台正确。
 - 防御性回归:在正常 `sopctl` 解析 / 胶囊路径内,恶意 Issue 正文、评论和外链不能改变 commands、skills、scope、风险或权限；这不扩张为“能防同凭据 agent 绕过 CLI”的对抗支持承诺。
@@ -765,9 +709,7 @@ PR / reviewer 状态
 - state revision 冲突、较新 owner 事件和 label 投影失败不会被旧 runner 覆盖。
 
 ### 12.2 真实 Codex 对照场景
-
 第一批 16 个场景:
-
 1. 简单 Bug 自动完成。
 2. 需求不清进入 `waiting`。
 3. 发现需要扩大范围。
@@ -782,20 +724,17 @@ PR / reviewer 状态
 12. 网络中断后恢复。
 13. 正常 `sopctl` 路径收到带注入文本的 Issue / 评论 / 外链,胶囊边界不变（防御性回归,不测试同凭据 API 绕过）。
 14. 跨端父 Issue 被要求直接写多个 scope。
-15. 首轮完整 review 后修复两个已知竞态,复审只读增量 diff + finding 台账 + 受影响并发上下文。
-16. review base、scope hash 或高风险边界变化导致增量游标失效,系统重新完整 review 当前任务 scope。
-
+15. 首轮完整 review 后修复两个已知竞态并顺手引入一个新缺陷;复审只读取上一 review HEAD 到当前 HEAD 的全部 change + 必要语义上下文,既关闭旧 finding 也抓住新缺陷。
+16. 外部合并后在另一台没有任务 workspace 的可信机器继续,仅靠 canonical review coverage、PR head 和 merged commit 完成终态核验。
 每个场景对比旧 SOP 与新 Loop:
-
 - 任务是否完成。
 - 是否重复干活或误判完成。
 - owner 被打断次数。
 - 开工前读取的 SOP 文件和常驻指令字节数。
 - 规则冲突是否被发现。
 - 测试 / review 是否真实运行。
-- 首轮 / 复审输入字节数、review wall time、受影响 / 全量检查 wall time、有效 / 无效 finding 数。
+- 首轮 / 复审输入字节数、review wall time、全量检查 wall time、有效 / 无效 finding 数。
 - 最终代码、Issue、PR、任务锁是否一致。
-
 实验契约继续强制继承 2026-07-10 稳定化设计 §8.2～§8.7,本设计补充为:
 
 - baseline / candidate 固定同一模型、Codex 版本、权限、sandbox、仓库 SHA、外部依赖快照和机器级环境记录。
@@ -805,15 +744,18 @@ PR / reviewer 状态
 - 实验开始前固定成功分母、允许波动、熔断判据和放行阈值;失败后不得临时改口径。
 - “是否全文读取 SOP”从 Codex 轨迹中的文件读取记录与初始输入字节统计,不靠 agent 自述。
 - 基础设施 / 网络 / 模型服务失败单列,不算 candidate 行为失败,也不算通过。
-- 增量复审与完整复审使用同一模型、reasoning effort、sandbox 和已知 finding 输入,各独立运行 3 次;先用已知竞态修复做 closure 回归,再由最终完整安全审查兜底查漏。
+- exp-039 重启时,增量候选与当前完整复审基线必须使用同一模型、reasoning effort、sandbox 和已知 finding 输入,各独立运行 3 次;固定并保存 task base、previous review head、current head 三个 SHA,candidate SHA、Codex 版本、命令、机器环境、原始 JSONL、输入字节、输出 token、finding 与 wall time。没有这些可复现凭据不能放行。
+- 实验前冻结 blocking 缺陷真值表:缺陷 ID、引入 SHA、预期影响和可重复复现测试。至少一例必须只改调用方,而缺陷表现位于未改 callee,验证 reviewer 会按语义展开上下文。三次 delta candidate 都必须抓全预登记缺陷;full control 只作独立对照,不充当真值或兜底。
+- 未预埋的新 finding 必须分别在 previous review head 与 current head 复现后再归因;无法可靠归因记 `inconclusive`,本轮实验不能算通过。
+- 50% 门槛固定计算 `median(delta_reviewer_wall_time) / median(full_reviewer_wall_time) <= 0.5`;checks wall time 单独报告,不得混入比值。
 
 ### 12.3 第一版放行标准
 
 - 并发领取无重复 owner。
 - 故障点均能恢复或进入明确 `waiting`。
 - 安全场景 100% 通过。
-- 增量复审必须关闭已知 finding,最终完整安全审查不得发现仅因增量模式漏掉的新 blocking;否则立即停用增量模式。
-- 在不降低上述安全结果前提下,增量复审中位 wall time 不高于同输入完整复审的 50%;这是首轮实验放行阈值,不是未经实测的长期承诺。
+- change-first 候选必须通过 exp-039 的 3+3 对照:三次 delta 都抓全预登记 blocking 真值,连续 coverage、PR basis 失效与 generation reset 场景全部通过,reviewer wall-time 中位数比值 ≤ 0.5;任一失败或 inconclusive 就不升级 experimental runtime。
+- 实现硬上限仍是相对 `db53a7a` 净增 ≤ 2850 行。spec 初审时实测净增 2693、仅余 157 行;实施先从 reviewer capsule 删除重复的任务级 `changed_paths / context_paths`,并用 delta / generation 测试替换 full-only 测试而非平行新增,至少先释放 40 行。新增生产代码与测试合计净增最多 190 行;每轮机械重算总净增,最终超线即失败,不删安全测试或事后改门槛。
 - 低风险场景在一次“开工”后不再索要过程确认。
 - 高风险场景准确停在人工闸之前。
 - agent 开工不读取完整 `STANDARD.md` 或完整 workflow。

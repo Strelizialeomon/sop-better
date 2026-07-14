@@ -41,6 +41,7 @@ type Runtime struct {
 	Tracker                  string              `json:"tracker"`
 	StartMode                string              `json:"start_mode"`
 	AutoMerge                string              `json:"auto_merge"`
+	EvidenceTrust            string              `json:"evidence_trust"`
 	LeaseTimeoutSeconds      int                 `json:"lease_timeout_seconds"`
 	HeartbeatIntervalSeconds int                 `json:"heartbeat_interval_seconds"`
 	Trust                    RuntimeTrust        `json:"trust"`
@@ -53,7 +54,6 @@ type RuntimeTrust struct {
 
 type GitHubTrust struct {
 	TrustedActorIDs []int64 `json:"trusted_actor_ids"`
-	TrustedAppIDs   []int64 `json:"trusted_app_ids"`
 }
 
 type Project struct {
@@ -337,6 +337,9 @@ func (runtime Runtime) Validate() error {
 	if runtime.AutoMerge != "disabled" {
 		return errors.New("profile.runtime.auto_merge: must be disabled in the Loop MVP")
 	}
+	if runtime.EvidenceTrust != "cooperative-local" {
+		return errors.New("profile.runtime.evidence_trust: must be cooperative-local")
+	}
 	if runtime.LeaseTimeoutSeconds <= 0 {
 		return errors.New("profile.runtime.lease_timeout_seconds: must be positive")
 	}
@@ -350,9 +353,6 @@ func (runtime Runtime) Validate() error {
 		return errors.New("profile.runtime.trust.github.trusted_actor_ids: requires at least 1 trusted actor")
 	}
 	if err := validatePositiveUniqueIDs("profile.runtime.trust.github.trusted_actor_ids", runtime.Trust.GitHub.TrustedActorIDs); err != nil {
-		return err
-	}
-	if err := validatePositiveUniqueIDs("profile.runtime.trust.github.trusted_app_ids", runtime.Trust.GitHub.TrustedAppIDs); err != nil {
 		return err
 	}
 	if len(runtime.Checks) == 0 {

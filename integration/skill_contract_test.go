@@ -86,9 +86,10 @@ func TestSopRunSkillKeepsTheRuntimeLoopClosed(t *testing.T) {
 	}
 	contents := string(data)
 	for _, required := range []string{
-		"sopctl task start", "sopctl task continue", "sopctl task status", "任务胶囊",
-		"不得手工创建 worktree", "测试 → 独立 review → 修复", "done", "waiting", "running",
-		"不得阅读整份运行时设计来决定下一步", "远端副作用",
+		"sopctl task start", "sopctl task continue", "sopctl task review", "sopctl task status", "任务胶囊",
+		"不得手工创建 worktree", "首轮审 PR merge-base→HEAD", "后续只审", "全部 change", "必要上下文", "profile 全部 checks", "不得手填 review JSON", "done", "waiting", "running",
+		"不得阅读整份运行时设计来决定下一步", "远端副作用", "只手动启动", "无 watch / daemon",
+		"40 位提交 SHA", "外部 owner / 保护流程完成合并",
 	} {
 		if !strings.Contains(contents, required) {
 			t.Errorf("sop-run is missing %q", required)

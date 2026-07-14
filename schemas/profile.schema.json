@@ -67,12 +67,13 @@
     "runtime": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "tracker", "start_mode", "auto_merge", "lease_timeout_seconds", "heartbeat_interval_seconds", "trust", "checks"],
+      "required": ["mode", "tracker", "start_mode", "auto_merge", "evidence_trust", "lease_timeout_seconds", "heartbeat_interval_seconds", "trust", "checks"],
       "properties": {
         "mode": {"const": "loop-v1-experimental"},
         "tracker": {"const": "github"},
         "start_mode": {"const": "manual"},
         "auto_merge": {"const": "disabled"},
+        "evidence_trust": {"const": "cooperative-local"},
         "lease_timeout_seconds": {"type": "integer", "minimum": 1},
         "heartbeat_interval_seconds": {"type": "integer", "minimum": 1},
         "trust": {"$ref": "#/$defs/runtime_trust"},
@@ -95,10 +96,9 @@
         "github": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["trusted_actor_ids", "trusted_app_ids"],
+          "required": ["trusted_actor_ids"],
           "properties": {
-            "trusted_actor_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}},
-            "trusted_app_ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1}}
+            "trusted_actor_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}}
           }
         }
       }

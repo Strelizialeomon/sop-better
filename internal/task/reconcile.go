@@ -82,7 +82,12 @@ func (reconciler Reconciler) Transition(ctx context.Context, claim StoredClaim, 
 	if err != nil {
 		return ReconcileResult{}, fmt.Errorf("read canonical issue state: %w", err)
 	}
-	if issue.State != StateRunning || (target != StateWaiting && target != StateDone) {
+	runningTransition := issue.State == StateRunning && target == StateWaiting
+	waitingCompletion := issue.State == StateWaiting && target == StateDone && claim.Claim.StateRevision == issue.Revision
+	if !runningTransition && !waitingCompletion {
+		if issue.State == StateWaiting && target == StateDone {
+			return ReconcileResult{}, errors.New("cannot finish waiting task with a claim from a stale waiting revision")
+		}
 		return ReconcileResult{}, fmt.Errorf("cannot transition task from %s to %s", issue.State, target)
 	}
 	guarded, err := reconciler.Leases.Renew(ctx, claim)

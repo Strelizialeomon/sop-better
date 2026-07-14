@@ -16,6 +16,9 @@ func TestParseProfileAcceptsLoopV1RuntimeProfile(t *testing.T) {
 	if got, want := profile.Runtime.Mode, "loop-v1-experimental"; got != want {
 		t.Fatalf("runtime.mode = %q, want %q", got, want)
 	}
+	if got, want := profile.Runtime.EvidenceTrust, "cooperative-local"; got != want {
+		t.Fatalf("runtime.evidence_trust = %q, want %q", got, want)
+	}
 	if got, want := profile.Runtime.Trust.GitHub.TrustedActorIDs[0], int64(123456); got != want {
 		t.Fatalf("trusted actor id = %d, want %d", got, want)
 	}
@@ -36,9 +39,10 @@ func validLoopProfileJSON() string {
     "tracker": "github",
     "start_mode": "manual",
     "auto_merge": "disabled",
+    "evidence_trust": "cooperative-local",
     "lease_timeout_seconds": 600,
     "heartbeat_interval_seconds": 60,
-    "trust": {"github": {"trusted_actor_ids": [123456], "trusted_app_ids": [7890]}},
+    "trust": {"github": {"trusted_actor_ids": [123456]}},
     "checks": {"test": ["go test ./..."], "build": ["go build ./..."]}
   }
 }`
@@ -71,14 +75,16 @@ func TestParseProfileRejectsUnsafeLoopRuntime(t *testing.T) {
 		{"unsupported tracker", `"tracker": "github"`, `"tracker": "linear"`, "profile.runtime.tracker"},
 		{"background start before release", `"start_mode": "manual"`, `"start_mode": "watch"`, "profile.runtime.start_mode"},
 		{"automatic merge in mvp", `"auto_merge": "disabled"`, `"auto_merge": "low_risk"`, "profile.runtime.auto_merge"},
+		{"wrong evidence trust", `"evidence_trust": "cooperative-local"`, `"evidence_trust": "github-app"`, "profile.runtime.evidence_trust"},
 		{"nonpositive lease", `"lease_timeout_seconds": 600`, `"lease_timeout_seconds": 0`, "profile.runtime.lease_timeout_seconds"},
 		{"nonpositive heartbeat", `"heartbeat_interval_seconds": 60`, `"heartbeat_interval_seconds": 0`, "profile.runtime.heartbeat_interval_seconds"},
 		{"heartbeat exceeds one third", `"heartbeat_interval_seconds": 60`, `"heartbeat_interval_seconds": 201`, "must not exceed one third"},
 		{"missing trusted actor", `"trusted_actor_ids": [123456]`, `"trusted_actor_ids": []`, "requires at least 1 trusted actor"},
 		{"nonpositive trusted actor", `"trusted_actor_ids": [123456]`, `"trusted_actor_ids": [0]`, "trusted_actor_ids[0]"},
 		{"duplicate trusted actor", `"trusted_actor_ids": [123456]`, `"trusted_actor_ids": [123456, 123456]`, "trusted_actor_ids[1]"},
-		{"nonpositive trusted app", `"trusted_app_ids": [7890]`, `"trusted_app_ids": [-1]`, "trusted_app_ids[0]"},
-		{"duplicate trusted app", `"trusted_app_ids": [7890]`, `"trusted_app_ids": [7890, 7890]`, "trusted_app_ids[1]"},
+		{"misleading trusted app", `"trusted_actor_ids": [123456]`, `"trusted_actor_ids": [123456], "trusted_app_ids": []`, "unknown field"},
+		{"removed check triggers", `"checks": {"test": ["go test ./..."], "build": ["go build ./..."]}`, `"checks": {"test": ["go test ./..."], "build": ["go build ./..."]}, "check_triggers": {"test": ["internal/**"]}`, "unknown field"},
+		{"removed delta paths", `"checks": {"test": ["go test ./..."], "build": ["go build ./..."]}`, `"checks": {"test": ["go test ./..."], "build": ["go build ./..."]}, "delta_review_paths": ["backend/**"]`, "unknown field"},
 		{"missing checks", `"checks": {"test": ["go test ./..."], "build": ["go build ./..."]}`, `"checks": {}`, "profile.runtime.checks"},
 		{"empty check command", `"go test ./..."`, `""`, "profile.runtime.checks.test[0]"},
 		{"multiline check command", `"go test ./..."`, `"go test\nrm -rf ."`, "profile.runtime.checks.test[0]"},
