@@ -946,7 +946,7 @@ func repositoryRoot(t *testing.T) string {
 
 func buildReleaseBinary(t *testing.T, repoRoot string) string {
 	t.Helper()
-	binary := filepath.Join(t.TempDir(), "sop-release")
+	binary := filepath.Join(t.TempDir(), "sop-release"+executableSuffix())
 	compile := exec.Command("go", "build", "-o", binary, "./cmd/sop-release")
 	compile.Dir = repoRoot
 	if output, err := compile.CombinedOutput(); err != nil {

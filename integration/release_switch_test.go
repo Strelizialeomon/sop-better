@@ -219,12 +219,12 @@ func TestReleaseProjectPreviewSharesTheRealProjectOperationLock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	stateBefore := snapshotTree(t, stateHome)
 	held, err := state.AcquireFileLock(filepath.Join(stateHome, "projects", projectID, "operation.lock"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer held.Close()
-	stateBefore := snapshotTree(t, stateHome)
 	projectBefore := snapshotTree(t, projectRoot)
 	manager := releasemanager.Manager{
 		StateHome: stateHome, ReleaseSource: releaseSource, ProjectRoot: projectRoot,
@@ -235,7 +235,10 @@ func TestReleaseProjectPreviewSharesTheRealProjectOperationLock(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "project operation is already running") {
 		t.Fatalf("concurrent project preview error = %v, want shared-lock rejection", err)
 	}
-	if got := snapshotTree(t, stateHome); !sameSnapshot(stateBefore, got) {
+	if err := held.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if got := withoutOperationLock(snapshotTree(t, stateHome)); !sameSnapshot(stateBefore, got) {
 		t.Fatalf("blocked project preview changed release state: before=%v after=%v", stateBefore, got)
 	}
 	if got := snapshotTree(t, projectRoot); !sameSnapshot(projectBefore, got) {
@@ -352,7 +355,11 @@ func TestSameVersionInstallerReconcilesHealthAndPrintsCustomStateUsage(t *testin
 		t.Fatalf("initial install: %v", err)
 	}
 	bootstrapPath := filepath.Join(stateHome, "bin", "sopctl"+executableSuffix())
-	for _, expected := range []string{"SOP_STATE_HOME='" + stateHome + "'", "'" + bootstrapPath + "'"} {
+	stateHomeUsage := "SOP_STATE_HOME='" + stateHome + "'"
+	if runtime.GOOS == "windows" {
+		stateHomeUsage = "$env:SOP_STATE_HOME = '" + stateHome + "'"
+	}
+	for _, expected := range []string{stateHomeUsage, "'" + bootstrapPath + "'"} {
 		if !strings.Contains(output.String(), expected) {
 			t.Fatalf("custom state usage is missing %q:\n%s", expected, output.String())
 		}
