@@ -1,12 +1,20 @@
-<!-- master/base/docs/project/issue-pr-workflow.md —— 所有项目(人人走 issue+PR,含单人)。agent 执行的 issue + PR 标准工作流。
-     核心:issue/PR 是 agent 之间的共享内存 / 凭据,不是给人的 PM 表。agent 全程操作,人可读可不读,只在高风险闸出现。
+<!-- master/base/docs/project/issue-pr-workflow.md —— 项目触发 Issue / PR 时采用的标准工作流。
+     核心:需要持久跟踪 / 交接时用 Issue,需要远端交付 / 评审时用 PR;不是每个小任务的固定前置。
      默认 GitHub 实现(gh CLI / GitHub PR);工作流是抽象,换平台时只换实现。
      $sop-init 把本文件落成 docs/ 下的工作流约定,并在 collaboration.md 引用。 -->
 
-# Issue + PR 工作流(agent 执行 · 人可读可不读)
+# Issue / PR 按需工作流(agent 执行 · 人可读可不读)
 
-> issue/PR = agent 的共享内存与「**凭据**」:agent 开、标、流转、关、提 PR、按风险审合,**全自动**。
-> 人只在**高风险闸**出现。为 agent 解析+操作而设计,但人想看随时看得懂。
+> 需要它们时,issue / PR 是 agent 的共享内存与「**凭据**」;不需要时,不为流程完整感强行创建。
+> 自动执行也有等待、失败与调试成本。先判断有没有真实的跟踪、协作、隔离或交付价值。
+
+## 什么时候用
+
+- **低风险、单会话、可逆的小改**:当前工作树直接完成;不强制 issue、独立分支、PR 或 worktree。代码仍要相关验证 + change-first review。
+- **Issue**:跨会话持续跟踪、角色交接、多人协调,或需要独立状态 / 关闭条件时才开。
+- **分支 + PR**:需要远端交付、他人评审、保护分支收口或明确的合并凭据时才用。
+- **worktree**:真并行任务、当前树有无关未提交改动或明确隔离需求时才用;不实行“一任务一 worktree”。
+- **高风险动作**:无论是否有 Issue / PR,都按项目高风险闸回人确认。
 
 ## 三件套分工(协作主线)
 
@@ -14,7 +22,7 @@
 - **issue = 索引 + 状态 + 消息总线**:写现在做什么、等谁、指向哪个 doc / PR;方案 / 字段 / 范围变化回写 issue 评论,别只藏在 PR / commit。
 - **PR = 交付凭据 + 验收 / 收口动作**:写改了什么、怎么验、风险是什么;只有满足验收 / 关闭条件才 `Closes #N`,否则 `Refs #N`。
 
-**协作 flow**:发起方 / 上游角色(业务 / coord / 开发自起)先落 doc → 开 issue 指稳定 doc → 开发接 issue 先验 doc → 开发过程用 issue 评论同步变化 → PR 交付并写验证 → 验收 / 关闭条件满足才关 issue。
+**触发完整协作链时的 flow**:发起方 / 上游角色先落 doc → 开 issue 指稳定 doc → 开发接 issue 先验 doc → 开发过程用 issue 评论同步变化 → PR 交付并写验证 → 验收 / 关闭条件满足才关 issue。只触发其中一部分时只走对应环节,不要补造其余凭据。
 
 ## 🧱 铁律:凭据保真(命门)
 
@@ -24,7 +32,7 @@
 
 ## Issue 生命周期(agent 操作)
 
-1. **开**:一个需求 / 缺陷一个 issue。
+1. **开**:先确认任务确实需要跨会话跟踪 / 角色交接 / 多人协调 / 独立关闭条件。触发后,一个需要独立跟踪的需求 / 缺陷一个 issue。
    - 先把 doc commit+push 到远端,再开 issue。
    - 正文 = 一句话需求 + 验收标准 + 指向 doc 的稳定链接(commit permalink / 已合 PR)。
    - issue 薄、doc 厚:细节进 doc,issue 只留索引 + 状态 + 验收。
@@ -45,15 +53,15 @@
 
 ## PR 生命周期(agent 操作)
 
-1. **分支**:`feat/issue-N-<slug>`(一需求一分支)。
+1. **分支**:有 Issue 时可用 `<type>/issue-N-<slug>`;没有 Issue 时用 `<type>/<slug>`。只在任务触发远端交付 / 评审 / 保护分支收口时开,不为本地小改强制建分支。
 2. **提交信息**:commit 前必须用 `$commit-msg` skill 读当前 diff 生成/校验 commit message;不许直接手写 `git commit -m ...` 绕过。若 skill 无法调用,先明说原因再提交。
-3. **提 PR**:正文 `Refs #N`(收口用 `Closes #N`)+ 改了什么 + 验收怎么过 + 链接 issue/doc。
+3. **提 PR**:正文写改了什么 + 验收怎么过 + 风险 / 边界 + 相关 doc;有 Issue 时再写 `Refs #N`(收口用 `Closes #N`)。
 4. **审 + 合(按风险 · 撒手档)**:
    - **低风险 / 可逆**(纯函数、UI、普通 req / design 文档、测试)→ agent 自审(过 code review 公约)+ 自动合,人不等。
      - req / design doc 内容的审 = brainstorming 收口那一步,不在 PR 再审一遍。
      - 普通 req / design 文档默认直接推 main;main 受保护才开 PR(仍自动合)。
      - 治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架不吃文档低风险豁免,回 owner 人审。
-     - 代码不吃这条豁免,照走 PR + 新眼睛 review。
+     - 代码始终要新眼睛 review;是否走 PR 按本页触发条件决定。走 PR 时不得用“低风险”跳过 review。
    - **高风险 / 不可逆**(生产库 schema、付费 API 全量、改远端、删数据)→ **回人审**才合;审是**独立一道**,不是 AI 自己盖章。
 5. **合后**:删分支;`Closes #N` 自动关 issue;只用了 `Refs #N` 则不因合并而关,只有验收 / 关闭条件已满足时才手动关 + 自检凭据保真。
 
@@ -74,8 +82,8 @@
   - **可短评**:只贴 PR / 文档链接、tag 人、说明已读回、临时轻进度、新眼睛复审已处理且没有状态变化。
   - **短评反向边界**:只要改变验收、风险、范围、状态、决策、残项归属、执行路线或关闭条件,就不得短评。短评也必须真实换行写入并读回,不留字面 `\n` / `@-` / 占位符。
 - **决策快照 ≤30 行**:spec ready / 方案变更时,在 issue 评论留"核心决策快照"(列拓扑 / 字段 / 关键选择,不展开理由)——让 review 子代理别把故意决策当 bug 报,也让回溯能复现设计。
-- **gh 就绪(默认 gh 实现 · 业务侧一次性前置)**:整套 issue/PR 凭据靠 `gh`。`gh auth status` 不过(没装 / 没登录)→ **用大白话**带业务装(mac `brew install gh` / win `winget install GitHub.CLI`)+ 引导他敲 `! gh auth login` 跟着提示走;**一次性,装完不再问**。逐步引导由 agent 现场说人话(别展开成版本化图文教程,会过时)。
-- **起手 freshness(多会话 / 多 agent)**:新会话先 `git fetch && 看 behind master`,落后先 sync 再信本地 SOP / 代码——本地常是旧快照、或停在别的分支。**业务会话顺带 `gh issue list --label 待业务确认`:有就一条条念给 owner 当场拍、没有一句带过**(别让等人决策的 issue 烂着没人 surface)。
+- **gh 就绪(仅触发 GitHub Issue / PR 时)**:需要操作 GitHub 凭据才检查 `gh auth status`。没装 / 没登录 → **用大白话**带业务装(mac `brew install gh` / win `winget install GitHub.CLI`)+ 引导他敲 `! gh auth login` 跟着提示走;不要让纯本地任务为 GitHub 工具停工。
+- **起手 freshness(依赖远端代码 / Issue / PR 时)**:先 `git fetch`、看当前分支 / 工作区 / behind 情况,再信本地 SOP / 代码;不要覆盖用户已有改动,也不要擅自 rebase 已 push 分支。**业务会话只有在项目实际使用 Issue 且存在待裁决任务时,才扫 `待业务确认`**。
 - **接 issue 先验链接(消费侧凭据校验)**:起手照 issue 工作前,**先验它指的 doc 在远端解析得开**(fetch + 按工作 ref 找路径)。解析不到 = **坏交接 / 会说谎的凭据**(issue 说"详见此 doc"、doc 却不在)→ **反弹回开 issue 的角色**(评论 tag + ⏸️ 待澄清),**别自己补 doc**(自补 = 伪造需求 · STANDARD §1.8 + §1.9)。
 - **取活先判细化(消费侧 · 别抓起就写)**:开发取活后 agent 先帮判一轮——够清楚且小 → 直接干;不清楚 / 太大 → 先端内 brainstorm 拆;**缺的是业务该给的"要什么"(含产品形态)→ 反弹业务(§1.9 carve-out)、不自补**(反例 geo-reverse #2:开发凭"永不阻塞"自己把需求补了)。
-- **收工 = 写凭据时点(owner 说"收工 / 结束")**:这就是红线「不擅自 push」要的那个**明确指令**——把本会话收口的 doc 按上面 Issue / PR 生命周期推远端(**普通 req / design 文档推 main;治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架回 owner 人审;代码走 PR**),开 / 更 issue 指稳定链接、自检保真。**不重抄步骤,照上面那两套生命周期走即可。**
+- **收工 = 已触发远端凭据时的收口点(owner 说"收工 / 结束")**:这可作为推送本会话已约定交付物的明确指令,但只收口实际触发的 doc / Issue / PR,不补造本来不需要的 Issue 或 PR。治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架仍回 owner 人审;代码走不走 PR按本页触发条件,但始终保留 review。

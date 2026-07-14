@@ -11,8 +11,8 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 
 ## 铁律
 
-- **默认只读**:只出报告、不动任何文件。**owner 明确说"改 / go"才动手修**——按 severity 走 issue/PR 工作流落地(见流程第 8 步)。没听到"改"就停在报告。
-- **头号查"过度治理"——只算人掏的成本**:人手开 issue / 贴 label / 等每个 PR 才叫过度;**agent 自动维护、agent 消费的 issue/PR 不算**(那是撒手基础设施,冤枉它=cry wolf)。
+- **默认只读**:只出报告、不动任何文件。**owner 明确说"改 / go"才动手修**——按 severity 和任务实际选择当前树或分支 / PR(见流程第 8 步)。没听到"改"就停在报告。
+- **头号查"过度治理"——算全流程成本**:既算人的等待 / 判断 / 手填,也算 agent 的执行时长、失败面、调试成本和对 owner 的打断。**agent 自动维护不等于免费**;小任务被强制塞进 Issue / 独立分支 / PR / worktree / 本地编排器,仍可能是过度治理。
 - **每条 finding 必须带证据**(file:line / 行数 / 具体仪式名),空喊"太重了"=违规(反驳协议在审查上的落地)。
 - **行数 ≠ 罪证**:体量只是**信号**,不直接判"错";说清"这是信号,该不该砍要看内容",别越权定罪。
 - **不 cry wolf**:右尺寸的项目如实说"没大问题",别为显得有用硬挑。
@@ -22,7 +22,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 1. **读 `STANDARD.md`**(§3 一条流程+结构按现实长 + §5 查法 + §1 公约)。
 2. **测目标项目的实际(几个端 / 几个人 / 风险)**:
    - **几个端**:数后端/服务/子项目(单 backend / 前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约/按端操作台**。
-   - **几个人**:扫 `docs/collaboration*`、agent 指令文件(`AGENTS.md`)、旧残留(`CLAUDE.md` / `.claude/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。(issue+PR 人人都有、不据此判人数)
+   - **几个人**:扫 `docs/collaboration*`、agent 指令文件(`AGENTS.md`)、旧残留(`CLAUDE.md` / `.claude/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。Issue / PR 是否存在只说明可能有跟踪 / 交付需求,不据此判人数。
    - **风险**:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
 3. **比"该有 vs 实际"**:STANDARD §3 由端 / 人 / 并行 agent 推出该有结构;扫项目实际治理文件 / 仪式;两边相减。
    - **结构相减**:第 2 个端 → contracts + 端级 `AGENTS.md` 操作台;真并行多 agent → worktree + 协调骨架;第 2 个人 → collaboration handoff。
@@ -44,7 +44,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
    | Refs / Closes 收口 | 覆盖 / 部分覆盖 / 冲突 / 缺失 / 偏离 | 母本 file:line -> 项目 file:line / 缺落点 |
    | doc / issue / PR 三件套 | 覆盖 / 部分覆盖 / 冲突 / 缺失 / 偏离 | 母本 file:line -> 项目 file:line / 缺落点 |
    | issue 评论分层 | 覆盖 / 部分覆盖 / 缺失 / 偏离 | 母本 file:line -> 项目 file:line / 缺落点 |
-   | 查证闭环 | 覆盖 / 部分覆盖 / 缺失 / 过重 | STANDARD/SKILL file:line -> 项目 file:line / 缺落点 |
+   | 查证闭环 + change-first review | 覆盖 / 部分覆盖 / 缺失 / 过重 | STANDARD/SKILL file:line -> 项目 file:line / 缺落点 |
    | 高风险治理项 | 覆盖 / 部分覆盖 / 冲突 / 缺失 / 偏离 | 母本 file:line -> 项目 file:line / 缺落点 |
    | 结构触发 | 匹配 / 部分覆盖 / 缺失 / 预建 / 偏离 | STANDARD file:line -> 项目结构证据 |
    ```
@@ -62,12 +62,13 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      - 未触发却存在治理骨架 = `预建` 或 `过重`。
      - 文件存在必须查内容,内容冲突不能被文件存在掩盖。
      - PR 模板不存在时记 `n/a`,不自动报缺失。
+     - 项目没有跨会话跟踪 / 角色交接需求时,Issue 模板、label、评论分层都可记 `n/a`;没有远端交付 / 评审需求时,PR 模板可记 `n/a`。不能把“不建”误报成缺失。
      - 第 2 个端触发 `docs/contracts/` 和端级 `AGENTS.md`;端级文件需覆盖最小操作面(scope / 取活 / Step 3 / Step 4 / 评论留痕 / review / 本端 local),不能只是身份桥接;串行只豁免 worktree / coordination。
    - **必查 surface(高频入口 + 执行落点)**:
      - Refs/Closes:PR 模板、根 `AGENTS.md` 速查、workflow、collaboration PR 流程。
      - 三件套:workflow 是否明确定义 doc / issue / PR;根 `AGENTS.md` / collaboration 是否漏 PR 或互相替代。
      - issue 评论分层:workflow 厚/短评论触发 + 最小字段;根 `AGENTS.md` 自检短引用。
-     - 查证闭环:根 `AGENTS.md` 沟通约束、workflow 起手凭据校验、UI 风格来源闸(仅新增 / 大改 UI)、是否过度联网 / 确认 / 长卡片 / 样式确认。
+     - 查证闭环 + change-first review:根 `AGENTS.md` 沟通约束、依赖远端时的凭据校验、UI 风格来源闸(仅新增 / 大改 UI)、是否过度联网 / 确认 / 长卡片 / 样式确认;代码复审是否以任务 change 为主、记录已审 HEAD 与未关闭 findings、允许查看相关语义上下文,并在基线失效时回退到完整任务变更而非默认全仓扫描。
      - 高风险治理项:根高风险闸、workflow PR 合并规则、PR 模板风险区。
      - 结构触发:端 / 人 / 并行 agent 三触发、实际目录、contracts、端级 `AGENTS.md` 的最小操作面、协作 doc、worktree / coordination。
    - **报告装配校验**:
@@ -85,9 +86,9 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
      - 主线表必须和 findings 对账;异常项未进入 findings 时,必须在收尾卡写豁免理由。
      - 表固定 6 行,新增主线必须替换旧项,不能追加。
 5. **按 §5 五类出 finding,每条标 severity + 证据**。**查法细则全在 STANDARD §5(第 1 步已读),本技能不重抄(重抄必漂移),这里只定 severity 映射**:
-   - **P1 过度治理(头号)**= §5.1(人手跑的仪式过重 + 死规则笼子;「只算人掏的成本、agent 自动维护不算」见铁律)。
-   - **P2 结构错配**= §5.2(含 ④删除残留 · kind `mismatch`/`stale`);**P2 沟通闭环缺环 / 口号化 / 过度阻塞**= §5.3(反驳+说人话、查证、分流、调研、执行验证、收口;含新增 / 大改 UI 漏确认风格来源,以及脚本 / 后端 / 既有样式小修被拖进样式确认)。
-   - **P3 结构缺失**= §5.4;**P3 凭据失真 / 交接断裂**= §5.5(含 doc/issue/PR 三件套分工失真、悬空链接、开工/收工书挡〔所有项目〕、协作总线断节、评论凭据塌缩、决策闸误关)。
+   - **P1 过度治理(头号)**= §5.1(强制 Issue / 分支 / PR / worktree / 编排器,或其它等待、失败、调试、打断成本过重 + 死规则笼子)。
+   - **P2 结构错配**= §5.2(含删除残留与 Skill 项目长出客户端 / 任务运行时 / 本地 agent 编排层 · kind `mismatch`/`stale`);**P2 沟通闭环缺环 / 口号化 / 过度阻塞**= §5.3(反驳+说人话、查证、分流、调研、执行验证、收口;含新增 / 大改 UI 漏确认风格来源,以及脚本 / 后端 / 既有样式小修被拖进样式确认)。
+   - **P3 结构缺失**= §5.4;**P3 凭据失真 / 交接断裂**= §5.5(含触发后的 doc/issue/PR 三件套分工失真、悬空链接、开工/收工书挡、协作总线断节、评论凭据塌缩、决策闸误关;未触发凭据流程的本地小改不适用)。
    - **P0 仅指针**:扫到硬编码密钥/凭据 → 只点一句"另走安全 track",**不在本体检展开**。
 6. **出双轨报告**:
    - **(a) 人读**:开头一句总判("太重 / 刚好 / 太轻" + 实测 几端 / 几人 / 风险);然后按 severity 排,每条 = `现象 + 为什么不对(对照 STANDARD 哪条)+ 建议(降到哪 / 补什么)+ 证据`。
@@ -102,7 +103,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
    - **推荐下一步**:给 1 条最建议动作。
    - **可选动作**:只有真有分叉才给 2-3 个选项并标推荐;没有分叉就不造选择题。
    - **高危边界**:推荐 push / 批量改 label / deploy / 删除 / 改 git 历史 等不等于授权,仍等 owner 明确确认具体动作。
-8. **若 owner 看完说"改 / go"** → 按 `master/base/docs/project/issue-pr-workflow.md` 落地:开 issue 记 findings → 分支 → 改 → PR(`Refs`)→ 按风险审合(低风险自动合 / 高风险回 owner)。**没说"改"就停在第 7 步。**
+8. **若 owner 看完说"改 / go"** → 选择最短安全路径:低风险、单会话、可逆的本地修正可在当前工作树直接改 + 验证 + change-first review;需要远端交付 / 评审 / 保护分支收口才开分支 + PR;需要跨会话跟踪 / 角色交接才开 Issue;真并行 / 隔离才用 worktree。高风险始终回 owner。**没说"改"就停在第 7 步。**
 
 ## 禁止
 
@@ -110,3 +111,4 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 - 无证据的 finding(凭印象喊"太重")——违反反驳协议。
 - cry wolf:右尺寸项目硬挑毛病凑数。
 - 把"体量大"直接等同于"错"——只能当信号。
+- 因为某个动作能自动化,就默认它没有耗时、失败面或维护成本。
