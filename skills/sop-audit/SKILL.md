@@ -1,6 +1,6 @@
 ---
 name: sop-audit
-description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP 太重、结构错配、沟通闭环缺环/口号化/过度阻塞、结构缺失、凭据失真,或需要检查 Codex AGENTS.md 与旧 CLAUDE.md 残留。
+description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP 太重、结构错配、沟通闭环缺环/口号化/过度阻塞、结构缺失、凭据失真,或需要检查 Claude CLAUDE.md 与旧 AGENTS.md / Codex 残留。
 ---
 
 # sop-audit
@@ -21,12 +21,12 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 
 1. **读 `STANDARD.md`**(§3 流程与结构按现实触发 + §5 查法 + §1 公约)。
 2. **测目标项目的实际**:
-   - **几个端**:数后端 / 服务 / 子项目(单 backend 或前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约 / 端级 `AGENTS.md` 操作台**。
-   - **几个人**:扫 `docs/collaboration*`、`AGENTS.md`、旧残留(`CLAUDE.md` / `.claude/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。issue / PR 存在只说明可能有跟踪 / 交付需求,不据此判人数。
+   - **几个端**:数后端 / 服务 / 子项目(单 backend 或前端 = 单端;前后端小程序爬虫多个 = 多端;纯脚本 = 无端)。**≥2 端该有契约 / 端级 `CLAUDE.md` 操作台**。
+   - **几个人**:扫 `docs/collaboration*`、`CLAUDE.md`、旧残留(`AGENTS.md` / `.codex/`)、scope label、gh 协作者 → 只有 owner = 单人;业务↔开发 / 小团队 / 多端 scope agent = 多人。**≥2 人该有协作 doc**。issue / PR 存在只说明可能有跟踪 / 交付需求,不据此判人数。
    - **风险**:碰生产库 / 付费 API 全量 / 改远端 = 高、不可逆。
 3. **比"该有 vs 实际"**:STANDARD §3 由端 / 人 / 并行 agent 推出该有结构;扫项目实际治理文件 / 仪式;两边相减。治理 doc 多是 `$sop-init` 从 `$SOP_HOME/master/` 生成的快照,按项目触发命中的 layer 跟当前 `master/` 对应文件比:
    - **missing**:母本有、项目缺的新规则 / carve-out = 漂移根因 → 建议回灌。
-   - **stale**:项目留着母本已删的块 / 档 / 文件(极简块、旧档位编号、旧模板名、`CLAUDE.md` / `.claude/`)→ 建议换现行块或迁到 `AGENTS.md`。
+   - **stale**:项目留着母本已删的块 / 档 / 文件(极简块、旧档位编号、旧模板名,或未迁移的 `AGENTS.md` / `.codex/` Codex 残留)→ 建议换现行块或迁到 `CLAUDE.md`。
    - **近似 ≠ 覆盖**:项目有近似版时逐条语义比。母本有具体边界 / carve-out、项目只搬大原则漏了限定,仍报 `missing` 并标信心;普通措辞 / 详略差异按合理本地偏离宽放(别破头号防过度治理)。
    - 只比项目触发命中的层(单端别拿 layer-multiend 比);`{{槽}}` 是洞,不参与漂移判断。
 4. **别漏查这几条高频主线**(存在则查、触发才必备;未触发且不存在 = n/a,不硬报缺失):
@@ -34,7 +34,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
    - doc / issue / PR 三件套分工;issue 评论分层。
    - 查证闭环 + change-first 复审(记录已审 HEAD / 未关 findings、基线失效回退完整任务而非全仓)。
    - 高风险治理项落点。
-   - 结构触发(端 / 人 / 并行三触发 vs 实际目录 / contracts / 端级 `AGENTS.md` 的最小操作面 / 协作 doc / worktree)。
+   - 结构触发(端 / 人 / 并行三触发 vs 实际目录 / contracts / 端级 `CLAUDE.md` 的最小操作面 / 协作 doc / worktree)。
    - 说人话与反驳是否落成可检查闸、还是只剩态度口号。
 5. **按 §5 五类出 finding,每条标 severity + 证据**(查法细则在 STANDARD §5,这里只定 severity 映射):
    - **P1 过度治理**(头号)= §5.1。

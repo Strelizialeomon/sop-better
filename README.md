@@ -1,6 +1,6 @@
 # sop-better
 
-`sop-better` 是一个 **Codex-only 开发 SOP 工具仓**。
+`sop-better` 是一个 **Claude Code 开发 SOP 工具仓**。
 
 它产出两个 skill:
 
@@ -79,7 +79,7 @@ agent 干活默认走这条闭环:
 | [`$sop-init`](skills/sop-init/SKILL.md) | 给新项目或已长大的项目生成 / 补齐 SOP | 按端数、协作人数、风险右尺寸生成 |
 | [`$sop-audit`](skills/sop-audit/SKILL.md) | 审现有 SOP 是否不合理 | 默认只出报告;owner 明确说改 / go 才动文件 |
 
-当前两个 skill 都已软链进 `~/.codex/skills/`。本仓工作树就是线上版本,改完即生效。
+当前两个 skill 都已软链进 `~/.claude/skills/`。本仓工作树就是线上版本,改完即生效。
 
 没有单独的 `$sop-improve`:audit 找到问题后,owner 点头就改。不为还没出现的需求养第三个 skill。
 
@@ -152,7 +152,7 @@ sop-better 用自己的方法造自己:
 ```text
 sop-better/
 ├── README.md                    # 项目入口说明
-├── AGENTS.md                    # 本仓 Codex 工作约定
+├── CLAUDE.md                    # 本仓 Claude Code 工作约定
 ├── STANDARD.md                  # 唯一真相源:生成与审计的权威尺
 ├── skills/
 │   ├── sop-init/                # 生成右尺寸 SOP

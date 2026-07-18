@@ -60,7 +60,7 @@
    - **低风险 / 可逆**(纯函数、UI、普通 req / design 文档、测试)→ agent 自审(过 code review 公约)+ 自动合,人不等。
      - req / design doc 内容的审 = brainstorming 收口那一步,不在 PR 再审一遍。
      - 普通 req / design 文档默认直接推 main;main 受保护才开 PR(仍自动合)。
-     - 治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架不吃文档低风险豁免,回 owner 人审。
+     - 治理 doc / SOP / `CLAUDE.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架不吃文档低风险豁免,回 owner 人审。
      - 代码始终要新眼睛 review;是否走 PR 按本页触发条件决定。走 PR 时不得用“低风险”跳过 review。
    - **高风险 / 不可逆**(生产库 schema、付费 API 全量、改远端、删数据)→ **回人审**才合;审是**独立一道**,不是 AI 自己盖章。
 5. **合后**:删分支;`Closes #N` 自动关 issue;只用了 `Refs #N` 则不因合并而关,只有验收 / 关闭条件已满足时才手动关 + 自检凭据保真。
@@ -86,4 +86,4 @@
 - **起手 freshness(依赖远端代码 / Issue / PR 时)**:先 `git fetch`、看当前分支 / 工作区 / behind 情况,再信本地 SOP / 代码;不要覆盖用户已有改动,也不要擅自 rebase 已 push 分支。**业务会话只有在项目实际使用 Issue 且存在待裁决任务时,才扫 `待业务确认`**。
 - **接 issue 先验链接(消费侧凭据校验)**:起手照 issue 工作前,**先验它指的 doc 在远端解析得开**(fetch + 按工作 ref 找路径)。解析不到 = **坏交接 / 会说谎的凭据**(issue 说"详见此 doc"、doc 却不在)→ **反弹回开 issue 的角色**(评论 tag + ⏸️ 待澄清),**别自己补 doc**(自补 = 伪造需求 · STANDARD §1.8 + §1.9)。
 - **取活先判细化(消费侧 · 别抓起就写)**:开发取活后 agent 先帮判一轮——够清楚且小 → 直接干;不清楚 / 太大 → 先端内 brainstorm 拆;**缺的是业务该给的"要什么"(含产品形态)→ 反弹业务(§1.9 carve-out)、不自补**(反例 geo-reverse #2:开发凭"永不阻塞"自己把需求补了)。
-- **收工 = 已触发远端凭据时的收口点(owner 说"收工 / 结束")**:这可作为推送本会话已约定交付物的明确指令,但只收口实际触发的 doc / Issue / PR,不补造本来不需要的 Issue 或 PR。治理 doc / SOP / `AGENTS.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架仍回 owner 人审;代码走不走 PR按本页触发条件,但始终保留 review。
+- **收工 = 已触发远端凭据时的收口点(owner 说"收工 / 结束")**:这可作为推送本会话已约定交付物的明确指令,但只收口实际触发的 doc / Issue / PR,不补造本来不需要的 Issue 或 PR。治理 doc / SOP / `CLAUDE.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架仍回 owner 人审;代码走不走 PR按本页触发条件,但始终保留 review。
