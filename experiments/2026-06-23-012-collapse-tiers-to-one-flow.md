@@ -19,7 +19,7 @@ owner 以**业务角色**给"想要的效果"(概念干净 = 一条流程 + work
 
 ## 3. 给 AI 的简报
 
-见 spec:`docs/superpowers/specs/2026-06-23-collapse-tiers-to-one-flow-design.md`(owner brainstorming 收口 → 评审通过 → go)。核心:一条流程恒定(§1 公约本就 tier-independent),档位只是把"结构按现实长"预先枚举成 9 组合;删枚举回生成规则。
+见 spec:`docs/specs/2026-06-23-collapse-tiers-to-one-flow-design.md`(owner brainstorming 收口 → 评审通过 → go)。核心:一条流程恒定(§1 公约本就 tier-independent),档位只是把"结构按现实长"预先枚举成 9 组合;删枚举回生成规则。
 
 ## 4. AI 跑完,我来评
 

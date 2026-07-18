@@ -73,7 +73,7 @@ owner 用 AI 没爽感、没飞跃——因为只交了**打字**,没交**认知
 ```
 sop-better/
 ├── README.md                    # 工具是什么 + 三维模型 + 怎么用 + 怎么造(狗粮法)
-├── docs/superpowers/specs/      # 本 spec
+├── docs/specs/                  # 本 spec
 ├── skills/                      # ← 新增:三件套技能实现(init 先行)
 │   └── sop-init/
 ├── templates/                   # ← 新增:各档的结构 + CLAUDE.md 约束块模板

@@ -58,7 +58,7 @@
 3. **提 PR**:正文写改了什么 + 验收怎么过 + 风险 / 边界 + 相关 doc;有 Issue 时再写 `Refs #N`(收口用 `Closes #N`)。
 4. **审 + 合(按风险 · 撒手档)**:
    - **低风险 / 可逆**(纯函数、UI、普通 req / design 文档、测试)→ agent 自审(过 code review 公约)+ 自动合,人不等。
-     - req / design doc 内容的审 = brainstorming 收口那一步,不在 PR 再审一遍。
+     - req / design doc 内容的审 = 方案 / spec 收口那一步,不在 PR 再审一遍。
      - 普通 req / design 文档默认直接推 main;main 受保护才开 PR(仍自动合)。
      - 治理 doc / SOP / `CLAUDE.md` / workflow / collaboration / PR 模板 / `docs/contracts/` / 跨端骨架不吃文档低风险豁免,回 owner 人审。
      - 代码始终要新眼睛 review;是否走 PR 按本页触发条件决定。走 PR 时不得用“低风险”跳过 review。

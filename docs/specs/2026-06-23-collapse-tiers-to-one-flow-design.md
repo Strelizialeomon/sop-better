@@ -90,7 +90,7 @@ STANDARD §1 公约开头白纸黑字：「**跟项目无关，solo 脚本和四
 | `templates/issue-pr-workflow.md` | step 2 label 的 **C1/C2 分流删掉**，收成单一基线方案（默认沿用 media-ops 现行：阶段 label + 阻塞 flag + 状态标记；见判断点 J1） | §4#2 |
 | `templates/collaboration.md` + `collaboration-c2.md` | 合并为一份协作 doc，按"多人/多端"伸缩；6+1 + 消息总线作为"多端多 agent"小节 | §4#3,6 |
 | `README.md` | 档位表 + 两轴叙述改为新模型 | 文档一致 |
-| `docs/superpowers/specs/2026-06-05-sop-better-design.md` | 不改正文（历史记录），但新 spec 取代其档位模型 | 留痕 |
+| `docs/specs/2026-06-05-sop-better-design.md` | 不改正文（历史记录），但新 spec 取代其档位模型 | 留痕 |
 
 **轻改(只换触发标签 / 重命名,实质结构不变)**：`end-role-claude.md`(S2→多端)/ `worktree-isolation.md`(C2→多端)/ `s2-contracts.md` **→ 重命名 `multiend-contracts.md`**(S2→多端)/ `contracts-README.md`(T2→多端)。〔实现期细化:为概念干净,把这几份多端文件里的死 token 也清了,超出 spec 初稿"不动"的保守范围——见 exp-012。〕
 
