@@ -30,7 +30,7 @@
 ## 开发流程(端速查 · 多 agent 并行时完整见 `coordination.md`「6+1 流程骨架」;串行单 agent 照根 `CLAUDE.md`)
 
 1. **取活先判**:读当前任务 / spec;有 Issue 时再读完整评论并验 doc 链接。够清楚且小 → 直接干;不清楚 / 太大 → 先进 Step 3;缺的是上游该给的需求 / 契约 / 验收 → 反弹 + 标 ⏸️,不自补。
-2. **Step 3 端内细化**:用 `brainstorming` skill 跟 owner 定端内方案 → 写端内 spec(`docs/execution/{{end}}/…`)→ spec 自检 + 必要的新眼睛 spec review。有 Issue 时再评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
+2. **Step 3 端内细化**:跟 owner 定端内方案 → 写端内 spec(`docs/execution/{{end}}/…`)→ spec 自检 + 必要的新眼睛 spec review。有 Issue 时再评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
 3. **Step 4 实施**:低风险串行小改可在当前工作树直接做;需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 可用 `<type>/issue-N-slug`);真并行 / 隔离才用 worktree。spec 没 cover 的边界细节自己定,有共享凭据时回写。
 4. **变更必留痕**:任何非 trivial 方案变化(范围 / 字段 / endpoint / schema / 依赖 / 算法 / 跨端影响)立刻回写共享 doc;有 Issue 时同步评论。不要只放 commit message / PR diff。
 5. **交付**:commit 前走 `$commit-msg`;代码完成后做 change-first review。需要远端交付 / 评审 / 保护分支收口才 push + PR;有 Issue 时默认 `Refs #N`,只有最终收口 / 验收满足才 `Closes #N`。

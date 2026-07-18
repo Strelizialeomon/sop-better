@@ -4,5 +4,5 @@
 
 <!-- 填进 base/CLAUDE.md 母本的 {{multiend_constraints}} 槽(仅多端): -->
 - 端划分：{{ends}}。每端有自己的 scope，跨端走 `docs/contracts/` 的单一真相源。
-- 各端独立 brainstorming；跨端契约 freeze 需我明确确认。
+- 各端独立定方案；跨端契约 freeze 需我明确确认。
 - 状态用标记：✅ 完成 / 🚧 进行 / ⏸️ 搁置 / ⬜ 未开始。

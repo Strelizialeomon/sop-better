@@ -19,7 +19,7 @@
 
 ## 3. 给 AI 的简报
 
-= 收敛的 design spec(`docs/superpowers/specs/2026-06-24-母本驱动生成-design.md`)§11 分期 + §12 五条可检验验收。不另写 writing-plans(§1.3)。
+= 收敛的 design spec(`docs/specs/2026-06-24-母本驱动生成-design.md`)§11 分期 + §12 五条可检验验收。不另写 writing-plans(§1.3)。
 
 ## 4. 跑完,核结果
 

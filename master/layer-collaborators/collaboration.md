@@ -38,5 +38,5 @@
 ## 红线
 
 - 不擅自 commit / push（需 owner 明确指令）。**owner 说"收工 / 结束"可作为已约定远端交付的明确指令**;只收口实际触发的凭据,不补造 Issue / PR。保护分支仍按高风险闸。
-- 不跑 writing-plans；spec 验收要硬 + code review 必留（见 agent 指令文件）。
+- 不预写重型实施计划；spec 验收要硬 + code review 必留（见 agent 指令文件）。
 - 治理过重要主动喊停——右尺寸 > 全面。

@@ -26,7 +26,7 @@
 
 1. **起需求**：跨端 → coord 起 req doc；单端上下文明确 → 该 scope agent 自起（不必经 coord 中转）。req doc 写"做什么 + 怎么算对 + 主流程 + 形态 + 跨端换什么数据"，**不写实施层**（见 `multiend-contracts.md`）。
 2. **取活**：scope label 有 open issue 即"待干"。
-3. **细化**：scope agent 用 `brainstorming` skill 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce（不再单独整体批）。
+3. **细化**：scope agent 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce（不再单独整体批）。
 4. **开发**：切 `<type>/issue-N-slug` 分支（分支名自决）；实施 + 进展 / 变更写 issue 评论；push + PR（默认 `Refs #N`,最终收口才 `Closes #N`）；**过新眼睛 review**（STANDARD §1.2）再示意 merge。
 5. **联调**：owner 跑；单端 bug → 该 agent；跨端 mismatch → 评论拍板改哪端。
 6. **收口**：别把"做完了"手抄进多个 doc（单一真相源 · STANDARD §1.7）。**owner 说"收工"= 推收口 doc 远端的明确指令（文档 main / 代码 PR）**。

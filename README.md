@@ -143,7 +143,7 @@ sop-better 用自己的方法造自己:
 - exp-039:change-first review——先审本轮变化,语义上下文按需展开,不重扫无关仓库。
 - exp-040:回归初衷——把 STANDARD §1 的双重叙述和 sop-audit 的覆盖闸机器砍薄,让工具能通过自己的 audit。
 
-早期设计记录在 [`docs/superpowers/specs/`](docs/superpowers/specs/)。
+早期设计记录在 [`docs/specs/`](docs/specs/)。
 
 ---
 
@@ -158,7 +158,7 @@ sop-better/
 │   ├── sop-init/                # 生成右尺寸 SOP
 │   └── sop-audit/               # 审计 / 优化现有 SOP
 ├── master/                      # 母本:base + 按触发追加的 layer
-├── docs/superpowers/specs/      # 历史设计 spec
+├── docs/specs/                  # 历史设计 spec
 ├── experiments/                 # 每次 dogfood / 回灌实验
 └── PLAYBOOK.md                  # 从实验沉淀出的护栏
 ```
