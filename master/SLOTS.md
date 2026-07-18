@@ -8,14 +8,14 @@
 
 | 层 | 触发 | 落到项目哪 |
 |---|---|---|
-| `base/` | 总是 | Codex agent 指令文件 `AGENTS.md` + `docs/decisions/`（adr-template + 你补 0001/升级触发 ADR）+ `docs/project/issue-pr-workflow.md` |
+| `base/` | 总是 | Claude Code agent 指令文件 `CLAUDE.md` + `docs/decisions/`（adr-template + 你补 0001/升级触发 ADR）+ `docs/project/issue-pr-workflow.md` |
 | `layer-collaborators/` | ≥2 个人 | `docs/project/collaboration.md`（双角色 handoff 段） |
-| `layer-multiend/` | ≥2 个端 | `docs/contracts/`（README + multiend-contracts）+ 每端 `<端>/AGENTS.md`（end-role）+ 把 `multiend-constraints-block` 填进根 `AGENTS.md` 的 `{{multiend_constraints}}` 槽 |
+| `layer-multiend/` | ≥2 个端 | `docs/contracts/`（README + multiend-contracts）+ 每端 `<端>/CLAUDE.md`（end-role）+ 把 `multiend-constraints-block` 填进根 `CLAUDE.md` 的 `{{multiend_constraints}}` 槽 |
 | `layer-parallel-agents/` | 真并行多 agent（= 上 worktree · **前提：已多端**；单端不单独触发） | `docs/project/worktree-isolation.md` + 把 `coordination.md` 追加进 `docs/project/collaboration.md` |
 
 > 三触发**正交**：端的事归端、人的事归人、并行的事归并行（口诀见 STANDARD §3）。`$sop-init` 必须按触发分流，**别按目录相邻**当门（否则复发 exp-012 挂错闸）。
 
-## 槽（base/AGENTS.md 母本内）
+## 槽（base/CLAUDE.md 母本内）
 
 | 槽 | 填什么 | 空值行为 |
 |---|---|---|
@@ -48,4 +48,4 @@
 ## 收编纪律（重排时）
 
 - `master/` 由原 `templates/`（已并入本目录、不再单独存在）**verbatim 重排**而来；后续改动直接改 `master/`。搬运时**半角→全角标点 / 斜杠加空格 / 标题层级**这类**格式归一不算改写**（audit 双向比别报成 drift），但**一个词都不许增删**。
-- `base/AGENTS.md` 是根 agent 指令文件的母本——把 freshness 从原标准块的"情景按需读"里**升到顶上 §⛳**（治 turn-1 埋点），其余块逐字。公约文字取原 `agent-constraints.md`（媒体ops 那版渲染落后、不取）。
+- `base/CLAUDE.md` 是根 agent 指令文件的母本——把 freshness 从原标准块的"情景按需读"里**升到顶上 §⛳**（治 turn-1 埋点），其余块逐字。公约文字取原 `agent-constraints.md`（媒体ops 那版渲染落后、不取）。
