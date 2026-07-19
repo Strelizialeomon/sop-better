@@ -144,6 +144,7 @@ sop-better 用自己的方法造自己:
 - exp-040:回归初衷——把 STANDARD §1 的双重叙述和 sop-audit 的覆盖闸机器砍薄,让工具能通过自己的 audit。
 - exp-041:从 Codex-only 翻回 Claude 规范(`AGENTS.md` → `CLAUDE.md`)。
 - exp-042:去耦 superpowers 残留——换工具时 de-name 到概念、不 name-swap;user-invoked 的 grill-me 不进 SOP。
+- exp-043:dogfood mobile-os audit——SOP 健康不 cry-wolf;superpowers 残留复发(且渗进测试路径)→ §5.2 点名"已卸载外部工具残留"这一类。
 
 早期设计记录在 [`docs/specs/`](docs/specs/)。
 
