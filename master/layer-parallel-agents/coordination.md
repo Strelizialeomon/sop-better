@@ -18,9 +18,9 @@
 
 **scope agent ≠ 执行 PM 派的细 task；= 高权限程序员，收到方向后自决实施。**
 
-> **身份靠"进哪个端的目录"自动定**：Claude Code 自动加载 cwd 最近的 `CLAUDE.md`——在 `wt-<端>/<端目录>/` 就自动是该端 scope agent，在主仓就是 coordination。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
+> **身份靠"进哪个端的目录"自动定**：Claude Code 自动加载 cwd 最近的 `CLAUDE.md`——在任务 worktree 里 cd 进 `<端目录>/`（如 `.worktrees/<issue>/<端目录>/`）就自动是该端 scope agent，在主仓 / worktree 根就是 coordination。**端身份 ⊥ worktree**（worktree 按 issue/任务切、非按端）。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
 >
-> **错座位护栏**：端内活（端内 spec / 端代码）归 scope agent、在对应端 worktree 产出；coordination（主仓）只产**跨端 req doc**。**救场**——spec 已误产在主仓：别"释放分支"，按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 在端 worktree 从 origin/master 另切实施分支`。
+> **错座位护栏**：端内活（端内 spec / 端代码）归 scope agent、在任务 worktree 的该端目录产出；coordination（主仓）只产**跨端 req doc**。**救场**——spec 已误产在主仓：别"释放分支"，按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 新建任务 worktree 从 origin/master 另切实施分支`。
 
 ## 6+1 流程骨架（轻 · 无硬 gate）
 
@@ -37,7 +37,7 @@
 - **消息总线**：需求 issue 保持 open 当容器；跨 agent 靠 issue 评论 sync（字段 / 决策 / 跨端影响），别端起手 `gh issue view N --comments` 自动 sync。**doc 写正文、issue 写状态和变更路由、PR 写交付验证**，别让任一件替代另外两件。
 - **起手 freshness（不可跳）**：新会话先 `git fetch && 看 behind master`，落后先 sync 再读 SOP——否则读的是旧快照的旧规则。一句话起手报告：`我是 X agent · 在 Y 分支 · behind N · open issue M · 准备干 #K`。**owner 会话顺带扫 `待业务确认`，一条条拍**。
 - **scope 隔离**：不动别端代码、不动别人起的 req doc / 契约（要改走 issue 评论提）。识别到要改 req doc / 跨端（含 owner 当面加的扩范围）→ **自己写评论上交 coord + 附设计草案 + 报 owner 一句，别把 escalate 做成 owner 选择题**（§1.9 carve-out）；只"做不做 / 优先级"留 owner 拍。
-- **worktree（选项）**：多 agent 真频繁本地冲突才上（每端一个 worktree 物理隔离）；否则别上（过度治理）。**上了 → 落 `worktree-isolation.md`（布局 / race trap / setup+维护 / 起手按-ref-验 / 反转条件）+ 记一条 ADR。**
+- **worktree（选项）**：多 agent 真频繁本地冲突才上（按 issue/任务建临时 worktree、用完即清）；否则别上（过度治理）。**上了 → 落 `worktree-isolation.md`（布局 / race trap / 创建+清理 / 起手按-ref-验 / 反转条件）+ 记一条 ADR。**
 
 ## 高价值坑（taoxi-geo 复发过的）
 

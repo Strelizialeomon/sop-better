@@ -145,6 +145,7 @@ sop-better 用自己的方法造自己:
 - exp-041:从 Codex-only 翻回 Claude 规范(`AGENTS.md` → `CLAUDE.md`)。
 - exp-042:去耦 superpowers 残留——换工具时 de-name 到概念、不 name-swap;user-invoked 的 grill-me 不进 SOP。
 - exp-043:dogfood mobile-os audit——SOP 健康不 cry-wolf;superpowers 残留复发(且渗进测试路径)→ §5.2 点名"已卸载外部工具残留"这一类。
+- exp-044:worktree 粒度从按端回灌为按 issue/任务(mobile-os 实测)——on-demand 用完即弃、仓内 `.worktrees/`、端身份⊥worktree,并把"合并即清"清理纪律一起沉。
 
 早期设计记录在 [`docs/specs/`](docs/specs/)。
 
