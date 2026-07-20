@@ -17,7 +17,7 @@
 ## 决策（三条一起 · HEAD-race 机制蒸自 taoxi-geo ADR-0007，粒度/布局蒸自 mobile-os 实测）
 
 1. **多 worktree 模型**：`git worktree add`，共享同一个 `.git/`（在主 worktree），各 worktree 独立 HEAD / index / 工作区。（不选多 clone：磁盘 ×N、history 重复；不选单 worktree：就是要解的那个 race。）
-2. **per-task 粒度**：每个 **issue / 需求 / task** 一个 worktree，**不是** per-scope（按端）、**不是** per-window。理由（mobile-os 实测）：并行任务数量变化快（按端永久预建要么建一堆空的、要么同端两任务并行时卡死），且一个任务常跨相邻端（按端 worktree 装不下跨端任务）。
+2. **per-task 粒度**：真要开 worktree 时按 **issue / 需求 / task** 切（一任务一个），**不是** per-scope（按端）、**不是** per-window；但 worktree 本身可选、**不是每个 task 都建**（串行 / 单 agent 别上，见头部门禁）。理由（mobile-os 实测）：并行任务数量变化快（按端永久预建要么建一堆空的、要么同端两任务并行时卡死），且一个任务常跨相邻端（按端 worktree 装不下跨端任务）。
 3. **on-demand 用完即弃**：开工临时建、合并即清，**不永久预建**（永久预建 = 为没有的形态预建 · STANDARD §3.5）。
 
 ## 布局（仓内 `.worktrees/`，gitignore）
@@ -29,7 +29,7 @@
     └── issue-33-cleanup/          ← 每个 issue/需求/task 一份
 ```
 
-- `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees` 确认。
+- `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees` 确认——**未被忽略则先 `echo '.worktrees/' >> .gitignore` 补上再建**（否则主仓 `git status` 会把整个 worktree 当未跟踪、易被误 `git add`）。
 - **端身份 ⊥ worktree（正交）**：端身份靠 **cwd 最近的 `CLAUDE.md`** 定（进哪个端子目录就是哪端 agent）；worktree 只管"这是哪个任务"。在 `.worktrees/issue-N/<端目录>/` 就自动是该端 scope agent——两件事各管各的，别把身份跟 worktree 名绑死。
 
 ## 头号铁律 —— HEAD race trap
