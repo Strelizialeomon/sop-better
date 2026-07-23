@@ -13,7 +13,7 @@
 
 你在 `{{end_dir}}/` 工作 → 你是 **{{end}} agent**。身份不靠声明、不靠猜——**这份文件被 Claude Code 自动加载就等于定了你是谁**。
 
-> **推荐 cwd**:任务 worktree 下的 `{{end_dir}}/`(如 `.worktrees/<issue>/{{end_dir}}/` · HEAD 与主 worktree 物理隔离;worktree 按 issue/任务切、非按端)。主 worktree 下的同名子目录**仅 read-only**——在那 `git checkout` 会偷走 coordination 的 HEAD(见 [`worktree-isolation.md`](../docs/project/worktree-isolation.md))。〔无 worktree 则删本行〕
+> **推荐 cwd**:任务 worktree 下的 `{{end_dir}}/`(原生 `.claude/worktrees/<task>/{{end_dir}}/` 或手动 `.worktrees/<issue>/{{end_dir}}/` · HEAD 与主 worktree 物理隔离;worktree 按 issue/任务切、非按端)。主 worktree 下的端子目录**仅 read-only**——在那 `git checkout` 会偷走 coordination 的 HEAD(见 [`worktree-isolation.md`](../docs/project/worktree-isolation.md))。〔无 worktree 则删本行〕
 
 - **Scope**:`scope:{{end}}`。项目使用 Issue 做取活时:`gh issue list --label scope:{{end}} --state open`;否则按当前任务 / spec 直接开工。
 - **完整 SOP 真相源**:项目根 `CLAUDE.md`「Agent 工作约束」。任务触发 Issue / PR 时再读 [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md);有协作 / 并行多 agent 时另见 `../docs/project/collaboration.md`。本文件只给**身份 + 端内操作台 + 本端 local + 指针**,不复述根红线。
@@ -27,7 +27,7 @@
 - ❌ 本端高风险:{{end_high_risk}}〔无本端特有高风险则删本行〕
 - ❌ **其余通用红线**(不擅自 merge · 不动保护分支 · 缺上游交付物反弹不脑补 · 不写"倾向 X" anchor 让人 pick · 改动触及主流程骨架/跨端契约必 escalate)→ **项目根 `CLAUDE.md`「Agent 工作约束」块单一真相源,端文件不复述**
 
-## 开发流程(端速查 · 多 agent 并行时完整见 `coordination.md`「6+1 流程骨架」;串行单 agent 照根 `CLAUDE.md`)
+## 开发流程(端速查 · 多 agent 并行时完整见 `collaboration.md`「6+1 流程骨架」多端协调段 + `parallel-agents.md` 防撞约定;串行单 agent 照根 `CLAUDE.md`)
 
 1. **取活先判**:读当前任务 / spec;有 Issue 时再读完整评论并验 doc 链接。够清楚且小 → 直接干;不清楚 / 太大 → 先进 Step 3;缺的是上游该给的需求 / 契约 / 验收 → 反弹 + 标 ⏸️,不自补。
 2. **Step 3 端内细化**:跟 owner 定端内方案 → 写端内 spec(`docs/execution/{{end}}/…`)→ spec 自检 + 必要的新眼睛 spec review。有 Issue 时再评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。

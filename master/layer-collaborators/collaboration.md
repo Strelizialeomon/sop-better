@@ -1,10 +1,10 @@
 <!-- master/layer-collaborators/collaboration.md —— 触发:有第 2 个人(≥2 个不同的人 · 业务↔开发 handoff)。
-     $sop-init 落成 docs/project/collaboration.md。若同时"真并行多 agent",再把 layer-parallel-agents/coordination.md 追加在后(单人多端多 agent 则只有那段、没有本段)。
-     拆分自原 templates/collaboration.md「基线双角色段」——多 agent 协调骨架挂"并行 agent"触发、在 coordination.md,不挂"第 2 个人"。-->
+     $sop-init 落成 docs/project/collaboration.md。若同时"多端且真并行多 agent",再把 layer-parallel-agents/coordination-multiend.md 追加在后(单人多端多 agent 则只有那段、没有本段);端-agnostic 的并行防撞独立落 docs/project/parallel-agents.md、不进本文件。
+     拆分自原 templates/collaboration.md「基线双角色段」——多 agent 协调挂"并行 agent"触发、在 parallel-agents.md(端-agnostic)与 coordination-multiend.md(多端),不挂"第 2 个人"。-->
 
 # 协作约定（本项目）
 
-> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 agent 指令文件公约里恒定；Issue / PR 按跟踪、交接与交付需要触发）。**多端真并行多 agent 的协调骨架在 `coordination.md`（$sop-init 追加在本段之后）。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管协作流。
+> 本文件是"谁干什么、怎么不撞车"的真相源，**有协作才有**。单端单人 / 无并行 agent 没有这份（角色变焦在 agent 指令文件公约里恒定；Issue / PR 按跟踪、交接与交付需要触发）。**agent↔agent 并行防撞见 `parallel-agents.md`；多端真并行的协调段由 `$sop-init` 追加在本段之后。** 跨端事实（仅多端）定义在 `docs/contracts/`，这里只管人↔人协作流——**端↔端走 `contracts/`，人↔人走本文件，agent↔agent 走 `parallel-agents.md`，三样各叫各的名。**
 
 ## 协作主线(doc / issue / PR)
 
