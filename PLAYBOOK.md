@@ -337,3 +337,11 @@
 - **护栏**:① 归层判据 = 规则自己的管辖声明(§1 说「任何项目」就必须进 base),不是它最初在哪个项目 / 哪层被踩出来;② base 补三条(取活与书挡 / 不假民主 / escalate 自决),触发层同款降为指针;③ `$sop-audit` step 4 必查清单加「取活与书挡」——这次靠逐行 diff 母本才逮到,不进清单换个 audit 就漏。
 - **代价 / 边界**:base 净 +1 行(+2/-1),是补 STANDARD 已承诺的欠账、不是加新规矩;「取活入口」带「仅项目用 Issue 时」限定,audit 不对无 issue 项目硬报缺失。只在 mobile-os 一个项目实测,但静态缺失与项目无关即成立;新 base 未重跑 `$sop-init` 复验,留集中 sweep(#15)。
 - **证据**:exp-046(#24 mobile-os 实测回灌;下游参照 mobile-os#133 已自行补齐并实测取活可用)
+
+---
+
+### ⚠️ 并行防撞跟端数无关,单端并行反而更容易撞——别把并行层挂在多端门后
+- **缺口**:并行层触发被写成「前提:已多端」,但它治的两个病(HEAD race 物理撞 / 同一堆文件逻辑撞)与端有没有第 2 个毫无关系;且 coordination.md 一半端-agnostic 一半按端、不可分割——「单端+真并行」项目整发 = 装空转的多端机器(§5.1),整剪 = 漏全部防撞(§5.4),两个都错。xhs-analysis 实测:单端从未有第 2 个端,照样撞出跨 PR 逻辑冲突,owner 一句话问出洞。
+- **护栏**:① 触发 = 真并行多 agent(与端数无关),多端且并行才追加协调段——SLOTS / STANDARD §3 / sop-init 三处同口径,三触发自检补「单人·单端·并行」例;② 拆两份:`parallel-agents.md`(端-agnostic 防撞:起手报告 / 消息总线+方案变更回写 / 取活认领 / escalate / close-keyword)+ `coordination-multiend.md`(角色表 / 6+1 / 按端 scope 隔离,防撞全指针);③ 命名各归各:**端↔端 contracts,人↔人 collaboration.md,agent↔agent parallel-agents.md**。反直觉点记牢:多端的"只动你端代码"本身就是隔离,单端没有这道墙——最需要防撞的项目恰恰是单端并行。
+- **代价 / 边界**:layer-parallel-agents 净 +24 行(实测 numstat;蒸自 xhs-analysis 实测的逻辑层护栏 + 互指头注),不是持平——以 audit 镜头自查属"为已实测发生的形态补缺",非预建;母本改后未重跑 `$sop-init` machine-path 复验,留 #15 集中 sweep。
+- **证据**:exp-047(#25 xhs-analysis 单端并行实测回灌;其 PR #2 手工版即本次蒸馏源)

@@ -11,7 +11,7 @@
 | `base/` | 总是 | Claude Code agent 指令文件 `CLAUDE.md` + `docs/decisions/`（adr-template + 你补 0001/升级触发 ADR）+ `docs/project/issue-pr-workflow.md` |
 | `layer-collaborators/` | ≥2 个人 | `docs/project/collaboration.md`（双角色 handoff 段） |
 | `layer-multiend/` | ≥2 个端 | `docs/contracts/`（README + multiend-contracts）+ 每端 `<端>/CLAUDE.md`（end-role）+ 把 `multiend-constraints-block` 填进根 `CLAUDE.md` 的 `{{multiend_constraints}}` 槽 |
-| `layer-parallel-agents/` | 真并行多 agent（= 上 worktree · **前提：已多端**；单端不单独触发） | `docs/project/worktree-isolation.md` + 把 `coordination.md` 追加进 `docs/project/collaboration.md` |
+| `layer-parallel-agents/` | 真并行多 agent（= 上 worktree · **与端数无关，单端也触发**） | `docs/project/worktree-isolation.md`（物理层）+ `docs/project/parallel-agents.md`（逻辑层）；**若也多端**再把 `coordination-multiend.md` 追加进 `docs/project/collaboration.md` |
 
 > 三触发**正交**：端的事归端、人的事归人、并行的事归并行（口诀见 STANDARD §3）。`$sop-init` 必须按触发分流，**别按目录相邻**当门（否则复发 exp-012 挂错闸）。
 
@@ -32,10 +32,10 @@
 
 | 槽 | 在哪层 | 填什么 |
 |---|---|---|
-| `{{ends}}` | multiend / parallel / coordination | 端清单（如 admin / backend / frontend / crawler） |
+| `{{ends}}` | multiend / coordination-multiend | 端清单（如 admin / backend / frontend / crawler） |
 | `{{End}}` / `{{end}}` / `{{end_dir}}` | end-role（每端一份） | 端名首字大写 / scope 小写 / 端目录名 |
-| `{{project}}` | end-role | 项目名 |
-| `{{base_branch}}` | end-role | 工作基线分支（如 `master` / `main` / `dev`） |
+| `{{project}}` | end-role / worktree-isolation | 项目名 |
+| `{{base_branch}}` | end-role / parallel-agents | 工作基线分支（如 `master` / `main` / `dev`） |
 | `{{stack}}` / `{{end_docs}}` / `{{impl_vocab}}` | end-role | 本端技术栈 / 本端独有常读 doc / 实施层词汇（Step 3 brainstorm 拍的） |
 | `{{end_milestones}}` / `{{end_high_risk}}` | end-role | 本端特有评论里程碑 / 本端特有高风险项；没有就删整行，不留“无”占位 |
 

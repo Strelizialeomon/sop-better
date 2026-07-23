@@ -1,8 +1,8 @@
-<!-- master/layer-parallel-agents/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是并行协作里的 (可选) 项,不是默认。
+<!-- master/layer-parallel-agents/worktree-isolation.md —— 仅"真并行多 agent"(与端数无关,单端也触发)。worktree 是并行协作里的 (可选) 项,不是默认。
      选用条件:你真的同时开 ≥2 个 agent 窗口改同一个仓。串行干 / 单 agent → 别上(过度治理)。
      HEAD-race 机制蒸自 taoxi-geo(ADR-0007);per-issue 粒度 / 仓内布局 / 清理纪律蒸自 mobile-os 实测。
-     $sop-init 仅在 owner 选上 worktree 时落本文件(为 docs/project/worktree-isolation.md),
-     并在 collaboration.md 多端追加段的 "worktree(选项)" 行指过来 + 用 adr-template.md 记一条 ADR(含下方反转条件)。
+     $sop-init 在触发并行层时与 parallel-agents.md 成对落本文件(为 docs/project/worktree-isolation.md;文件先发、上不上 worktree 看头部门禁,动作可选),
+     并在 parallel-agents.md 的 "worktree(选项)" 节指过来 + 用 adr-template.md 记一条 ADR(含下方反转条件)。
      占位符:{{project}} 项目名。-->
 
 # Per-task Worktree 物理隔离（真并行 · 可选）
@@ -23,23 +23,27 @@
 ## 布局（仓内 `.worktrees/`，gitignore）
 
 ```
-{{project}}/                       ← 主 worktree（含 .git/）· coordination 用 · HEAD 永远停 master
+{{project}}/                       ← 主 worktree（含 .git/）· 协调/只读窗口用（多端时即 coordination）· HEAD 永远停 master
 └── .worktrees/
     ├── issue-17/                  ← 某任务一份完整 linked worktree
     └── issue-33-cleanup/          ← 每个 issue/需求/task 一份
 ```
 
 - `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees/` 确认（**必须带尾斜杠**——`xxx/` 型 pattern 对不存在的无斜杠路径不匹配，无尾斜杠时建前恒 exit 1 误报，实测复现）——**未被忽略则先 `echo '.worktrees/' >> .gitignore` 补上并 commit 再建**（否则主仓 `git status` 会把整个 worktree 当未跟踪、易被误 `git add`，新 clone 也拿不到忽略规则）。
-- **端身份 ⊥ worktree（正交）**：端身份靠 **cwd 最近的 `CLAUDE.md`** 定（进哪个端子目录就是哪端 agent）；worktree 只管"这是哪个任务"。在 `.worktrees/issue-N/<端目录>/` 就自动是该端 scope agent——两件事各管各的，别把身份跟 worktree 名绑死。
+- **〔多端〕端身份 ⊥ worktree（正交）**：端身份靠 **cwd 最近的 `CLAUDE.md`** 定（进哪个端子目录就是哪端 agent）；worktree 只管"这是哪个任务"。在 `.worktrees/issue-N/<端目录>/` 就自动是该端 scope agent——两件事各管各的，别把身份跟 worktree 名绑死。
 
 ## 头号铁律 —— HEAD race trap
 
-- **绝不在主 worktree 跑 `git checkout <feature-branch>`**——会偷走 coordination 窗口的 HEAD。主仓 HEAD **永远停 master**。
-- 主仓下的**端子目录只读**：在那 `git checkout` = 踩 race。
+- **绝不在主 worktree 跑 `git checkout <feature-branch>`**——会偷走主仓窗口（多端时即 coordination）的 HEAD。主仓 HEAD **永远停 master**。
+- 〔多端〕主仓下的**端子目录只读**：在那 `git checkout` = 踩 race。
 - 实现分支的 `git checkout` **只在任务 worktree（`.worktrees/<task>/`）里跑**。
 - **主仓禁 `git clean -fdx` / `-fdX`**：`.worktrees/` 是 ignored 目录，一条 clean 会把**全部任务 worktree 连 WIP 一起删光**（仓外同级布局免疫此雷，仓内布局必须补这道闸）。
 
 ## 创建一个任务 worktree（on-demand）
+
+**优先走运行时原生**（Claude Code）：会话内用原生 `EnterWorktree`——自动在 `.claude/worktrees/<task>/` 建目录 + 新分支并切会话；默认 baseRef=fresh 即从 `origin/<默认分支>` 新建，正合"不从主仓 HEAD 猜基线"；退出用 `ExitWorktree`（keep / remove，remove 对未提交改动有拒删闸）。原生路径同样建前 `git check-ignore -v .claude/worktrees/` 验忽略。**caveat**：原生退出清理只管**本会话原生建**的 worktree——手动建的、跨会话遗留的（含原生 keep 下来的），仍走下方手动创建 / "合并即清"清理。
+
+**手动 fallback**（脚本化 / CI / 无原生支持时）：
 
 ```bash
 cd {{project}}                                             # 主 worktree
@@ -68,7 +72,7 @@ git fetch origin && git rev-list --count HEAD..origin/master # behind N?
 
 ## 清理（合并即清 · 压 worktree 泛滥）
 
-per-task 没有端数上限，**不清就堆成坟场**。PR 合并 / 任务明确废弃后：
+per-task 没有数量上限，**不清就堆成坟场**。本会话原生建的 → `ExitWorktree`（remove 自带拒删未提交改动的闸，与本节同向）；手动建的 / 跨会话遗留的（含原生 keep 下来的——路径换 `.claude/worktrees/<task>` 同理），PR 合并 / 任务明确废弃后：
 
 ```bash
 git -C .worktrees/issue-N-slug status --short             # 有无普通 WIP
@@ -94,4 +98,4 @@ git -C .worktrees/issue-N-slug status --short --ignored   # ignored 产物(.venv
 | 单 `.git/` 出现性能瓶颈（多 worktree 大 fetch / GC 慢） | 拆成多 clone 独立仓 |
 | 单机协作变多机 / owner 加协作者 | 每个协作者各自 `git clone` + 各自 `.worktrees/` |
 | worktree 数量长期居高、清理欠债 | 收紧"合并即清"为强制闸 / 加陈旧 worktree 巡检 |
-| 目标 agent 运行时原生支持 worktree（按子目录自动推 path） | 简化本 SOP |
+| ~~目标 agent 运行时原生支持 worktree~~ | **已执行（exp-047）**：原生 `EnterWorktree` 收编为首选，手动 `git worktree add` 降 fallback |
