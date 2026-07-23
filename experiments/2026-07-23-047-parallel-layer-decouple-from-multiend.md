@@ -28,7 +28,7 @@
 
 ## 反向验收 / 自审
 
-- **净增行数(诚实报)**:layer-parallel-agents 目录 删 46(coordination.md)+ 新 31+48 = 净 **+33 行**;worktree-isolation 原生段 +6。超出"持平"——但这是 P1 结构错配的修复:多出的行主要是 xhs-analysis 实测蒸来的逻辑层防撞(取活认领 / 方案变更回写 issue 是旧版没有的护栏)+ 两份互指头注。以 audit 镜头自查:不是为想象预建,是为已实测发生的形态(单端并行)补缺。
+- **净增行数(诚实报 · 实测 numstat)**:layer-parallel-agents 目录 删 45(coordination.md)+ 新 26+39 = 三文件净 +20,加 worktree-isolation(+12/−8)全目录净 **+24 行**。超出"持平"——但这是 P1 结构错配的修复:多出的行主要是 xhs-analysis 实测蒸来的逻辑层防撞(取活认领 / 方案变更回写 issue 是旧版没有的护栏)+ 两份互指头注。以 audit 镜头自查:不是为想象预建,是为已实测发生的形态(单端并行)补缺。
 - **承重墙逐条核**(exp-006):HEAD race、错座位救场、6+1、scope 隔离、escalate carve-out、close-keyword、起手 freshness 全部在位,只是换了住址;拆分无删义。
 - **单一真相源**:防撞约定只住 parallel-agents.md,coordination-multiend 全指针;三触发正交自此名实相符(SLOTS 表不再有"前提:已多端")。
 
