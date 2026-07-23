@@ -28,7 +28,7 @@
 - 另一端 review,issue 上 1-2 轮 reconcile(**异步走评论 · 不开会**)。
 - 双方一致 = **agreed draft** → 各进实施**并行建**(frontend 可 mock 跑,不等 backend)。
 - **仍永不阻塞**:发起方 post 完不停,继续按自己理解的 draft 干;有异议走评论改。**握手 = 尽早对齐,不是卡住等批**。
-- **同 agent 跨端不豁免留痕**:一个 agent 在同一任务 worktree 里把两端一起做完时,握手轮次可省(自己不必跟自己 reconcile),但**留痕不省**——draft 仍 post 到 issue 评论 announce,平台边界仍按下面第三节选择性 freeze。留痕是写给未来 feature 的,与当时谁做无关。
+- **同 agent 跨端不豁免留痕**:一个 agent 把两端一起做完时(同一任务 / 会话,无论是否用 worktree),握手轮次可省(自己不必跟自己 reconcile),但**留痕不省**——draft 仍 post 到 issue 评论 announce,平台边界仍按下面第三节选择性 freeze。留痕是写给未来 feature 的,与当时谁做无关。
 
 ## 三、契约 firmness 三级
 

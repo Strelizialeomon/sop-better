@@ -29,7 +29,7 @@
     └── issue-33-cleanup/          ← 每个 issue/需求/task 一份
 ```
 
-- `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees` 确认——**未被忽略则先 `echo '.worktrees/' >> .gitignore` 补上再建**（否则主仓 `git status` 会把整个 worktree 当未跟踪、易被误 `git add`）。
+- `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees/` 确认（**必须带尾斜杠**——`xxx/` 型 pattern 对不存在的无斜杠路径不匹配，无尾斜杠时建前恒 exit 1 误报，实测复现）——**未被忽略则先 `echo '.worktrees/' >> .gitignore` 补上并 commit 再建**（否则主仓 `git status` 会把整个 worktree 当未跟踪、易被误 `git add`，新 clone 也拿不到忽略规则）。
 - **端身份 ⊥ worktree（正交）**：端身份靠 **cwd 最近的 `CLAUDE.md`** 定（进哪个端子目录就是哪端 agent）；worktree 只管"这是哪个任务"。在 `.worktrees/issue-N/<端目录>/` 就自动是该端 scope agent——两件事各管各的，别把身份跟 worktree 名绑死。
 
 ## 头号铁律 —— HEAD race trap
@@ -37,6 +37,7 @@
 - **绝不在主 worktree 跑 `git checkout <feature-branch>`**——会偷走 coordination 窗口的 HEAD。主仓 HEAD **永远停 master**。
 - 主仓下的**端子目录只读**：在那 `git checkout` = 踩 race。
 - 实现分支的 `git checkout` **只在任务 worktree（`.worktrees/<task>/`）里跑**。
+- **主仓禁 `git clean -fdx` / `-fdX`**：`.worktrees/` 是 ignored 目录，一条 clean 会把**全部任务 worktree 连 WIP 一起删光**（仓外同级布局免疫此雷，仓内布局必须补这道闸）。
 
 ## 创建一个任务 worktree（on-demand）
 
@@ -77,7 +78,7 @@ git -C .worktrees/issue-N-slug status --short --ignored   # ignored 产物(.venv
 - 先读回 PR/issue 确认**分支确已合并**（任务废弃则要有明确凭据）。
 - `status --short` 为空只证明没普通 WIP，**不证明 ignored 产物可丢**——重点盘点 venv、运行产物、标定、本地设备配置；有价值先迁到明确位置。
 - 以上全过才 `git worktree remove .worktrees/issue-N-slug && git worktree prune`。**禁 `git worktree remove --force`**，不强删未知 WIP。
-- **删远端分支是另一项动作**，按根高风险闸另取授权，不随本地 remove 自动执行。
+- **删远端分支是另一项动作**，需 owner 明确授权（项目宜将其列入根高风险闸的 `{{risk_gate_items}}`），不随本地 remove 自动执行。
 
 ## 其它须知
 

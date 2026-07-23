@@ -18,7 +18,7 @@
 
 **scope agent ≠ 执行 PM 派的细 task；= 高权限程序员，收到方向后自决实施。**
 
-> **身份靠"进哪个端的目录"自动定**：Claude Code 自动加载 cwd 最近的 `CLAUDE.md`——在任务 worktree 里 cd 进 `<端目录>/`（如 `.worktrees/<issue>/<端目录>/`）就自动是该端 scope agent，在主仓 / worktree 根就是 coordination。**端身份 ⊥ worktree**（worktree 按 issue/任务切、非按端）。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
+> **身份靠"进哪个端的目录"自动定**：Claude Code 自动加载 cwd 最近的 `CLAUDE.md`——在任务 worktree 里 cd 进 `<端目录>/`（如 `.worktrees/<issue>/<端目录>/`）就自动是该端 scope agent；**主仓根 = coordination；任务 worktree 根 = 端身份未定、cd 进端目录才定**（worktree 根上的是任务 agent，不是 coordination）。**端身份 ⊥ worktree**（worktree 按 issue/任务切、非按端）。不靠声明、不靠猜（细则见 `worktree-isolation.md`）。
 >
 > **错座位护栏**：端内活（端内 spec / 端代码）归 scope agent、在任务 worktree 的该端目录产出；coordination（主仓）只产**跨端 req doc**。**救场**——spec 已误产在主仓：别"释放分支"，按 req-doc 交接走 `push → doc PR(Refs)→ owner merge 进 master → scope agent 新建任务 worktree 从 origin/master 另切实施分支`。
 
@@ -42,4 +42,4 @@
 ## 高价值坑（taoxi-geo 复发过的）
 
 - **close-keyword 误关**：doc PR / 中间 PR 用 `Refs #N` 不用 `Closes`；commit 别让 `#N` 紧跟 `close/fix/resolve`（GitHub substring match，会误关 message-bus issue）。需求 issue 由最后一个实施 PR 关。
-- **HEAD race**：多 worktree 共享 `.git`，主 worktree 下的同名子目录只读，别在那 `git checkout`（会偷 coordination 的 HEAD）。
+- **HEAD race**：多 worktree 共享 `.git`，主 worktree 下的端子目录只读，别在那 `git checkout`（会偷 coordination 的 HEAD）。
