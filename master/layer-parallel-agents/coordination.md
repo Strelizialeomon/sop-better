@@ -29,7 +29,7 @@
 3. **细化**：scope agent 跟 owner 定端内方案 → 端内 spec doc → 自检 + 评论 announce（不再单独整体批）。
 4. **开发**：切 `<type>/issue-N-slug` 分支（分支名自决）；实施 + 进展 / 变更写 issue 评论；push + PR（默认 `Refs #N`,最终收口才 `Closes #N`）；**过新眼睛 review**（STANDARD §1.2）再示意 merge。
 5. **联调**：owner 跑；单端 bug → 该 agent；跨端 mismatch → 评论拍板改哪端。
-6. **收口**：别把"做完了"手抄进多个 doc（单一真相源 · STANDARD §1.7）。**owner 说"收工"= 推收口 doc 远端的明确指令（文档 main / 代码 PR）**。
+6. **收口**：别把"做完了"手抄进多个 doc（单一真相源 · STANDARD §1.7）。收工书挡按根 `CLAUDE.md`「取活与书挡」条（owner 说"收工"= 推收口的明确指令），不复述。
 - **+1 回改 req doc**（可选 · 有重大 deviation 才值）。
 
 ## 多 agent 不撞车
