@@ -27,13 +27,13 @@
 - ❌ 本端高风险:{{end_high_risk}}〔无本端特有高风险则删本行〕
 - ❌ **其余通用红线**(不擅自 merge · 不动保护分支 · 缺上游交付物反弹不脑补 · 不写"倾向 X" anchor 让人 pick · 改动触及主流程骨架/跨端契约必 escalate)→ **项目根 `CLAUDE.md`「Agent 工作约束」块单一真相源,端文件不复述**
 
-## 开发流程(端速查 · 多 agent 并行时完整见 `collaboration.md`「6+1 流程骨架」多端协调段 + `parallel-agents.md` 防撞约定;串行单 agent 照根 `CLAUDE.md`)
+## 开发流程(端速查)
 
-1. **取活先判**:读当前任务 / spec;有 Issue 时再读完整评论并验 doc 链接。够清楚且小 → 直接干;不清楚 / 太大 → 先进 Step 3;缺的是上游该给的需求 / 契约 / 验收 → 反弹 + 标 ⏸️,不自补。
-2. **Step 3 端内细化**:跟 owner 定端内方案 → 写端内 spec(`docs/execution/{{end}}/…`)→ spec 自检 + 必要的新眼睛 spec review。有 Issue 时再评论 announce(spec link + ≤30 行决策快照 + "进 Step 4")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
-3. **Step 4 实施**:低风险串行小改可在当前工作树直接做;需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 可用 `<type>/issue-N-slug`);真并行 / 隔离才用 worktree。spec 没 cover 的边界细节自己定,有共享凭据时回写。
-4. **变更必留痕**:任何非 trivial 方案变化(范围 / 字段 / endpoint / schema / 依赖 / 算法 / 跨端影响)立刻回写共享 doc;有 Issue 时同步评论。不要只放 commit message / PR diff。
-5. **交付**:commit 前走 `$commit-msg`;代码完成后做 change-first review。需要远端交付 / 评审 / 保护分支收口才 push + PR;有 Issue 时默认 `Refs #N`,只有最终收口 / 验收满足才 `Closes #N`。
+按 [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md)「步进-点头」表走(取活→细化→实施→验证+复审→交付→收口;每完成一步报下一步、停等放行),此处不复述。端内注记:
+
+- **细化**:端内 spec 落 `docs/execution/{{end}}/…`;有 Issue 时评论 announce(spec link + ≤30 行决策快照 + "进实施")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
+- **实施**:需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 用 `<type>/issue-N-slug`);真并行 / 隔离才用 worktree。spec 没 cover 的边界自己定,非 trivial 方案变化立刻回写共享 doc / issue 评论。
+- **多 agent 并行**完整版见 `collaboration.md`「6+1 流程骨架」多端协调段 + `parallel-agents.md` 防撞约定。
 
 - **本端实施层词汇**(Step 3 才拍这些 · 别在 req doc 提前锁):{{impl_vocab}}
 - **本端评论里程碑**:{{end_milestones}}〔没有就删本行;例:backend 写完 `…-api-draft.md` 必在 issue 评论 link 供对接,与 spec-ready 是两个里程碑。〕

@@ -36,6 +36,7 @@
 - **撒手有安全网**：跳重型实施计划，代价是 spec 验收可检验 + 必过独立新眼睛 review。spec 收口后先审 spec（实证与信源可信〔权威一手 > GH issue / SO〕/ 验收 / 范围边界）；代码采用 **change-first review**：首次审任务起点到当前 HEAD，后续只审上次已审 HEAD 到当前 HEAD，并记录已审 HEAD 与未关闭 findings。reviewer 可顺着变化查看相关函数、接口、调用方、契约和测试，但不重扫无关仓库；基线失效 / 历史不连续 / 范围不清时回退到完整任务变更。琐碎 spec 免；默认撒手档 = {{default_altitude}}，高风险升回我。
 - **Issue 评论按凭据价值分层（仅任务有 Issue 时）**：决策、实测 / 调研、收口、状态校正、阻塞 / 高风险、残项迁移、路线变化按 `docs/project/issue-pr-workflow.md` 写厚评论；只贴链接 / tag / 轻进度才短评。
 - **取活与书挡（仅项目用 Issue 时）**：不知道下一步干哪个 → `gh issue list --state open` 挑活（多端项目按各端文件的 scope 版取活）。开工书挡——标 `待业务确认` 的 issue 主动 surface 给我、别默默跳过；收工书挡——本任务已约定远端交付时，我说「收工 / 结束」= 按 workflow 推送收口 doc 的明确指令，未约定远端交付不补造。
+- **步进-点头（有 Issue 的任务）**：接活先把步进表（`docs/project/issue-pr-workflow.md`「步进-点头」）展开成任务清单；每完成一步 → 勾 issue 流程格 → 报「本步完成 + 下一步是 X」停等放行；我说「连走到 X」= 中间闸静默过。
 - **流程按需升级**：低风险、单会话、可逆的小改可在当前工作树直接完成,不强制 issue / 独立分支 / PR / worktree;代码仍要相关验证 + change-first review。需要远端交付 / 他人评审 / 保护分支收口才加分支 + PR;需要跨会话跟踪 / 角色交接才加 Issue;真并行、无关未提交改动或明确隔离需求才加 worktree。
 - **其它情景规则按需读、别全塞这**：任务触发 Issue / PR 时读 `docs/project/issue-pr-workflow.md`;真并行多 agent 时读 `docs/project/parallel-agents.md`(上 worktree 再读 `worktree-isolation.md`);有第 2 个人或多端并行时才读 `docs/project/collaboration.md`;跨端时再读契约。起手新鲜度只在依赖远端事实时触发。
 {{multiend_constraints}}
