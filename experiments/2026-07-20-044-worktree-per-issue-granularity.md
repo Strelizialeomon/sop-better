@@ -26,6 +26,7 @@
 - `master/layer-parallel-agents/worktree-isolation.md`:主体重写。per-scope→per-task;永久预建→on-demand 用完即弃;主仓同级 `wt-<端>/`→仓内 `.worktrees/<issue>/`(gitignore,建前 `check-ignore`);新增"端身份 ⊥ worktree"解耦、"重环境各配 + 长驻例外"、"合并即清清理纪律"。**保留全部承重墙**:HEAD race trap、起手按-ref-验(§1.8)、stash 跨 wt 共享 caveat、反转条件。
 - `master/layer-parallel-agents/coordination.md`:3 处解耦——身份判定改"cwd 最近 CLAUDE.md + 端身份⊥worktree"、错座位救场改"新建任务 worktree 另切"、worktree 选项行改"按 issue/任务建临时、用完清"。
 - `master/layer-multiend/end-role-claude.md`:推荐 cwd 从 `wt-{{end}}/` 改 `.worktrees/<issue>/{{end_dir}}/`。
+- `master/layer-multiend/multiend-contracts.md`:§二补一条「同 agent 跨端不豁免留痕」——per-issue 切法让一个 agent 可在同一 worktree 一把改完两端(旧按端切时物理结构逼着走 issue 握手,现在没这道物理墙),握手轮次自然蒸发可接受,但契约留痕(issue announce + 选择性 freeze)是给未来 feature 的、不随之豁免。mobile-os 同向背书:其 collaboration.md 明文「spec/contract 不得用未合并 commit 交接」+ 跨端任务强制 `scope:cross-end` label,活项目已把留痕当不可豁免项。
 
 ## 反向验收 / 自审(本仓家规:改 SOP 先用 audit 镜头审自己)
 
