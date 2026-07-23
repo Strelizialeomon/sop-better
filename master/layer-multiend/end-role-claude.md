@@ -5,7 +5,7 @@
        通用红线指向项目根 `CLAUDE.md`「Agent 工作约束」块(单一真相源),**绝不复述**——复述 = 会漂移的凭据(改了一处忘改 N 份端文件)。
      占位符:{{End}} 端名首字大写 · {{end}} scope 小写 · {{end_dir}} 端目录名 · {{project}} 项目名
             {{base_branch}} 工作基线分支 · {{stack}} 本端技术栈 · {{end_docs}} 本端独有常读 doc(逐条列)
-            {{impl_vocab}} 本端"实施层词汇"(Step 3 brainstorm 拍的那些)
+            {{impl_vocab}} 本端"实施层词汇"(细化 brainstorm 拍的那些)
             {{end_milestones}} 本端特有评论里程碑(可空则删整段) · {{end_high_risk}} 本端特有高风险项(可空则删整段)
      〔多 repo 而非 monorepo〕:端文件放各端 repo 根;跨端契约/SOP 的相对路径换成稳定 URL(commit permalink / 已合 PR),别用会悬空的相对路径(STANDARD §1.8)。 -->
 
@@ -29,13 +29,13 @@
 
 ## 开发流程(端速查)
 
-按 [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md)「步进-点头」表走(取活→细化→实施→验证+复审→交付→收口;每完成一步报下一步、停等放行),此处不复述。端内注记:
+按 [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md)「步进-点头」表走(取活→细化→实施→验证+复审→交付→收口;每完成一步报下一步、停等放行),此处不复述;**无 Issue 任务不进闸**,按根 `CLAUDE.md`「流程按需升级」直接干。端内注记:
 
 - **细化**:端内 spec 落 `docs/execution/{{end}}/…`;有 Issue 时评论 announce(spec link + ≤30 行决策快照 + "进实施")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
 - **实施**:需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 用 `<type>/issue-N-slug`);真并行 / 隔离才用 worktree。spec 没 cover 的边界自己定,非 trivial 方案变化立刻回写共享 doc / issue 评论。
 - **多 agent 并行**完整版见 `collaboration.md`「6+1 流程骨架」多端协调段 + `parallel-agents.md` 防撞约定。
 
-- **本端实施层词汇**(Step 3 才拍这些 · 别在 req doc 提前锁):{{impl_vocab}}
+- **本端实施层词汇**(细化时才拍这些 · 别在 req doc 提前锁):{{impl_vocab}}
 - **本端评论里程碑**:{{end_milestones}}〔没有就删本行;例:backend 写完 `…-api-draft.md` 必在 issue 评论 link 供对接,与 spec-ready 是两个里程碑。〕
 
 ## 你常读的文件
