@@ -321,3 +321,11 @@
 - **护栏**:回归初衷时判据不是「行数少了没」,是「改完能不能通过自己的 audit」。① STANDARD §1 双叙述合成一条主线(反驳 / 说人话 各一次,不在闭环里再讲);② sop-audit 覆盖闸状态机砍回「别漏查这几条主线」短清单——**正是 exp-030 自己的告诫**(「覆盖闸继续长项就变成它本来要治理的过度 SOP」)被 exp-031~033 违反,这次执行它;③ 减法后走承重墙矩阵(exp-006 / 034)逐条核权威点 / 执行点 / 审计点没丢 + 以 `origin/main` 为保留基线。
 - **代价 / 边界**:exp-034「先重排别新增」的**补一刀**——重排是第一步,攒几轮后必须真删被 subsume 的层,否则重排只是把肥肉换个位置。删减风险真实(可能误伤 audit 依赖的细节),靠矩阵 + 保留基线兜;**复验待补**:对活 lab 项目(taoxi-geo / media-ops)重跑 `$sop-audit`,验薄版仍逮得到漂移 / 结构错配、且没多报噪音。
 - **证据**:exp-040(owner 主导:Codex 接手后 SOP 变厚变杂,回归 Skill-only 初衷)
+
+---
+
+### ⚠️ worktree 按 issue/任务切,别按端——按端是被真实并行形态顶翻的旧粒度
+- **缺口**:master 层 `worktree-isolation.md` 写死 per-scope(按端)/ 永久预建 / 主仓同级 `wt-<端>/`(蒸自更老的 taoxi-geo),但 **STANDARD §3 与 base workflow 自己早已是"按任务"口径**——只有这层母本漂着。唯一"多端+真并行"活项目 mobile-os 也已淘汰按端,改 `.worktrees/<issue>/`(仓内、用完即弃),端身份靠 **cwd 最近 CLAUDE.md** 与 worktree 解耦。
+- **护栏**:per-task 粒度(每 issue/需求/task 一个)+ on-demand 用完即弃 + 仓内 `.worktrees/`(gitignore)。**代价必须自带解药**:按 issue 切没有端数上限 → 把"合并即清"清理 checklist(读回确认已合 → 盘点 tracked/untracked/**ignored** 产物 → 全过才 remove、禁 `--force`)当一等公民一起沉,并加"数量长期居高 → 收紧强制闸"反转条件。
+- **代价 / 边界**:重环境端(venv/设备标定)每 worktree 重配 → "按任务切是默认粒度、非铁律",重环境端可留一个长驻 worktree。mobile-os 实测已见泛滥(26 活 worktree 多个未清),清理纪律不落地就堆坟场。**复验待补**:母本改动未在真项目重跑 `$sop-init` 验生成物。
+- **证据**:exp-044(owner 指出按端不灵活 → 回灌 mobile-os per-issue 实测 + 清理纪律)

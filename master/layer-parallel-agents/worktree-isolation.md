@@ -1,95 +1,97 @@
-<!-- master/layer-parallel-agents/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是多端协作里的 (可选) 项,不是默认。
-     选用条件:你真的同时开 ≥2 个 agent 窗口改同一个仓(每端一个)。串行干 / 单 agent → 别上(过度治理)。
-     蒸馏自 taoxi-geo(ADR-0007 + collaboration §13 实战)。$sop-init 仅在 owner 选上 worktree 时落本文件,
+<!-- master/layer-parallel-agents/worktree-isolation.md —— 仅多端且"真并行多 agent"。worktree 是并行协作里的 (可选) 项,不是默认。
+     选用条件:你真的同时开 ≥2 个 agent 窗口改同一个仓。串行干 / 单 agent → 别上(过度治理)。
+     HEAD-race 机制蒸自 taoxi-geo(ADR-0007);per-issue 粒度 / 仓内布局 / 清理纪律蒸自 mobile-os 实测。
+     $sop-init 仅在 owner 选上 worktree 时落本文件(为 docs/project/worktree-isolation.md),
      并在 collaboration.md 多端追加段的 "worktree(选项)" 行指过来 + 用 adr-template.md 记一条 ADR(含下方反转条件)。
-     占位符:{{project}} 项目名 · {{ends}} 端列表(每端一个 wt-)。-->
+     占位符:{{project}} 项目名。-->
 
-# Per-scope Worktree 物理隔离（多端 · 可选）
+# Per-task Worktree 物理隔离（真并行 · 可选）
 
-> **本质——靠物理隔离，不靠流程控制**：worktree 是"一次性把隔离做进物理结构"，setup 完**日常控制 ≈ 0**（git 自己保证各窗口 HEAD 不互扰，只要各待各的目录）。下面大半篇幅是"怎么摆台子 + 有哪几个坑 + 啥时该反悔"，**不是一套天天要跑的控制流程**——别被行数吓到。
+> **本质——靠物理隔离，不靠流程控制**：worktree 是"一次性把隔离做进物理结构"，建完**日常控制 ≈ 0**（git 自己保证各窗口 HEAD 不互扰，只要各待各的目录）。下面大半篇幅是"怎么摆台子 + 有哪几个坑 + 啥时该反悔"，**不是一套天天要跑的控制流程**——别被行数吓到。
 >
 > **要解的病（只有它成立才上）**：多个 agent 窗口**同时**开工时，git 的 **HEAD 是整仓共享的全局变量**——不随你 `cd` 进哪个子目录变。
 > A 窗口一 `git checkout`，就把 B 窗口的 HEAD 偷走，B 的未提交改动（WIP）跟着飘到错的分支。
-> worktree 给每个**并行** agent 一份独立 HEAD / index / 工作区，这病就没了。
+> worktree 给每个**并行**任务一份独立 HEAD / index / 工作区，这病就没了。
 > **没有并行 agent = 没有这病 = 别上 worktree（那是为没有的形态预建 · STANDARD §3.5 最坏的过度治理）。**
 
-## 决策（三条一起 · 蒸自 taoxi-geo ADR-0007）
+## 决策（三条一起 · HEAD-race 机制蒸自 taoxi-geo ADR-0007，粒度/布局蒸自 mobile-os 实测）
 
 1. **多 worktree 模型**：`git worktree add`，共享同一个 `.git/`（在主 worktree），各 worktree 独立 HEAD / index / 工作区。（不选多 clone：磁盘 ×N、history 重复；不选单 worktree：就是要解的那个 race。）
-2. **per-scope 粒度**：每个端 `{{ends}}` 一个 worktree。**不是** per-feature、**不是** per-window。
-3. **永久预建**：onboarding / 拉新机器时一次建好，不每次临时 on-demand。
+2. **per-task 粒度**：真要开 worktree 时按 **issue / 需求 / task** 切（一任务一个），**不是** per-scope（按端）、**不是** per-window；但 worktree 本身可选、**不是每个 task 都建**（串行 / 单 agent 别上，见头部门禁）。理由（mobile-os 实测）：并行任务数量变化快（按端永久预建要么建一堆空的、要么同端两任务并行时卡死），且一个任务常跨相邻端（按端 worktree 装不下跨端任务）。
+3. **on-demand 用完即弃**：开工临时建、合并即清，**不永久预建**（永久预建 = 为没有的形态预建 · STANDARD §3.5）。
 
-## 布局（铁律：主仓 + 各 wt-* 必须同级）
+## 布局（仓内 `.worktrees/`，gitignore）
 
 ```
-~/code/{{project}}-root/
-├── {{project}}/        ← 主 worktree（含 .git/）· coordination 用 · HEAD 永远停 master
-├── wt-<scopeA>/        ← scopeA agent 用
-├── wt-<scopeB>/
-└── ...                 ← 每端一个 · 与主仓同级、不嵌套
+{{project}}/                       ← 主 worktree（含 .git/）· coordination 用 · HEAD 永远停 master
+└── .worktrees/
+    ├── issue-17/                  ← 某任务一份完整 linked worktree
+    └── issue-33-cleanup/          ← 每个 issue/需求/task 一份
 ```
 
-scope agent 只在自己的 `wt-<scope>/` 里干活；**不在**主仓下的同名子目录工作（那是 race trap，见下）。
+- `.worktrees/` **必须被 git 忽略**（由仓库 `.gitignore` 统一忽略）；建前先 `git check-ignore -v .worktrees/` 确认（**必须带尾斜杠**——`xxx/` 型 pattern 对不存在的无斜杠路径不匹配，无尾斜杠时建前恒 exit 1 误报，实测复现）——**未被忽略则先 `echo '.worktrees/' >> .gitignore` 补上并 commit 再建**（否则主仓 `git status` 会把整个 worktree 当未跟踪、易被误 `git add`，新 clone 也拿不到忽略规则）。
+- **端身份 ⊥ worktree（正交）**：端身份靠 **cwd 最近的 `CLAUDE.md`** 定（进哪个端子目录就是哪端 agent）；worktree 只管"这是哪个任务"。在 `.worktrees/issue-N/<端目录>/` 就自动是该端 scope agent——两件事各管各的，别把身份跟 worktree 名绑死。
 
 ## 头号铁律 —— HEAD race trap
 
 - **绝不在主 worktree 跑 `git checkout <feature-branch>`**——会偷走 coordination 窗口的 HEAD。主仓 HEAD **永远停 master**。
-- 主仓下的**同名子目录只读**：在那 `git checkout` = 踩 race。
-- scope agent 的 `git checkout` **只在自己 `wt-<scope>/` 里跑**。
+- 主仓下的**端子目录只读**：在那 `git checkout` = 踩 race。
+- 实现分支的 `git checkout` **只在任务 worktree（`.worktrees/<task>/`）里跑**。
+- **主仓禁 `git clean -fdx` / `-fdX`**：`.worktrees/` 是 ignored 目录，一条 clean 会把**全部任务 worktree 连 WIP 一起删光**（仓外同级布局免疫此雷，仓内布局必须补这道闸）。
 
-## 一次性 setup（owner 拉新机器）
+## 创建一个任务 worktree（on-demand）
 
 ```bash
-cd ~/code/{{project}}-root/{{project}}              # 主 worktree
-git worktree add --detach ../wt-<scope> master      # 每个端一行（替 <scope>）
-git worktree list                                   # 验证（含主 worktree）
+cd {{project}}                                             # 主 worktree
+git fetch origin --prune
+git worktree add .worktrees/issue-N-slug \
+  -b <type>/issue-N-slug origin/master                    # 从 origin/master 新建,不从主仓当前 HEAD 猜基线
+git -C .worktrees/issue-N-slug status -sb                 # 建后验:分支 / 脏文件 / behind
 ```
 
-- gitignored 的 `node_modules/` / Python venv / 各端 config **每个 worktree 各一份**，首次 setup 各自配。
+- gitignored 的 `node_modules/` / Python venv / 设备标定 / 各端 local config **每个 worktree 各一份**——这是 per-task 切法的代价，首次进各自配。**重环境端**（要重装 venv / 重跑标定的）可保留**一个长驻 worktree** 当例外，不必每任务重付。
 
 ## 每个 agent 起手（不可跳 · worktree 特有）
 
 worktree 各自的 HEAD 是**独立的旧快照**——不 fetch 就读到旧 SOP / 旧代码（可能含已废除的红线）。
 
 ```bash
-pwd                                                          # 我在哪个 worktree
+pwd                                                          # 我在哪个 worktree / 哪个端子目录
 git branch --show-current                                    # HEAD 在哪个分支
 git status                                                   # 工作树干不干净
 git fetch origin && git rev-list --count HEAD..origin/master # behind N?
 ```
 
-`behind > 0` → **先 sync 到 origin/master 再信本地 SOP / 代码**（clean 树直接 `git checkout -b <type>/issue-<N>-<slug> origin/master` 开新分支），sync 后**重读起手要读的 doc**。
+`behind > 0` → **先 sync 到 origin/master 再信本地 SOP / 代码**，sync 后**重读起手要读的 doc**。
 
-> 这就是"凭据要**按 ref 验**、别按本地旧快照信"的落地（STANDARD §1.8）：worktree 物理隔离 = 各端 HEAD 是各自的旧快照，不 fetch 就全程零信号读错规则。
+> 这就是"凭据要**按 ref 验**、别按本地旧快照信"的落地（STANDARD §1.8）：worktree 物理隔离 = 各 HEAD 是各自的旧快照，不 fetch 就全程零信号读错规则。
 
-## 开新 feature（scope agent）
+## 清理（合并即清 · 压 worktree 泛滥）
 
-```bash
-cd ~/code/{{project}}-root/wt-<scope>
-git fetch origin
-git checkout -b <type>/issue-<N>-<slug> origin/master   # 不必 checkout master：主仓已 active，切不过去
-# 干活 → git push -u origin <branch> → gh pr create ... Refs #N
-```
-
-- **`git stash` 跨 worktree 共享**：所有 wt 共用一个 `.git/`，`git stash list` 看到的是同一份——可拿它做临时跨端 hand-off（A 端 stash、B 端 pop）。
-- **同一 feat 分支不能同时在两个 worktree checkout**（git 报 `already checked out`）——同端一时刻通常只一条 active feat，撞上别懵：换分支名或在原 worktree 收尾。
-
-## 维护命令
+per-task 没有端数上限，**不清就堆成坟场**。PR 合并 / 任务明确废弃后：
 
 ```bash
-git worktree list                  # 列 worktree
-git worktree remove <path>         # 移除（要求 clean）
-git worktree prune                 # 清理已删 worktree 的元数据
-git worktree repair                # 修元数据指向旧路径（主仓 / 容器搬家后）
+git -C .worktrees/issue-N-slug status --short             # 有无普通 WIP
+git -C .worktrees/issue-N-slug status --short --ignored   # ignored 产物(.venv / runs/ / 标定 / 设备 config)
 ```
 
-- **容器搬家**：整体 rename / `mv {{project}}-root/`（主仓 + 所有 wt-* 一起搬）后用 `git worktree repair` 修指针；**先冷备份、确认无 WIP 再 prune**，别急着删。
+- 先读回 PR/issue 确认**分支确已合并**（任务废弃则要有明确凭据）。
+- `status --short` 为空只证明没普通 WIP，**不证明 ignored 产物可丢**——重点盘点 venv、运行产物、标定、本地设备配置；有价值先迁到明确位置。
+- 以上全过才 `git worktree remove .worktrees/issue-N-slug && git worktree prune`。**禁 `git worktree remove --force`**，不强删未知 WIP。
+- **删远端分支是另一项动作**，需 owner 明确授权（项目宜将其列入根高风险闸的 `{{risk_gate_items}}`），不随本地 remove 自动执行。
+
+## 其它须知
+
+- **`git stash` 跨 worktree 共享**：所有 wt 共用一个 `.git/`，`git stash list` 看到的是同一份——名字必须带 issue/任务信息；优先 commit 到任务分支而非长期 stash。
+- **同一分支不能同时在两个 worktree checkout**（git 报 `already checked out`）——换分支名或在原 worktree 收尾。
+- **维护 + 搬家**：`git worktree list`（列）/ `remove <path>`（移除，要 clean）/ `prune`（清元数据）/ `repair`（修指针）。整体 `mv {{project}}/`（主仓带 `.worktrees/` 一起搬）后用 `repair` 修指针，**先冷备份、确认无 WIP 再 prune**。
 
 ## 反转条件（任一发生 → 起新 ADR 重新决策）
 
 | 触发 | 反转方向 |
 |---|---|
-| onboarding 老踩 race（误在主仓同名子目录 `git checkout`） | 加 cwd 检查 wrapper / shell alias，强制启动校验在不在 wt-* |
+| onboarding 老踩 race（误在主仓端子目录 `git checkout`） | 加 cwd 检查 wrapper / shell alias，强制启动校验在不在 `.worktrees/` |
 | 单 `.git/` 出现性能瓶颈（多 worktree 大 fetch / GC 慢） | 拆成多 clone 独立仓 |
-| 单机协作变多机 / owner 加协作者 | 每个协作者各自 `git clone` + 各自 wt-* |
+| 单机协作变多机 / owner 加协作者 | 每个协作者各自 `git clone` + 各自 `.worktrees/` |
+| worktree 数量长期居高、清理欠债 | 收紧"合并即清"为强制闸 / 加陈旧 worktree 巡检 |
 | 目标 agent 运行时原生支持 worktree（按子目录自动推 path） | 简化本 SOP |
