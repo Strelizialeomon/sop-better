@@ -137,7 +137,7 @@ SOP 该多重,看它带来的**总成本**:人的等待 / 判断 / 手填,加上
 
 **结构按正交触发长出来(绝不为还没有的预建):**
 
-- **有第 2 个端?** 才加 `docs/contracts/` + 每端操作台 `<端>/CLAUDE.md`(身份 + scope / 取活 + 端内 Step 3/4 速查 + 本端 local)。
+- **有第 2 个端?** 才加 `docs/contracts/` + 每端操作台 `<端>/CLAUDE.md`(身份 + scope / 取活 + 端速查 + 本端 local)。
 - **要真并行多 agent?**(与端数无关)要才加 worktree 隔离 + 并行防撞约定,多端再加协调骨架;串行 / 单 agent 不加。
 - **有第 2 个人?** 才加 `collaboration.md` 的业务↔开发 handoff。
 

@@ -161,6 +161,7 @@ sop-better 用自己的方法造自己:
 - exp-046:公约层三条(取活入口 / 两个书挡 / 不假民主+escalate)漏进触发层 → 回渲染进 base;audit 必查清单补"取活与书挡"(mobile-os 实测,#24)。
 - exp-047:并行层与多端解耦——触发去绑端(单端并行反而更易撞),coordination 拆 parallel-agents(端-agnostic)+ coordination-multiend,原生 EnterWorktree 收编为首选(xhs-analysis 实测,#25)。
 - exp-048:重新对齐初心——北极星重立(度量 = 杠杆/爽感 + 行为,方法 = 验证做便宜);audit 补行为面抽查;家规加出题税;实测发现撒手实验字段 7-14 起消失两周无人察觉。
+- exp-049:步进-点头闭环——权威 6 步表 + 双状态锚(issue 勾选框真相源 / 会话清单投影),agent 自报下一步、owner 一字放行,治"做完一步就趴窝"。
 
 早期设计记录在 [`docs/specs/`](docs/specs/)。
 
