@@ -32,7 +32,7 @@ description: Use when 用户要体检/审计/优化现有开发 SOP,怀疑 SOP �
 4. **别漏查这几条高频主线**(存在则查、触发才必备;未触发且不存在 = n/a,不硬报缺失):
    - Refs / Closes 收口(默认 `Refs`,最终收口才 `Closes`)。
    - doc / issue / PR 三件套分工;issue 评论分层。
-   - 查证闭环 + change-first 复审(记录已审 HEAD / 未关 findings、基线失效回退完整任务而非全仓)。
+   - 查证闭环 + change-first 复审(口径见 STANDARD §1.2,此处不复述)——**连带核新眼睛授权句在不在**:只写"必过新眼睛"却没写"谁审 + 已常设授权",agent 每次到闸口回头问 owner → **只报一条** `missing`、severity 取 P2(同一根因别拆两条 · 不 cry wolf)。
    - 高风险治理项落点。
    - 结构触发(端 / 人 / 并行三触发 vs 实际目录 / contracts / 端级 `CLAUDE.md` 的最小操作面 / 协作 doc / worktree)。
    - 说人话与反驳是否落成可检查闸、还是只剩态度口号。
