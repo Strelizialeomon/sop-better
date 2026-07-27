@@ -1,6 +1,6 @@
 <!-- master/layer-parallel-agents/coordination-multiend.md —— 触发:多端 且 真并行多 agent(两个触发都命中才发;单端并行只发 parallel-agents.md)。
      $sop-init 把这段追加进 docs/project/collaboration.md:若也有第 2 个人,接在 layer-collaborators 双角色段之后;单人多端多 agent 则单独成 collaboration.md。
-     端-agnostic 的防撞约定(起手报告 / 消息总线 / 取活认领 / escalate / close-keyword)在 parallel-agents.md,本文不复述——本文只装"端"的事。
+     端-agnostic 的防撞约定(起手报告 / 消息总线 / 取活认领 / escalate / 遇阻处置 / close-keyword)在 parallel-agents.md,本文不复述——本文只装"端"的事。
      拆自原 coordination.md(exp-047):那份一半端-agnostic 一半按端,单端并行项目整发过度、整剪漏防撞。占位符:{{ends}} -->
 
 # 多端多 agent 协调(本项目)
