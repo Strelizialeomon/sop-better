@@ -32,7 +32,7 @@
 按 [`../docs/project/issue-pr-workflow.md`](../docs/project/issue-pr-workflow.md)「步进-点头」表走(取活→细化→实施→验证+复审→交付→收口;每完成一步报下一步、停等放行),此处不复述;**无 Issue 任务不进闸**,按根 `CLAUDE.md`「流程按需升级」直接干。端内注记:
 
 - **细化**:端内 spec 落 `docs/execution/{{end}}/…`;有 Issue 时评论 announce(spec link + ≤30 行决策快照 + "进实施")。简单 fix(trivial 常量 / 命名 / 小 SQL 等)免。
-- **实施**:需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 用 `<type>/issue-N-slug`);真并行 / 隔离才用 worktree。spec 没 cover 的边界自己定,非 trivial 方案变化立刻回写共享 doc / issue 评论。
+- **实施**:需要远端交付才从 `{{base_branch}}` 切 `<type>/<slug>`(有 Issue 用 `<type>/issue-N-slug`;**真并行多 agent 时钉死 `feat/issue-N`**——分支名兼任抢坑闸,见 `parallel-agents.md`);真并行 / 隔离才用 worktree。spec 没 cover 的边界自己定,非 trivial 方案变化立刻回写共享 doc / issue 评论。
 - **多 agent 并行**完整版见 `collaboration.md`「6+1 流程骨架」多端协调段 + `parallel-agents.md` 防撞约定。
 
 - **本端实施层词汇**(细化时才拍这些 · 别在 req doc 提前锁):{{impl_vocab}}
