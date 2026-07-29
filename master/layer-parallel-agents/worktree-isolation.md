@@ -17,7 +17,7 @@
 ## 决策（三条一起 · HEAD-race 机制蒸自 taoxi-geo ADR-0007，粒度/布局蒸自 mobile-os 实测）
 
 1. **多 worktree 模型**：`git worktree add`，共享同一个 `.git/`（在主 worktree），各 worktree 独立 HEAD / index / 工作区。（不选多 clone：磁盘 ×N、history 重复；不选单 worktree：就是要解的那个 race。）
-2. **per-task 粒度 + 名字必须带 issue 号**：真要开 worktree 时按 **issue / 需求 / task** 切（一任务一个），**不是** per-scope（按端）、**不是** per-window；**目录名与分支名都必须含 `issue-<N>`**（`.worktrees/issue-N` + `feat/issue-N`）——这不只是命名整洁：并行取活时**建 worktree 就是抢坑动作**，git 靠"同名分支 / 同名目录已存在"做互斥（实测同名分支 exit 255、同名目录 exit 128、新号 exit 0），**名字不带 issue 号就撞不上，锁直接失效**（取活纪律见 `parallel-agents.md`）；但 worktree 本身可选、**不是每个 task 都建**（串行 / 单 agent 别上，见头部门禁）。理由（mobile-os 实测）：并行任务数量变化快（按端永久预建要么建一堆空的、要么同端两任务并行时卡死），且一个任务常跨相邻端（按端 worktree 装不下跨端任务）。
+2. **per-task 粒度 + 名字必须带 issue 号**：真要开 worktree 时按 **issue / 需求 / task** 切（一任务一个），**不是** per-scope（按端）、**不是** per-window；**目录名就是 `.worktrees/issue-N`、分支名就是 `feat/issue-N`**，不加 slug、不加后缀、前缀全项目钉死一个——并行取活时**建 worktree 就是抢坑动作**，git 靠"同名分支 / 同名目录已存在"做互斥（实测：同名分支 exit 255、同名目录 exit 128、新号 exit 0）。**判据是"两个 agent 对同一 issue 必然生成同一个名字"，不是"名字里带了 issue 号"**——`issue-6-add-login` 与 `fix/issue-6-login-bug` 都带号，实测照样双双 exit 0（取活纪律见 `parallel-agents.md`）；但 worktree 本身可选、**不是每个 task 都建**（串行 / 单 agent 别上，见头部门禁）。理由（mobile-os 实测）：并行任务数量变化快（按端永久预建要么建一堆空的、要么同端两任务并行时卡死），且一个任务常跨相邻端（按端 worktree 装不下跨端任务）。
 3. **on-demand 用完即弃**：开工临时建、合并即清，**不永久预建**（永久预建 = 为没有的形态预建 · STANDARD §3.5）。
 
 ## 布局（仓内 `.worktrees/`，gitignore）
@@ -38,11 +38,13 @@
 - 〔多端〕主仓下的**端子目录只读**：在那 `git checkout` = 踩 race。
 - 实现分支的 `git checkout` **只在任务 worktree（`.worktrees/<task>/`）里跑**。
 - **主仓禁裸跑 `git clean -fdx` / `-fdX`**：`.worktrees/`（走原生路径则是 `.claude/worktrees/`）是 ignored 目录——**主仓眼里，所有并行 agent 的工作区都是"垃圾"**，一条 clean 把它们连同未提交的 WIP 一起删光，**不可逆**（仓外同级布局免疫此雷，仓内 / 原生布局必须补这道闸）。
-- **可选加一层响铃（是警报，不是闸）**：`.githooks/post-checkout` 放个脚本，主仓 HEAD 一离开 {{base_branch}} 就喊一声（每台机器装一次：`git config core.hooksPath .githooks`）。**限度要说清**——git **没有** `pre-checkout` 钩子，它是**切完才跑**（事后报警，拦不住）；而且只在切换那一刻响，**会话开始时就已经跑偏的，它一辈子不响**。当补丁用，别当闸用，更别因为装了它就放松上面三条铁律。
+- **可选加一层响铃（是警报，不是闸）**：`.githooks/post-checkout` 放个脚本（记得 `chmod +x`），主仓 HEAD 一离开 master 就喊一声（**每个 clone 各配一次**：`git config core.hooksPath .githooks`——它是 repo 级本地配置，不是机器级；且设了它会**整体停用** `.git/hooks/` 下的默认钩子）。**限度要说清**——git **没有** `pre-checkout` 钩子，它是**切完才跑**（事后报警，拦不住）；而且只在切换那一刻响，**会话开始时就已经跑偏的，它一辈子不响**。当补丁用，别当闸用，更别因为装了它就放松上面三条铁律。
 
 ## 创建一个任务 worktree（on-demand）
 
-**优先走运行时原生**（Claude Code）：会话内用原生 `EnterWorktree`——自动在 `.claude/worktrees/<task>/` 建目录 + 新分支并切会话；**`<task>` 同样必须带 `issue-<N>`**（原生路径也是靠同名冲突抢坑，随手起个 `fix-bug` 就把锁绕没了）；默认 baseRef=fresh 即从 `origin/<默认分支>` 新建，正合"不从主仓 HEAD 猜基线"；退出用 `ExitWorktree`（keep / remove，remove 对未提交改动有拒删闸）。原生路径同样建前 `git check-ignore -v .claude/worktrees/` 验忽略。**caveat**：原生退出清理只管**本会话原生建**的 worktree——手动建的、跨会话遗留的（含原生 keep 下来的），仍走下方手动创建 / "合并即清"清理。
+**并行取活必须走手动 `git worktree add`（见下），不走原生**——原生 `EnterWorktree` **没有分支名参数**（入参只有 `name` / `path`，分支由它自己起），而**分支名才是主锁**（实测：不同目录 + 同分支 → exit 255，先撞的是分支）；加上它建在 `.claude/worktrees/` 而手动建在 `.worktrees/`，**父目录不同、目录名永不相撞**（实测：`.worktrees/issue-6` 已存在时 `git worktree add .claude/worktrees/issue-6` → exit 0）。**A 走原生、B 走手动 → 双双成功、双双开工，锁是空的。**
+
+**原生 `EnterWorktree` 仅用于非取活场景**（临时隔离、单 agent 探索）：会话内自动在 `.claude/worktrees/<task>/` 建目录 + 新分支并切会话；默认 baseRef=fresh 即从 `origin/<默认分支>` 新建，正合"不从主仓 HEAD 猜基线"；退出用 `ExitWorktree`（keep / remove，remove 对未提交改动有拒删闸）。原生路径同样建前 `git check-ignore -v .claude/worktrees/` 验忽略。**caveat**：原生退出清理只管**本会话原生建**的 worktree——手动建的、跨会话遗留的（含原生 keep 下来的），仍走下方手动创建 / "合并即清"清理。
 
 **手动 fallback**（脚本化 / CI / 无原生支持时）：
 
@@ -99,4 +101,4 @@ git -C .worktrees/issue-N status --short --ignored   # ignored 产物(.venv / ru
 | 单 `.git/` 出现性能瓶颈（多 worktree 大 fetch / GC 慢） | 拆成多 clone 独立仓 |
 | 单机协作变多机 / owner 加协作者 | 每个协作者各自 `git clone` + 各自 `.worktrees/` |
 | worktree 数量长期居高、清理欠债 | 收紧"合并即清"为强制闸 / 加陈旧 worktree 巡检 |
-| ~~目标 agent 运行时原生支持 worktree~~ | **已执行（exp-047）**：原生 `EnterWorktree` 收编为首选，手动 `git worktree add` 降 fallback |
+| ~~目标 agent 运行时原生支持 worktree~~ | **已执行（exp-047）后被部分反转（exp-054）**：原生 `EnterWorktree` 曾收编为首选；但它**没有分支名参数**、且建在另一个父目录下，用于并行取活时锁是空的 → **取活退回手动 `git worktree add`**，原生只留非取活隔离。**下次原生支持指定分支名时可重新收编** |

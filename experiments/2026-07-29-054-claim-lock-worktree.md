@@ -51,7 +51,7 @@ agent B: git worktree add .worktrees/issue-5-login-bug  -b fix/issue-5-login-bug
 
 - **目录 = `issue-N`,分支 = `feat/issue-N`**,不加 slug、不加后缀。
 - **前缀全项目钉死一个**(默认 `feat/`,要换写进 ADR),**不许按任务类型变**。
-- 原生 `EnterWorktree` 的 `<task>` 名同样必须是 `issue-N`(随手起 `fix-bug` 就把锁绕没了)。
+- **并行取活一律走手动 `git worktree add`,不走原生 `EnterWorktree`**——复审 F1 逮到:原生**没有分支名参数**(入参只有 `name` / `path`),而**分支名才是主锁**(实测:不同目录 + 同分支 → exit 255);且它建在 `.claude/worktrees/`、手动建在 `.worktrees/`,**父目录不同、目录名永不相撞**(实测 exit 0)。**A 走原生 / B 走手动 = 双双成功 = 锁是空的。** 原生只留给非取活的临时隔离。
 - 连带清掉三处会绕开闸的既有措辞:`coordination-multiend.md` 的「分支名**自决**」、`worktree-isolation.md` 的「already checked out → **换分支名**」、以及两处 `<type>/issue-N-slug` 分支命名规则。
 
 ### 2.3 三种撞法,只有一种有硬闸(其余两种明写"在裸奔")
@@ -60,7 +60,7 @@ agent B: git worktree add .worktrees/issue-5-login-bug  -b fix/issue-5-login-bug
 |---|---|---|
 | **同一个 issue 被领两次** | 建 `issue-N` worktree 抢坑 | ✅ 有——第二个 agent 一行代码都写不了 |
 | **不同 issue 改同一堆文件** | 动手前看有没有别人正在动那块 + issue 评论同步影响面 | ❌ 无闸,**只有纪律**——worktree 拦不住,各自改得好好的、合并照撞 |
-| **同一任务内多个子代理写同一工作区** | 派之前**数写手**:≥2 个写手就各给一份 `cp -a` 沙箱或串行派;只读的随便并发 | ❌ 无闸,**只有纪律**——后写的盖掉先写的,两边都报成功 |
+| **同一任务内多个子代理写同一工作区** | 派之前**数写手**:≥2 个写手就每人一份独立工作区,**优先用工具层自带的** `Agent(isolation: "worktree")`,没有才退 `cp -a`;只读的随便并发 | ❌ 无闸,**只有纪律**——后写的盖掉先写的,两边都报成功 |
 
 第三行是 agent 首版**完全漏掉**的场景(owner 补),而它恰恰是最常发生的——派并行子代理是日常动作。
 
@@ -81,7 +81,7 @@ agent B: git worktree add .worktrees/issue-5-login-bug  -b fix/issue-5-login-bug
 | **layer-parallel-agents** | 约定 3 改为"建 worktree 抢坑 = 唯一的锁"(命名钉死 / exit code 判据 / 失败处置 / 为什么 label 不行 / 跨机器不成立);**新增约定 5**(子代理沙箱);新增三种撞法总表;坑里加 `.git/config.lock` 竞争 | 仅真并行项目 |
 | **layer-multiend** | 端级分支命名同加条件例外 | 仅多端项目 |
 | **worktree-isolation** | per-task 粒度条升格为**命名钉死 + 理由**;原生路径同规;`git clean -fdx` 补 `.claude/worktrees/` 与"主仓眼里并行工作区都是垃圾"的说明;**新增 post-checkout 响铃**(明标是警报不是闸) | 仅上 worktree 项目 |
-| **STANDARD §5.3** | audit 查法补 **"并行防撞写了却锁不住"**(取活只写"看一眼"、或命名不带号 / 带 slug → 互斥形同虚设);**反向同查**:无并行却被强制抢坑 | `$sop-audit` |
+|  **STANDARD §5 第 2 类**(结构错配) | audit 查法补 **"并行防撞写了却锁不住"**(取活只写"看一眼"、或判据是"两个 agent 会不会对同一 issue 生成不同的名字",不是"名字带没带号";同步进 `skills/sop-audit/SKILL.md` 必查清单(PLAYBOOK exp-046 护栏 ③));**反向同查**:无并行却被强制抢坑 | `$sop-audit` |
 
 ### 2.6 刻意留下的洞(写进规则、不藏着)
 
@@ -93,7 +93,7 @@ agent B: git worktree add .worktrees/issue-5-login-bug  -b fix/issue-5-login-bug
 
 ### 2.7 出题税账目
 
-**净增**:always-loaded +73 字符(净 0 行、无新 bullet)、并行层约定 3 扩写 + 新增约定 5 与撞法表、STANDARD §5.3 一句查法。
+**净增**:always-loaded +73 字符(净 0 行、无新 bullet)、并行层约定 3 扩写 + 新增约定 5 与撞法表、STANDARD §5 第 2 类一句查法 + audit 清单半句。
 **同轮抵扣**:`issue-pr-workflow.md` 的 lifecycle label **从"互斥状态机"降级为"看板"**(家规要求的"降级为结构");并行层约定 3 是**替换**软认领、不是叠加;三处会绕开闸的旧措辞(「分支名自决」「换分支名」「`<type>/issue-N-slug`」)**被删或收窄**。
 **净增成立的理由**:主体是接线 + 换更硬原语,规则面**变窄**(取活从"自由挑"收成"抢到才算",分支名从"自决"收成"钉死");文本增量避开了最贵的 always-loaded。按 exp-048 北极星算修路,不算出题。
 
@@ -113,13 +113,29 @@ agent B: git worktree add .worktrees/issue-5-login-bug  -b fix/issue-5-login-bug
 ## 4. dogfood(本仓自己吃)
 
 - **反向验收(exp-005 纪律)** 跑了两轮,第二轮逮到两处漏网:`end-role-claude.md` 与 `issue-pr-workflow.md` 里还留着 `<type>/issue-N-slug` 分支命名。**处置是加条件例外而非一刀钉死**——串行 / 单 agent 项目带 slug 更可读,不该为并行场景牺牲(§5.1)。
-- **分层验证**:`grep` 确认 base 层仍零 worktree 强制提及(仅存两处是既有的"真并行才加"按需升级条款)。
+- **分层验证**:base 层 worktree 提及共 **5 处**(`CLAUDE.md:42,43`、`issue-pr-workflow.md:13,16,58`),**全是"才用 / 才加 / 按需读"式条件句、零强制**;其中 `:58` 是本轮新增(label 降级时指向 parallel-agents 的必要代价,不是漏网)。首版把这里写成"仅存两处",数字错,已按复审更正。
 - **体量核算**:见头部。
 - **新眼睛复审**:见 §4.1(按**回滚后**的口径跑——findings 是待核实假设,交作者 / owner 解;exp-052/053 的两档判据已于本日回滚,不适用)。
 
-### 4.1 复审结果
+### 4.1 复审结果:13 条 findings,**逮到两个致命洞,机制卖点当时并不成立**
 
-<!-- 待新眼睛子代理返回后填 -->
+**这道闸这次真的顶住了**——它逮到的两条都是 agent 和 owner 都没看出来的:
+
+| # | finding | 已修 |
+|---|---|---|
+| **F1** | **原生 `EnterWorktree` 与手动 `git worktree add` 是两条永不相撞的命名空间**:原生**没有分支名参数**、且建在 `.claude/worktrees/`(父目录都不同)。reviewer 实测 `.worktrees/issue-6` 存在时建 `.claude/worktrees/issue-6` → **exit 0**。首版把原生定为"首选路径",**等于首选路径上的锁是空的** | ✅ 改为"并行取活一律走手动,原生只用于非取活" |
+| **F2** | **判据在三处退化成"名字**带** issue 号"**(弱判据),只有 `parallel-agents.md` 一处写了强判据。实测 `issue-6-add-login` + `fix/issue-6-login-bug` → **exit 0**,带号照样失效。最重的是 `STANDARD` 那条 audit 查法——**锁坏掉的项目会审计通过** | ✅ 三处统一为"两个 agent 必然生成同一个名字",audit 查法同改 |
+| F3 | **锁只有获取、没有释放**:会话崩溃留下的孤儿 worktree 会把 issue **永久**锁死(清理节要求"确认已合并"才准 remove,约定 3 又禁删禁改名) | ✅ 约定 3 补活锁 / 死锁判别 + 接手流程 |
+| F4 | 约定 5 的 `cp -a` 沙箱**绕开了运行时已有的** `Agent(isolation: "worktree")`;且同一份文档一边说"worktree 治不了子代理层",一边拿一条"子代理用 worktree 隔离"的 bug 当凭据 | ✅ 改为优先用工具层隔离 |
+| F6 | 新查法只进 STANDARD、没进 `$sop-audit` 必查清单(PLAYBOOK exp-046 护栏 ③ 记过同一失效模式) | ✅ 已进清单 |
+| F8 | #34645 适用面被放大:实为 **Windows + 运行时 `isolation` 并发 + closed as not planned** | ✅ 降级为可执行判据 + 标限定 |
+| F9/F10/F13 | §5.3 应为 §5 第 2 类;"base 层仅存两处"实为 5 处;`core.hooksPath` 是 **每 clone** 一次、且会停用默认钩子 | ✅ 全改 |
+| F5 | `{{base_branch}}` 在本文件未登记槽位 → 生成物会带填不上的占位符 | ✅ 改回 `master`,与同文件其余处一致 |
+| F11/F12 | 回滚头注表述、以及"回滚把已证不可达的判据放回活规则面且撤走了对应 audit 查法"这笔已知代价 | ⏸️ 见 §6,留待下一轮 |
+
+**reviewer 主动报告的"查了什么才没找到问题"**(§1.3):独立复现全部三个退出码并**补测出两条决定性的新数据**(不同目录+同分支 → exit 255,证明**分支名才是主锁**;跨父目录 → exit 0,即 F1);逐条 WebFetch 核 GitHub 官方文档两句引文**逐字属实**;独立复算体量口径**与自述逐数字一致**;穷举全仓命名分歧路径,确认三处旧措辞已收拾干净、其余 8 个文件无第二套命名规则;逐条核回滚干净度(索引态与 `6eccb35` 逐字一致、活规则面 ①/② 零残留)。
+
+**这条记录的元教训**:agent 上一轮曾建议"规则文本改动免复审闸"(理由:reviewer 只能引规则审规则、必然自循环)——**本轮当场证伪**,该建议撤回。exp-052 那次复审确实只审出格式与记账口径,但那是**那一轮改的东西本身就只有格式**;本轮改的是有真实行为面的机制,复审就逮到了真洞。**闸的价值取决于被审对象有没有行为面,不取决于它是不是"规则文本"。**
 
 ### 4.2 自曝:agent 首版把锁写成了失效版本
 
